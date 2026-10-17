@@ -1,0 +1,116 @@
+{
+  "schema": "secs.service-static-text-profile-fixtures.v1",
+  "reader": "service-management.contracts.Command.parse + planning.validate_plan_payload",
+  "cases": [
+    {
+      "name": "lifecycle-summary-0",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"safe\\u0000text\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-summary-1",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"\\u001c\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-summary-2",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"\\u001d\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-summary-3",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"\\u001e\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-summary-4",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"\\u001f\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-summary-5",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\" \\t\\n\\r\u0085\u2000\u3000\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-optional-or-control-6",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"details\":\"safe\\u0000text\",\"summary\":\"Bounded example\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "lifecycle-optional-or-control-7",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"details\":\"  \\u001c\\u001d\\u001e\\u001f\",\"summary\":\"Bounded example\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "lifecycle-optional-or-control-8",
+      "request": "{\"expected_version\":null,\"operation\":\"request.create\",\"payload\":{\"summary\":\"safe\\u001ctext\"},\"request_id\":\"request-1\",\"resource\":{\"id\":\"request-1\",\"kind\":\"ServiceRequest\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "planning-reason-9",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"   \",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-reason-10",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"\\u001c\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-reason-11",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"\\u001d\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-reason-12",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"\\u001e\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-reason-13",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"\\u001f\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-reason-14",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"safe\\u001ctext\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "planning-nul-reason",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"safe\\u0000text\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-nul-input-value",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":\"safe\\u0000text\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-nul-input-key",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":{\"safe\\u0000key\":\"text\"}},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-depth-29",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"leaf\"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "planning-depth-30",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"leaf\"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "planning-depth-31",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"leaf\"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "planning-depth-32",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"value\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\"leaf\"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    }
+  ]
+}

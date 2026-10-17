@@ -1,0 +1,130 @@
+{
+  "schema": "castalia.wallet-membership-presentation-v2.vector",
+  "publicTestOnly": true,
+  "seedHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "application": {
+    "factoryId": "1111111111111111111111111111111111111111111111111111111111111111",
+    "programId": "2222222222222222222222222222222222222222222222222222222222222222",
+    "applicantOfficialDreggCellId": "3333333333333333333333333333333333333333333333333333333333333333",
+    "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "applicationKind": 7,
+    "applicationVersion": 1,
+    "applicationNonce": 7,
+    "membershipClass": 1,
+    "jurisdictionCode": 0,
+    "applicationFlags": 0,
+    "createdAt": 1700000000
+  },
+  "challenge": {
+    "version": 2,
+    "challengeId": "AAECAwQFBgcICQoLDA0ODw",
+    "nonce": "EBESExQVFhcYGRobHB0eHw",
+    "origin": "https://castalia.example",
+    "audience": "castalia-control-local",
+    "operation": "castalia.membership.enroll",
+    "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "applicationCommitment": "f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b5",
+    "signatureSuite": 1,
+    "issuedAt": 1700000000123,
+    "expiresAt": 1700000060123
+  },
+  "presentation": {
+    "schema": "castalia.wallet-membership-presentation.v2",
+    "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "challenge": {
+      "version": 2,
+      "challengeId": "AAECAwQFBgcICQoLDA0ODw",
+      "nonce": "EBESExQVFhcYGRobHB0eHw",
+      "origin": "https://castalia.example",
+      "audience": "castalia-control-local",
+      "operation": "castalia.membership.enroll",
+      "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+      "applicationCommitment": "f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b5",
+      "signatureSuite": 1,
+      "issuedAt": 1700000000123,
+      "expiresAt": 1700000060123
+    },
+    "signatureSuite": "Ed25519",
+    "signature": "6vScDhYJnMFhyuLTswLunqzhj1R5a7f9IGWI-5_sfQnBr1D3rSaH0-ZM7_D5HCJ1ngmRTtVhLmMlFeARfcUHCQ"
+  },
+  "expected": {
+    "applicationTranscriptHex": "63617374616c69612f6d656d6265722d6170706c69636174696f6e2f76310011111111111111111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222222222222222222333333333333333333333333333333333333333333333333333333333333333303a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b807000000000000000100000000000000070000000000000001000000000000000000000000000000000000000000000000f1536500000000",
+    "applicationCommitment": "f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b5",
+    "challengeTranscriptHex": "63617374616c69612f77616c6c65742d6d656d626572736869702d656e726f6c6c6d656e742f763200020000000000000010000000000102030405060708090a0b0c0d0e0f10000000101112131415161718191a1b1c1d1e1f1800000068747470733a2f2f63617374616c69612e6578616d706c651600000063617374616c69612d636f6e74726f6c2d6c6f63616c1a00000063617374616c69612e6d656d626572736869702e656e726f6c6c2000000003a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b820000000f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b501000000000000007b68e5cf8b010000db52e6cf8b010000",
+    "signatureHex": "eaf49c0e16099cc161cae2d3b302ee9eace18f54796bb7fd206588fb9fec7d09c1af50f7ad2687d3e64ceff0f91c22759e09914ed5612e632515e0117dc50709"
+  },
+  "tamperedCases": [
+    {
+      "name": "challenge-audience-one-field-tamper",
+      "expectedFailure": "signature-or-expected-audience-binding",
+      "application": {
+        "factoryId": "1111111111111111111111111111111111111111111111111111111111111111",
+        "programId": "2222222222222222222222222222222222222222222222222222222222222222",
+        "applicantOfficialDreggCellId": "3333333333333333333333333333333333333333333333333333333333333333",
+        "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "applicationKind": 7,
+        "applicationVersion": 1,
+        "applicationNonce": 7,
+        "membershipClass": 1,
+        "jurisdictionCode": 0,
+        "applicationFlags": 0,
+        "createdAt": 1700000000
+      },
+      "presentation": {
+        "schema": "castalia.wallet-membership-presentation.v2",
+        "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "challenge": {
+          "version": 2,
+          "challengeId": "AAECAwQFBgcICQoLDA0ODw",
+          "nonce": "EBESExQVFhcYGRobHB0eHw",
+          "origin": "https://castalia.example",
+          "audience": "castalia-control-tampered",
+          "operation": "castalia.membership.enroll",
+          "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+          "applicationCommitment": "f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b5",
+          "signatureSuite": 1,
+          "issuedAt": 1700000000123,
+          "expiresAt": 1700000060123
+        },
+        "signatureSuite": "Ed25519",
+        "signature": "6vScDhYJnMFhyuLTswLunqzhj1R5a7f9IGWI-5_sfQnBr1D3rSaH0-ZM7_D5HCJ1ngmRTtVhLmMlFeARfcUHCQ"
+      }
+    },
+    {
+      "name": "application-membership-class-one-field-tamper",
+      "expectedFailure": "application-commitment-binding",
+      "application": {
+        "factoryId": "1111111111111111111111111111111111111111111111111111111111111111",
+        "programId": "2222222222222222222222222222222222222222222222222222222222222222",
+        "applicantOfficialDreggCellId": "3333333333333333333333333333333333333333333333333333333333333333",
+        "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "applicationKind": 7,
+        "applicationVersion": 1,
+        "applicationNonce": 7,
+        "membershipClass": 2,
+        "jurisdictionCode": 0,
+        "applicationFlags": 0,
+        "createdAt": 1700000000
+      },
+      "presentation": {
+        "schema": "castalia.wallet-membership-presentation.v2",
+        "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+        "challenge": {
+          "version": 2,
+          "challengeId": "AAECAwQFBgcICQoLDA0ODw",
+          "nonce": "EBESExQVFhcYGRobHB0eHw",
+          "origin": "https://castalia.example",
+          "audience": "castalia-control-local",
+          "operation": "castalia.membership.enroll",
+          "ownerPublicKey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+          "applicationCommitment": "f21ed04a6d39c8abcb5ebefd13bf0046c67daf967e18618e6e8fde54a68356b5",
+          "signatureSuite": 1,
+          "issuedAt": 1700000000123,
+          "expiresAt": 1700000060123
+        },
+        "signatureSuite": "Ed25519",
+        "signature": "6vScDhYJnMFhyuLTswLunqzhj1R5a7f9IGWI-5_sfQnBr1D3rSaH0-ZM7_D5HCJ1ngmRTtVhLmMlFeARfcUHCQ"
+      }
+    }
+  ]
+}

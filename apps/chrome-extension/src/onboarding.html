@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Become a member</title>
+    <link rel="stylesheet" href="./onboarding.css" />
+  </head>
+  <body>
+    <main class="flow" aria-labelledby="flow-title">
+      <button id="close" class="close" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Castalia</p>
+      <h1 id="flow-title">Become a member</h1>
+      <p class="intro">Begin with a private wallet held by this extension.</p>
+      <p class="requester">This site will be approved to use your wallet:<br /><strong id="embedding-origin">Checking…</strong></p>
+      <div class="rule" aria-hidden="true"></div>
+      <p id="status" class="status" role="status">Loading your wallet…</p>
+      <div id="passphrase-field" class="field" hidden>
+        <label for="passphrase">Wallet passphrase</label>
+        <input id="passphrase" type="password" autocomplete="new-password" required />
+        <p>Encrypts the recoverable Member Key stored by this extension.</p>
+      </div>
+      <button id="continue" class="primary" type="button" disabled>Loading wallet…</button>
+      <p class="boundary">Your shared identity seed and both private signing keys stay inside the extension. Zenith currently receives only the Ed25519 public Member Key and its signed membership request.</p>
+    </main>
+    <script type="module" src="../dist/onboarding.js"></script>
+  </body>
+</html>

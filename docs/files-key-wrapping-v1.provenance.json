@@ -1,0 +1,86 @@
+{
+  "schema": "castalia.files-key-implementation-evidence.v1",
+  "walletBaseRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+  "webBaseRevision": "e4037e1d9e3f5a1e3d6c5510f212989907aabc97",
+  "components": [
+    {
+      "component": "native wrapping/auth contract",
+      "wallet": {
+        "path": "crates/castalia-wallet-core/src/files_keys.rs",
+        "sha256": "53f10fb2659ab1165052fcdbd2d08b2f867c7c319cc6229ad87ff462b2c6f9e0"
+      },
+      "web": {
+        "path": "crates/castalia-wallet-wasm/src/files_keys.rs",
+        "sha256": "53f10fb2659ab1165052fcdbd2d08b2f867c7c319cc6229ad87ff462b2c6f9e0"
+      },
+      "relationship": "byte-identical"
+    },
+    {
+      "component": "public synthetic vector",
+      "wallet": {
+        "path": "docs/contracts/files-key-wrap-v1.vector.json",
+        "sha256": "1ae9d1d5bc148667475374cd472373d3df2477a189b9811f6a2376dfb0846a4a"
+      },
+      "web": {
+        "path": "crates/castalia-wallet-wasm/tests/files-key-wrap-v1.vector.json",
+        "sha256": "1ae9d1d5bc148667475374cd472373d3df2477a189b9811f6a2376dfb0846a4a"
+      },
+      "relationship": "byte-identical"
+    },
+    {
+      "component": "typed provider contract",
+      "wallet": {
+        "path": "packages/provider-types/src/files-key-contract.ts",
+        "sha256": "f51f690a8ff3744ef6cf9839fde44f0e508dc8f89b5036ad790f4ef9a295dc6f"
+      },
+      "web": {
+        "path": "apps/web/src/wallet/files-key-contract.ts",
+        "sha256": "bf9e17504aede5c0d725968d441ee4195ee5557285d993c49a8097681ae054ab"
+      },
+      "relationship": "same contract, repository formatting differs; fixed public vectors and canonical request tests define compatibility"
+    }
+  ],
+  "existingPatternAdaptation": [
+    {
+      "sourceRepository": "bananawalnut/castalia-wallet",
+      "sourceRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+      "sourcePath": "apps/chrome-extension/src/registration-runtime.ts",
+      "sourceSha256": "cdc9da2590c5322087682556e6cb1f90218fab4b405ff632a7f80f0567b1d04f",
+      "destinationPath": "apps/chrome-extension/src/files-key-runtime.ts",
+      "transformation": "Adapts the existing fresh-confirmation, strict request/replay and cancellation pattern to three closed Files operations; registration canonical bytes remain unchanged."
+    },
+    {
+      "sourceRepository": "bananawalnut/castalia-wallet",
+      "sourceRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+      "sourcePath": "apps/chrome-extension/src/registration-confirmation.ts",
+      "sourceSha256": "ccf7accda14964b522d2b1fa10f001e263310b21214106aca03e551da6ad1f24",
+      "destinationPath": "apps/chrome-extension/src/files-key-confirmation.ts",
+      "transformation": "Adapts the existing fresh-confirmation, strict request/replay and cancellation pattern to three closed Files operations; registration canonical bytes remain unchanged."
+    },
+    {
+      "sourceRepository": "bananawalnut/castalia-wallet",
+      "sourceRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+      "sourcePath": "apps/chrome-extension/src/registration-confirmation.html",
+      "sourceSha256": "8244ffcae759af426a721af71c9f657dcb33e4b6fe111ccfc07959bec1ccd4f6",
+      "destinationPath": "apps/chrome-extension/src/files-key-confirmation.html",
+      "transformation": "Adapts the existing fresh-confirmation, strict request/replay and cancellation pattern to three closed Files operations; registration canonical bytes remain unchanged."
+    },
+    {
+      "sourceRepository": "bananawalnut/castalia-wallet",
+      "sourceRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+      "sourcePath": "apps/chrome-extension/src/registration-content.ts",
+      "sourceSha256": "b5d38f6aaded46a330d71156407bc03512175c2c272c8c0d84d4026f211993a8",
+      "destinationPath": "apps/chrome-extension/src/files-key-content.ts",
+      "transformation": "Adapts the existing fresh-confirmation, strict request/replay and cancellation pattern to three closed Files operations; registration canonical bytes remain unchanged."
+    },
+    {
+      "sourceRepository": "bananawalnut/castalia-wallet",
+      "sourceRevision": "5adc63bd929bb761e0ff27d6e201424e67f930c0",
+      "sourcePath": "apps/chrome-extension/src/registration.ts",
+      "sourceSha256": "ac29427948a414751a54ee136b5bd7f2a658dd62d948326b6bb708db56f31514",
+      "destinationPath": "apps/chrome-extension/src/files-key-handler.ts",
+      "transformation": "Adapts the existing fresh-confirmation, strict request/replay and cancellation pattern to three closed Files operations; registration canonical bytes remain unchanged."
+    }
+  ],
+  "qualification": "Source compatibility evidence only. Browser/operator acceptance and inherited-source rights are separate; this record makes no new license or ownership grant."
+}

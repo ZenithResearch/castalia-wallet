@@ -1,0 +1,27 @@
+{
+  "sourceRepository": "https://github.com/bananawalnut/castalia-wallet",
+  "sourceRevision": "58d32a40559ffff0a9d99411f967b0889524c994",
+  "purpose": "Historical verification vectors only; no Wallet runtime consumes these. Devgraph migration owns continuing historical verification.",
+  "files": [
+    {
+      "sourcePath": "crates/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/invalid-requests.json",
+      "preservedPath": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/invalid-requests.json",
+      "sha256": "b0743408e3b0a8532df74456d59b887c9fea607ec742bd769235b87b3ce703e5"
+    },
+    {
+      "sourcePath": "crates/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/requests.json",
+      "preservedPath": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/requests.json",
+      "sha256": "ac9c4ce70c547186980f6ca04c5bda69b3b9c0c4c8df2b4153bc9d5fc4796881"
+    },
+    {
+      "sourcePath": "crates/castalia-wallet-devgraph-cli/tests/fixtures/named-work-v1/requests.json",
+      "preservedPath": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-cli/tests/fixtures/named-work-v1/requests.json",
+      "sha256": "7f6aacb8e98b4f1fbd5b0cf005ee2b57df4d93de5be79e6e930104c99370458a"
+    },
+    {
+      "sourcePath": "crates/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "preservedPath": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c"
+    }
+  ]
+}

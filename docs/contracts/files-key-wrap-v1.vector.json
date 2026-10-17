@@ -1,0 +1,44 @@
+{
+  "schema": "castalia.files-key-public-vector.v1",
+  "purpose": "Public synthetic interoperability vector; never use these values for real funds or data.",
+  "seedHex": "0707070707070707070707070707070707070707070707070707070707070707",
+  "dataKeyHex": "0909090909090909090909090909090909090909090909090909090909090909",
+  "recoveryKey": "castalia-recovery-key-v1.BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc.kFpAfw",
+  "envelope": {
+    "schema": "castalia.files-key-envelope.v1",
+    "binding": {
+      "schema": "castalia.files-key-binding.v1",
+      "ownerMemberKey": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+      "serviceId": "1111111111111111111111111111111111111111111111111111111111111111",
+      "storageAccountId": "fixture-account",
+      "namespaceId": "2222222222222222222222222222222222222222222222222222222222222222",
+      "workspaceId": "3333333333333333333333333333333333333333333333333333333333333333",
+      "submissionId": "4444444444444444444444444444444444444444444444444444444444444444",
+      "revisionId": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    "nonce": "AwMDAwMDAwMDAwMD",
+    "ciphertext": "RH3pQVXl40LUAjuuzFgRoRlMRFBJBFQWf-7PN_FTypQzSBaQ9o2B34-fCfUuPVHB"
+  },
+  "custodyPassphrase": "public files fixture only",
+  "custody": {
+    "aead": {
+      "name": "AES-256-GCM",
+      "nonce": "BAQEBAQEBAQEBAQE",
+      "tagBits": 128
+    },
+    "ciphertext": "e_JxBcKOZJ6gvNINDyiQly1noroAs3130a3bbabUqYniyIDrSKEIFUHnzJ_iSDrKnzG2u5ZEgssJk_8B7ifWYId8NGpmdo8UtHFah0FcvdPMQKh80Oy_MT3NY7FDMfbjHaDtIV6057mm-_WlEFQERXqQgkwl6cqER8U6Zbth3lHDP3kRfQGJtcvVzLqQ9WSImSzdw9NM-kbcnJ5spMARCLsZ6i_wNmwR8cBw2071sayn5RJja4InP4Ruohs5iIdBuR9AfkEi0ZSVhvDlw0qUvn2Bjkyy_g4RihJV1_u253cq9Gbe",
+    "createdAt": 1,
+    "kdf": {
+      "derivedKeyBytes": 32,
+      "iterations": 3,
+      "memoryKiB": 65536,
+      "name": "Argon2id",
+      "parallelism": 1,
+      "salt": "AgICAgICAgICAgICAgICAg",
+      "version": 19
+    },
+    "keySuite": "Ed25519",
+    "publicKey": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+    "schema": "castalia.wallet-custody.v1"
+  }
+}

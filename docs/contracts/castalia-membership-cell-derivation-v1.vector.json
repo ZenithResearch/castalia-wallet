@@ -1,0 +1,22 @@
+{
+  "schema": "castalia.membership-cell-derivation-v1",
+  "inputs": {
+    "networkId": "castalia-local-v1",
+    "profileVersion": 1,
+    "ownerPublicKey": "5252525252525252525252525252525252525252525252525252525252525252",
+    "castaliaAuthorityPublicKey": "4141414141414141414141414141414141414141414141414141414141414141",
+    "factoryId": "6161616161616161616161616161616161616161616161616161616161616161",
+    "applicationCommitment": "abababababababababababababababababababababababababababababababab",
+    "birthNonce": 7
+  },
+  "outputs": {
+    "applicantOfficialTokenId": "8f73d4e8768b1e2a2c548f2cf9bf77ed40a22cbc69267a457317581b81259047",
+    "applicantOfficialDreggCellId": "75aaa7dcea7335ae8812c30d457e81be2388698e61459a8c807fcbec23c4d7d5",
+    "membershipBirthTokenId": "8126c237df9bc1810a0c93eba5661d336e1e34c35abbe6cc3defce565250d3e3",
+    "membershipCellId": "ac43a3dd95a65e24faf71ff9899c968581ab1ad36a7986a4a2be4d7d59e208fb"
+  },
+  "nonCircularity": {
+    "officialCellDependsOnApplicationCommitment": false,
+    "membershipCellDependsOnApplicationCommitment": true
+  }
+}

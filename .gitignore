@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+*.tsbuildinfo
+target/
+apps/chrome-extension/src/generated/
+apps/chrome-extension/licenses/
+
+# Extension/runtime artifacts
+*.crx
+*.pem
+*.zip
+profile/
+.chrome-profile/
+
+# Secrets/local env
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

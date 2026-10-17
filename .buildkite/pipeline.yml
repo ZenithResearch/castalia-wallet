@@ -1,0 +1,52 @@
+steps:
+  - label: ':test_tube: Portable Wallet verification'
+    key: portable-verify
+    agents:
+      queue: linux-small
+    command: bash .buildkite/verify.sh
+    timeout_in_minutes: 60
+    artifact_paths:
+      - 'build/buildkite-verify/**/*'
+      - 'build/wallet-qualification-evidence.tar.gz'
+      - 'build/castalia-wallet-v3-ci-contract/**/*'
+      - 'build/castalia-wallet-v3-ci-contract.contents.sha256'
+      - 'build/castalia-wallet-browser-acceptance/**/*'
+      - 'build/castalia-wallet-browser-acceptance.contents.sha256'
+      - 'build/castalia-wallet-browser-acceptance.provenance.json'
+      - 'build/castalia-wallet-browser-acceptance.tar.gz'
+      - 'build/castalia-wallet-browser-acceptance.tar.gz.sha256'
+
+  - block: 'Manual gate: loaded Chrome custody and credential v2 acceptance'
+    key: loaded-chrome-acceptance
+    depends_on: portable-verify
+    blocked_state: running
+    prompt: >-
+      Portable CI does not establish loaded-browser acceptance. Run custody, registration,
+      Files and provider-profile smokes against the SAME exact production artifact.
+      Also run scripts/smoke-extension-credential-presentation.mts against that SAME exact
+      artifact for generic v2 acceptance, including two independent applications,
+      concurrent requests and worker restart. All five smoke results are required.
+      The provider-profile smoke must approve two independent providers through Wallet settings,
+      starting with zero profiles and preserving the package digest throughout.
+      Use CASTALIA_EXTENSION_DIRECTORY on a supported headed Chrome host with disposable
+      identities. Verify the tree digest before and after; record exact commit, package digest,
+      browser version and each result. Fixture enrollment does not qualify a real issuer.
+      Also run both labelled main #8 upgrade journeys with scripts/smoke-extension-upgrade.mts.
+      The canonical Linux reproduction and independent issuer TLS reports must pass.
+      No real wallet or native bridge is used.
+    fields:
+      - text: 'Exact source and package digest'
+        key: chrome-source-package
+        required: true
+      - text: 'Chrome version and custody/registration/Files evidence'
+        key: chrome-acceptance-evidence
+        required: true
+      - text: 'Generic v2 Chrome evidence: exact CI-contract digest, browser, all cases and result'
+        key: chrome-generic-v2-evidence
+        required: true
+      - text: 'Main #8 production-shaped and archived-fixture upgrade evidence; baseline and candidate hashes'
+        key: chrome-upgrade-evidence
+        required: true
+      - text: 'Canonical reproduction and Linux certificate-validating issuer report'
+        key: chrome-reproduction-issuer-evidence
+        required: true

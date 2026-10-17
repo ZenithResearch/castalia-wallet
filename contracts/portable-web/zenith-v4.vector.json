@@ -1,0 +1,45 @@
+{
+  "source": "public Castalia Web membership-contract at 3827722f0eff12408c7a6639de75a2d6040f2a8b; disposable keys discarded",
+  "ownerPublicKey": "44b2a5471553332bdd138bfeca45b79e4eb39ae405825b8ee13369a9ca1b48ea",
+  "trust": {
+    "schema": "castalia.scoped-membership-trust-policy.v1",
+    "version": 1,
+    "roots": [
+      {
+        "issuerId": "disposable-fixture",
+        "keyId": "fixture",
+        "signatureSuite": "Ed25519",
+        "publicKey": "c44dba7e5b386ed7a1be0591fb885c5c67bcd0f2d42eed8d8ea366f2bc9b0f4c"
+      }
+    ],
+    "scopes": [
+      {
+        "scopeId": "70913071506f79ffb6e96f631dae81e9e529a9a8025e5f949277596bd6e90d04",
+        "genesis": {
+          "schema": "castalia.community-genesis.v1",
+          "version": 1,
+          "scopeType": "community",
+          "alias": "disposable-fixture",
+          "nonce": "abababababababababababababababababababababababababababababababab"
+        },
+        "issuerIds": [
+          "disposable-fixture"
+        ]
+      }
+    ]
+  },
+  "credential": {
+    "schema": "castalia.scoped-membership-credential.v4",
+    "version": 4,
+    "scopeType": "community",
+    "scopeId": "70913071506f79ffb6e96f631dae81e9e529a9a8025e5f949277596bd6e90d04",
+    "membershipId": "73ac3677749cddf6b1ab7678e8ecbad32985c511b1a4ab2bbec70a0fc81a780a",
+    "ownerPublicKey": "44b2a5471553332bdd138bfeca45b79e4eb39ae405825b8ee13369a9ca1b48ea",
+    "status": "active",
+    "issuerId": "disposable-fixture",
+    "issuerKeyId": "fixture",
+    "signatureSuite": "Ed25519",
+    "issuerSignature": "UMoSPOlHEQU4msdxoJgKQtAZW38E-Tb6YnIxdQX5Lk1aZl8gtEy3g8jBkYnQFOsG7Nh0P71v7u6ooZh5k9QnDw"
+  },
+  "transcriptHex": "63617374616c69612f73636f7065642d6d656d626572736869702d63726564656e7469616c2f7634007b22736368656d61223a2263617374616c69612e73636f7065642d6d656d626572736869702d63726564656e7469616c2e7634222c2276657273696f6e223a342c2273636f706554797065223a22636f6d6d756e697479222c2273636f70654964223a2237303931333037313530366637396666623665393666363331646165383165396535323961396138303235653566393439323737353936626436653930643034222c226d656d626572736869704964223a2237336163333637373734396364646636623161623736373865386563626164333239383563353131623161346162326262656337306130666338316137383061222c226f776e65725075626c69634b6579223a2234346232613534373135353333333262646431333862666563613435623739653465623339616534303538323562386565313333363961396361316234386561222c22737461747573223a22616374697665222c226973737565724964223a22646973706f7361626c652d66697874757265222c226973737565724b65794964223a2266697874757265222c227369676e61747572655375697465223a2245643235353139227d"
+}

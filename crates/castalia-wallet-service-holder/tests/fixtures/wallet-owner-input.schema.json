@@ -1,0 +1,705 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "enum": [
+        "castalia.wallet-service-owner-input.v1"
+      ]
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "valid_not_before": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "valid_until": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "application": {
+      "enum": [
+        "runtime",
+        "service"
+      ]
+    },
+    "issuer_node_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[!-~]+(?![\\s\\S])"
+    },
+    "selected_issuer_key_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[!-~]+(?![\\s\\S])"
+    },
+    "issuers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issuer"
+      },
+      "maxItems": 32
+    },
+    "holder": {
+      "$ref": "#/$defs/holder"
+    },
+    "descriptors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/descriptor"
+      },
+      "maxItems": 256
+    },
+    "delegation_policy": {
+      "$ref": "#/$defs/delegation_policy"
+    }
+  },
+  "required": [
+    "schema",
+    "generation",
+    "valid_not_before",
+    "valid_until",
+    "application",
+    "issuer_node_id",
+    "selected_issuer_key_id",
+    "issuers",
+    "holder",
+    "descriptors",
+    "delegation_policy"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "issuer": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "public_key_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "algorithm": {
+          "enum": [
+            "ed25519"
+          ]
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "expired",
+            "unknown",
+            "not_yet_valid"
+          ]
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "revoked_at": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replaced_by": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[!-~]+(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "node_id",
+        "key_id",
+        "public_key_hex",
+        "algorithm",
+        "status",
+        "not_before",
+        "not_after",
+        "revoked_at",
+        "replaced_by"
+      ],
+      "additionalProperties": false
+    },
+    "holder": {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "public_key_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "algorithm": {
+          "enum": [
+            "ed25519"
+          ]
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "expired",
+            "unknown",
+            "not_yet_valid"
+          ]
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "revoked_at": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replaced_by": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[!-~]+(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "subject_id",
+        "generation",
+        "key_id",
+        "public_key_hex",
+        "algorithm",
+        "status",
+        "not_before",
+        "not_after",
+        "revoked_at",
+        "replaced_by"
+      ],
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "schema_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "max_execution_response_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "schema_id",
+        "max_output_bytes",
+        "max_execution_response_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "disclosure_rule": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "enum": [
+            "wallet_identity",
+            "holder_identity",
+            "subject_identity",
+            "credential_identity",
+            "raw_credential_attributes",
+            "raw_proof_bytes",
+            "witness_private_inputs",
+            "trace_debug_material",
+            "token_secret",
+            "source_auth_token",
+            "issuer_private_material",
+            "stable_nullifier",
+            "network_metadata"
+          ]
+        },
+        "surface": {
+          "enum": [
+            "verify_receipt",
+            "reject_receipt",
+            "execute_receipt",
+            "readiness_status",
+            "demo_projection",
+            "log",
+            "operator_cli",
+            "public_audit",
+            "handler_context"
+          ]
+        },
+        "representation": {
+          "enum": [
+            "redacted_digest",
+            "redacted_placeholder",
+            "derived_status"
+          ]
+        }
+      },
+      "required": [
+        "class",
+        "surface",
+        "representation"
+      ],
+      "additionalProperties": false
+    },
+    "disclosure": {
+      "type": "object",
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "policy_version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/disclosure_rule"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "policy_id",
+        "policy_version",
+        "permissions"
+      ],
+      "additionalProperties": false
+    },
+    "descriptor": {
+      "type": "object",
+      "properties": {
+        "opcode": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 255
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "payload_schema": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[!-~]+(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "output_profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/output"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_kind": {
+          "enum": [
+            "receiver_production_handler"
+          ]
+        },
+        "required_credentials": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[!-~]+(?![\\s\\S])"
+          },
+          "maxItems": 16
+        },
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[!-~]+(?![\\s\\S])"
+          },
+          "maxItems": 16
+        },
+        "accepted_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[!-~]+(?![\\s\\S])"
+          },
+          "maxItems": 16
+        },
+        "required_authority_mode": {
+          "anyOf": [
+            {
+              "enum": [
+                "local_fixture",
+                "signed_source",
+                "solo_verified_receipt",
+                "federation_checkpoint",
+                "light_client_verified",
+                "recursive_proof_carrying_state"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replay_scope": {
+          "enum": [
+            "session_opcode_nonce"
+          ]
+        },
+        "max_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "handler_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "dev_binding": {
+          "enum": [
+            false
+          ]
+        },
+        "range": {
+          "enum": [
+            "operator_defined"
+          ]
+        },
+        "disclosure_policy": {
+          "$ref": "#/$defs/disclosure"
+        }
+      },
+      "required": [
+        "opcode",
+        "name",
+        "payload_schema",
+        "output_profile",
+        "target_kind",
+        "required_credentials",
+        "required_capabilities",
+        "accepted_evidence",
+        "required_authority_mode",
+        "replay_scope",
+        "max_ttl_seconds",
+        "handler_id",
+        "dev_binding",
+        "range",
+        "disclosure_policy"
+      ],
+      "additionalProperties": false
+    },
+    "principal": {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "revoked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "subject_id",
+        "key_id",
+        "not_before",
+        "not_after",
+        "revoked"
+      ],
+      "additionalProperties": false
+    },
+    "policy_descriptor": {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "opcode": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 255
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "handler_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "max_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        }
+      },
+      "required": [
+        "operation",
+        "opcode",
+        "fingerprint",
+        "handler_id",
+        "max_ttl_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "rule": {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "resource": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "resource_match": {
+          "enum": [
+            "exact",
+            "prefix"
+          ]
+        },
+        "effect": {
+          "enum": [
+            "allow",
+            "deny"
+          ]
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "subject_id",
+        "key_id",
+        "operation",
+        "resource",
+        "resource_match",
+        "effect",
+        "not_before",
+        "not_after",
+        "active"
+      ],
+      "additionalProperties": false
+    },
+    "delegation_policy": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "enum": [
+            "secs.service-receiver-policy.v1"
+          ]
+        },
+        "application": {
+          "enum": [
+            "runtime",
+            "service"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "runtime://receiver-local",
+            "service://receiver-local"
+          ]
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "max_ttl_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "principals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/principal"
+          },
+          "maxItems": 32
+        },
+        "descriptors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/policy_descriptor"
+          },
+          "maxItems": 256
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          },
+          "maxItems": 1024
+        }
+      },
+      "required": [
+        "schema",
+        "application",
+        "audience",
+        "not_before",
+        "not_after",
+        "max_ttl_seconds",
+        "principals",
+        "descriptors",
+        "rules"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

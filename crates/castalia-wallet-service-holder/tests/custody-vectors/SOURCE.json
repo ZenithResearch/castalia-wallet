@@ -1,0 +1,71 @@
+{
+  "schema": "castalia.wallet-service-custody.public-vectors.v1",
+  "source": "Accepted private custody format plan V3; public metadata bytes unchanged from V1. No secret material.",
+  "authority": false,
+  "files": [
+    {
+      "path": "custody-metadata.schema.json",
+      "sha256": "2934f4a270883f8b0beba435ab8614f95d87de7ba47047df69db6f22b993866f"
+    },
+    {
+      "path": "state-1.json",
+      "sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f"
+    },
+    {
+      "path": "state-2.json",
+      "sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89"
+    },
+    {
+      "path": "state-3.json",
+      "sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824"
+    },
+    {
+      "path": "state-4.json",
+      "sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487"
+    },
+    {
+      "path": "state-5.json",
+      "sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e"
+    },
+    {
+      "path": "current-1.json",
+      "sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea"
+    },
+    {
+      "path": "current-2.json",
+      "sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d"
+    },
+    {
+      "path": "current-3.json",
+      "sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa"
+    },
+    {
+      "path": "current-4.json",
+      "sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef"
+    },
+    {
+      "path": "current-5.json",
+      "sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f"
+    },
+    {
+      "path": "clock-1.json",
+      "sha256": "3b3a4bed14dcc32fee4e4db2f447bddab238cdda417e647e12942b96c3da3eaf"
+    },
+    {
+      "path": "clock-2.json",
+      "sha256": "b0f05f7a0c17a3f00570a1344e50e3bc4e7952eca45808858326e910c43f9f37"
+    },
+    {
+      "path": "clock-3.json",
+      "sha256": "bfdec75aaec9f31a148e94a08ecd6242bb06a9968810e8f55ba2934a5606ba30"
+    },
+    {
+      "path": "clock-4.json",
+      "sha256": "84e869fc5356405bac32bcfb1e2b7d24eb6a40629486d82a371a0d6b905bef0d"
+    },
+    {
+      "path": "clock-5.json",
+      "sha256": "0d385ea503efa2bcfa272a6d9570eccc6338317d61205a75cc31ff4f45c811cf"
+    }
+  ]
+}

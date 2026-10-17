@@ -1,0 +1,25 @@
+[package]
+name = "libsec-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+bincode = "1"
+ed25519-dalek = { version = "2.1", default-features = false }
+x25519-dalek = { version = "2.0", default-features = false, features = ["static_secrets"] }
+hkdf = "0.13"
+sha2 = { version = "0.11", default-features = false }
+chacha20poly1305 = { version = "0.11", default-features = false, features = ["alloc"] }
+rs_merkle = { version = "1.4", default-features = false }
+wasm-bindgen = { version = "0.2", optional = true }
+uniffi = { workspace = true, optional = true }
+
+[dev-dependencies]
+rand = { version = "0.8", features = ["getrandom"] }
+
+[features]
+uniffi = ["dep:wasm-bindgen", "dep:uniffi"]

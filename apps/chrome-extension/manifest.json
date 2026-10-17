@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Castalia",
+  "short_name": "Castalia",
+  "version": "0.0.0",
+  "description": "Encrypted Member Key custody with independently approved providers and credentials.",
+  "icons": {
+    "16": "icons/castalia-16.png",
+    "32": "icons/castalia-32.png",
+    "48": "icons/castalia-48.png",
+    "128": "icons/castalia-128.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "windows",
+    "sidePanel"
+  ],
+  "host_permissions": [],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "background": {
+    "service_worker": "dist/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "dist/content-script.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/castalia-16.png",
+      "32": "icons/castalia-32.png",
+      "48": "icons/castalia-48.png",
+      "128": "icons/castalia-128.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "dist/provider.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ]
+}

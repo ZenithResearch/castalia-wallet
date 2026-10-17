@@ -1,0 +1,36 @@
+{
+  "name": "castalia-wallet",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Castalia Wallet proof-of-possession checkpoint workspace.",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test:scripts && npm run test --workspaces --if-present",
+    "test:scripts": "node --test scripts/*.test.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspace @castalia-wallet/chrome-extension",
+    "smoke:dregg-membership": "npm run build --workspace @castalia-wallet/dregg-adapter && node scripts/smoke-dregg-membership.mjs",
+    "smoke:extension-custody": "tsx scripts/smoke-extension-custody.mts",
+    "package:production-extension": "node scripts/package-production-extension.mjs",
+    "package:browser-acceptance-extension": "node scripts/package-browser-acceptance-extension.mjs",
+    "inspect:production-extension": "node scripts/inspect-production-extension.mjs",
+    "validate:extension-package": "node scripts/validate-extension-package.mjs",
+    "validate:extension-manifest": "node scripts/validate-extension-package.mjs",
+    "smoke:extension-registration": "tsx scripts/smoke-extension-registration.mts",
+    "smoke:extension-files": "tsx scripts/smoke-extension-files.mts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "esbuild": "^0.28.0",
+    "playwright-core": "^1.62.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

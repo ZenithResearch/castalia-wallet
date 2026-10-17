@@ -1,0 +1,643 @@
+use server::public_audit::{
+    PublicAuditBundle, PublicAuditBundleStatus, PublicAuditChainMetadata, PublicAuditReceiptEntry,
+    PublicAuditRedactionPolicy, PublicAuditSignerKey,
+};
+
+#[test]
+fn public_audit_bundle_schema_is_versioned_redacted_and_serializable() {
+    let bundle = PublicAuditBundle {
+        version: PublicAuditBundle::VERSION.to_string(),
+        redaction_policy: PublicAuditRedactionPolicy::DefaultNoPayloadOrPrivateEvidence,
+        status: PublicAuditBundleStatus::Complete,
+        exported_at: 1_770_000_000,
+        chain: PublicAuditChainMetadata {
+            algorithm_version: "secs-public-audit-chain-v2".to_string(),
+            chain_scope: "context:ctx-1".to_string(),
+            root_hash_hex: "root-hash".to_string(),
+            first_receipt_id: "r-1".to_string(),
+            last_receipt_id: "r-2".to_string(),
+            receipt_count: 2,
+            complete: true,
+        },
+        signer_keys: vec![PublicAuditSignerKey {
+            signer_key_id: "verifier:test".to_string(),
+            public_key_hex: "11".repeat(32),
+        }],
+        receipts: vec![PublicAuditReceiptEntry {
+            chain_index: 0,
+            previous_entry_hash_hex: None,
+            receipt_id: "r-1".to_string(),
+            schema_version: 2,
+            context_id: Some("ctx-1".to_string()),
+            timestamp: 1_770_000_001,
+            kind: "verify".to_string(),
+            decision: "accepted".to_string(),
+            reason: None,
+            operation: Some("candidate.dev.local_static".to_string()),
+            handler_id: Some("handler:file_write".to_string()),
+            opcode: 0x50,
+            packet_hash_hex: "aa".repeat(32),
+            session_id_hex: "bb".repeat(16),
+            nonce_hex: "cc".repeat(12),
+            authenticator_kind: "ed25519_node_and_verifier".to_string(),
+            signer_key_id: "verifier:test".to_string(),
+            signature_hex: "dd".repeat(64),
+            evidence_summary: vec!["evidence_kind:local_static".to_string()],
+            output_projection: None,
+            entry_hash_hex: "ee".repeat(32),
+        }],
+    };
+
+    let json = serde_json::to_string(&bundle).expect("public audit bundle should serialize");
+    assert!(json.contains("secs-public-audit-bundle-v2"));
+    assert!(json.contains("default_no_payload_or_private_evidence"));
+    assert!(!json.contains("raw_payload"));
+    assert!(!json.contains("raw_private_evidence"));
+
+    let decoded: PublicAuditBundle = serde_json::from_str(&json).unwrap();
+    assert_eq!(decoded.version, PublicAuditBundle::VERSION);
+    assert_eq!(decoded.chain.receipt_count, 2);
+}
+
+use ed25519_dalek::SigningKey;
+use server::ledger::{Ledger, PublicAuditExportError};
+use server::receipt::{AuthenticatorKind, Decision, Receipt};
+use server::verifier::{VerifiedCallContext, VerifiedSubject};
+use sqlx::sqlite::SqlitePoolOptions;
+
+async fn memory_ledger() -> Ledger {
+    let pool = SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect("sqlite::memory:")
+        .await
+        .unwrap();
+    let ledger = Ledger::new(pool);
+    ledger.init_schema().await.unwrap();
+    ledger
+}
+
+fn context(context_id: &str) -> VerifiedCallContext {
+    VerifiedCallContext {
+        schema_version: 2,
+        descriptor_fingerprint: "descriptor:public-audit-fixture".to_string(),
+        context_id: context_id.to_string(),
+        packet_hash: [9u8; 32],
+        session_id: [1u8; 16],
+        nonce: [2u8; 12],
+        opcode: 0x50,
+        operation: "candidate.dev.local_static".to_string(),
+        resource: Some("application/json".to_string()),
+        subject: VerifiedSubject {
+            subject_id: "prototype.local-dev.subject".to_string(),
+            key_id: "subject-key:test".to_string(),
+        },
+        audience: "secS://receiver-a".to_string(),
+        evidence_summary: vec![
+            "evidence_kind:local_static".to_string(),
+            "public_key_ref_sha256:abcdef".to_string(),
+        ],
+        proof_metadata: None,
+        capability_result: "accepted".to_string(),
+        credential_result: "accepted".to_string(),
+        issued_at: 1_770_000_000,
+        expires_at: 1_770_000_300,
+        replay_scope: "SessionOpcodeNonce".to_string(),
+        handler_id: Some("candidate/local-static".to_string()),
+    }
+}
+
+fn signer_key() -> SigningKey {
+    SigningKey::from_bytes(&[7u8; 32])
+}
+
+fn signed_receipt(receipt_id: &str, context: &VerifiedCallContext, timestamp: u64) -> Receipt {
+    Receipt::execution(receipt_id, context, Decision::Accepted, None, timestamp)
+        .sign_ed25519(
+            "verifier:public-audit-test",
+            &[7u8; 32],
+            AuthenticatorKind::Ed25519NodeAndVerifier,
+        )
+        .unwrap()
+}
+
+#[tokio::test]
+async fn exports_complete_redacted_public_audit_bundle_for_context_chain() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-export");
+    ledger
+        .record_receipt(&signed_receipt("r-public-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    ledger
+        .record_receipt(&signed_receipt("r-public-2", &context, 1_770_000_011))
+        .await
+        .unwrap();
+
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-export",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(bundle.version, PublicAuditBundle::VERSION);
+    assert_eq!(bundle.status, PublicAuditBundleStatus::Complete);
+    assert!(bundle.chain.complete);
+    assert_eq!(bundle.chain.receipt_count, 2);
+    assert_eq!(bundle.chain.first_receipt_id, "r-public-1");
+    assert_eq!(bundle.chain.last_receipt_id, "r-public-2");
+    assert_eq!(
+        bundle.signer_keys[0].signer_key_id,
+        "verifier:public-audit-test"
+    );
+    assert_eq!(bundle.receipts.len(), 2);
+    assert!(bundle.receipts[0].signature_hex.len() >= 128);
+    assert!(bundle.receipts[0]
+        .evidence_summary
+        .iter()
+        .all(|field| !field.contains("raw_payload") && !field.contains("raw_private_evidence")));
+
+    let json = serde_json::to_string(&bundle).unwrap();
+    assert!(!json.contains("secret payload"));
+    assert!(!json.contains("raw_private_evidence"));
+}
+
+#[tokio::test]
+async fn public_audit_export_rejects_incomplete_or_unsigned_context_chains() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-incomplete");
+    ledger
+        .record_receipt(&Receipt::execution(
+            "r-unsigned",
+            &context,
+            Decision::Accepted,
+            None,
+            1_770_000_010,
+        ))
+        .await
+        .unwrap();
+
+    let error = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-incomplete",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap_err();
+
+    assert_eq!(error, PublicAuditExportError::IncompleteReceiptChain);
+}
+
+#[tokio::test]
+async fn local_public_audit_verifier_accepts_valid_bundle_and_rejects_tampering() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-verify");
+    ledger
+        .record_receipt(&signed_receipt("r-verify-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    ledger
+        .record_receipt(&signed_receipt("r-verify-2", &context, 1_770_000_011))
+        .await
+        .unwrap();
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-verify",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+
+    assert!(bundle.verify_local_public_audit().is_ok());
+
+    let mut tampered = bundle.clone();
+    tampered.receipts[0].decision = "rejected".to_string();
+    assert_eq!(
+        tampered.verify_local_public_audit().unwrap_err(),
+        server::public_audit::PublicAuditVerificationError::ReceiptEntryHashMismatch
+    );
+
+    let mut missing_signer = bundle.clone();
+    missing_signer.signer_keys.clear();
+    assert_eq!(
+        missing_signer.verify_local_public_audit().unwrap_err(),
+        server::public_audit::PublicAuditVerificationError::UnknownSignerKey
+    );
+
+    let mut tampered_root = bundle;
+    tampered_root.chain.root_hash_hex = "00".repeat(32);
+    assert_eq!(
+        tampered_root.verify_local_public_audit().unwrap_err(),
+        server::public_audit::PublicAuditVerificationError::ChainRootMismatch
+    );
+}
+
+#[tokio::test]
+async fn audit_chain_export_records_versioned_ordered_hash_links() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-chain-links");
+    ledger
+        .record_receipt(&signed_receipt("r-chain-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    ledger
+        .record_receipt(&signed_receipt("r-chain-2", &context, 1_770_000_011))
+        .await
+        .unwrap();
+
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-chain-links",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(bundle.chain.algorithm_version, "secs-public-audit-chain-v2");
+    assert_eq!(
+        bundle.chain.chain_scope,
+        "context:ctx-public-audit-chain-links"
+    );
+    assert_eq!(bundle.receipts[0].chain_index, 0);
+    assert_eq!(bundle.receipts[0].previous_entry_hash_hex, None);
+    assert_eq!(bundle.receipts[1].chain_index, 1);
+    assert_eq!(
+        bundle.receipts[1].previous_entry_hash_hex.as_deref(),
+        Some(bundle.receipts[0].entry_hash_hex.as_str())
+    );
+
+    let second = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-chain-links",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+    assert_eq!(second.chain.root_hash_hex, bundle.chain.root_hash_hex);
+    assert_eq!(second.receipts, bundle.receipts);
+}
+
+#[tokio::test]
+async fn audit_chain_range_export_rejects_missing_endpoints_and_verifier_rejects_reorder() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-range");
+    ledger
+        .record_receipt(&signed_receipt("r-range-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    ledger
+        .record_receipt(&signed_receipt("r-range-2", &context, 1_770_000_011))
+        .await
+        .unwrap();
+
+    let missing = ledger
+        .export_public_audit_bundle_for_context_range(
+            "ctx-public-audit-range",
+            "r-range-1",
+            "r-range-missing",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(missing, PublicAuditExportError::IncompleteReceiptChain);
+
+    let mut bundle = ledger
+        .export_public_audit_bundle_for_context_range(
+            "ctx-public-audit-range",
+            "r-range-1",
+            "r-range-2",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+    bundle.receipts.swap(0, 1);
+    assert_eq!(
+        bundle.verify_local_public_audit().unwrap_err(),
+        server::public_audit::PublicAuditVerificationError::ReceiptChainLinkMismatch
+    );
+}
+
+#[tokio::test]
+async fn local_audit_publisher_records_idempotent_redacted_publication_status() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-publisher-ok");
+    ledger
+        .record_receipt(&signed_receipt("r-publish-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    ledger
+        .record_receipt(&signed_receipt("r-publish-2", &context, 1_770_000_011))
+        .await
+        .unwrap();
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-publisher-ok",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+
+    let publisher =
+        server::public_audit::LocalAuditPublisher::success("local-noop", "target-ref:do-not-leak");
+    let first = ledger
+        .publish_public_audit_bundle(&bundle, &publisher, 1_770_000_200)
+        .await
+        .unwrap();
+    let second = ledger
+        .publish_public_audit_bundle(&bundle, &publisher, 1_770_000_201)
+        .await
+        .unwrap();
+
+    assert_eq!(
+        first.status,
+        server::public_audit::PublicAuditPublicationStatus::Published
+    );
+    assert_eq!(second.idempotency_key, first.idempotency_key);
+    assert_eq!(second.attempt_count, 2);
+    assert_eq!(second.bundle_version, "secs-public-audit-bundle-v2");
+    assert_eq!(second.chain_algorithm_version, "secs-public-audit-chain-v2");
+    assert_eq!(second.chain_scope, "context:ctx-public-audit-publisher-ok");
+    assert_eq!(second.root_hash_hex, bundle.chain.root_hash_hex);
+    assert_eq!(second.receipt_count, 2);
+    assert_eq!(second.target_kind, "local-noop");
+    assert_ne!(
+        second.target_ref_digest_hex.as_deref(),
+        Some("target-ref:do-not-leak")
+    );
+
+    let rows = ledger
+        .audit_publication_statuses_for_root(&bundle.chain.root_hash_hex)
+        .await
+        .unwrap();
+    assert_eq!(
+        rows.len(),
+        1,
+        "duplicate publish attempts must converge on one status row"
+    );
+}
+
+#[tokio::test]
+async fn audit_publication_failure_is_visible_and_does_not_rewrite_receipts() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-publisher-fail");
+    ledger
+        .record_receipt(&signed_receipt("r-publish-fail-1", &context, 1_770_000_010))
+        .await
+        .unwrap();
+    let before = ledger
+        .inspect_receipt_chain_by_context_id("ctx-public-audit-publisher-fail")
+        .await
+        .unwrap();
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-publisher-fail",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+
+    let publisher = server::public_audit::LocalAuditPublisher::failure(
+        "local-noop",
+        "target-ref:do-not-leak",
+        "simulated outage: private fragment should not leak",
+    );
+    let status = ledger
+        .publish_public_audit_bundle(&bundle, &publisher, 1_770_000_200)
+        .await
+        .unwrap();
+    let after = ledger
+        .inspect_receipt_chain_by_context_id("ctx-public-audit-publisher-fail")
+        .await
+        .unwrap();
+
+    assert_eq!(
+        status.status,
+        server::public_audit::PublicAuditPublicationStatus::Failed
+    );
+    assert_eq!(status.last_error.as_deref(), Some("simulated outage"));
+    assert_eq!(
+        before, after,
+        "publication failure must not rewrite local receipts"
+    );
+
+    let mut tampered = bundle.clone();
+    tampered.chain.root_hash_hex = "00".repeat(32);
+    let rejected = ledger
+        .publish_public_audit_bundle(&tampered, &publisher, 1_770_000_201)
+        .await
+        .unwrap_err();
+    assert_eq!(
+        rejected,
+        server::ledger::PublicAuditPublicationError::BundleVerificationFailed
+    );
+}
+
+#[tokio::test]
+async fn public_audit_v2_exports_only_signed_output_projection_metadata() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-output");
+    let receipt = Receipt::execution_with_output(
+        "r-public-output",
+        &context,
+        Decision::Accepted,
+        None,
+        1_770_000_300,
+        Some("fixture.response.v1"),
+        Some(b"SENTINEL_RAW_EXECUTION_OUTPUT"),
+    )
+    .unwrap()
+    .sign_ed25519(
+        "verifier:public-audit-test",
+        &[7u8; 32],
+        AuthenticatorKind::Ed25519NodeAndVerifier,
+    )
+    .unwrap();
+    ledger.record_receipt(&receipt).await.unwrap();
+    let bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-output",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_301,
+        )
+        .await
+        .unwrap();
+    let projection = bundle.receipts[0].output_projection.as_ref().unwrap();
+    assert_eq!(projection.schema_id, "fixture.response.v1");
+    assert_eq!(projection.byte_count, 29);
+    assert_eq!(projection.digest_sha256_hex.len(), 64);
+    let json = serde_json::to_string(&bundle).unwrap();
+    assert!(!json.contains("SENTINEL_RAW_EXECUTION_OUTPUT"));
+    bundle.verify_local_public_audit().unwrap();
+}
+
+#[test]
+fn immutable_public_audit_v1_and_v2_fixtures_are_version_aware_and_redacted() {
+    use server::public_audit::{verify_external_audit_anchor_record, ExternalAuditAnchorRecord};
+    let v1_json = include_str!("fixtures/public_audit/bundle_v1_chain_v1.json");
+    let v2_outputless_json =
+        include_str!("fixtures/public_audit/bundle_v2_chain_v2_outputless.json");
+    let v2_output_json = include_str!("fixtures/public_audit/bundle_v2_chain_v2_with_output.json");
+    let anchor_json = include_str!("fixtures/public_audit/anchor_v1.json");
+    let v1: PublicAuditBundle = serde_json::from_str(v1_json).unwrap();
+    let v2_outputless: PublicAuditBundle = serde_json::from_str(v2_outputless_json).unwrap();
+    let v2_output: PublicAuditBundle = serde_json::from_str(v2_output_json).unwrap();
+    let anchor: ExternalAuditAnchorRecord = serde_json::from_str(anchor_json).unwrap();
+
+    assert_eq!(v1.version, "secs-public-audit-bundle-v1");
+    assert_eq!(v1.chain.algorithm_version, "secs-public-audit-chain-v1");
+    assert!(v1.receipts[0].output_projection.is_none());
+    v1.verify_local_public_audit().unwrap();
+    verify_external_audit_anchor_record(&v1, &anchor).unwrap();
+
+    for bundle in [&v2_outputless, &v2_output] {
+        assert_eq!(bundle.version, "secs-public-audit-bundle-v2");
+        assert_eq!(bundle.chain.algorithm_version, "secs-public-audit-chain-v2");
+        bundle.verify_local_public_audit().unwrap();
+    }
+    assert!(v2_outputless.receipts[0].output_projection.is_none());
+    let projection = v2_output.receipts[0].output_projection.as_ref().unwrap();
+    assert_eq!(projection.schema_id, "fixture.response.v1");
+    assert_eq!(projection.digest_sha256_hex.len(), 64);
+
+    for json in [v1_json, v2_outputless_json, v2_output_json, anchor_json] {
+        assert!(!json.contains("SENTINEL_RAW_EXECUTION_OUTPUT"));
+        assert!(!json.contains("raw_output"));
+    }
+
+    let mut cross_version = v2_output.clone();
+    cross_version.version = "secs-public-audit-bundle-v1".into();
+    cross_version.chain.algorithm_version = "secs-public-audit-chain-v1".into();
+    assert!(cross_version.verify_local_public_audit().is_err());
+    let mut tampered = v2_output;
+    tampered.receipts[0]
+        .output_projection
+        .as_mut()
+        .unwrap()
+        .byte_count += 1;
+    assert!(tampered.verify_local_public_audit().is_err());
+    let mut unknown = v1;
+    unknown.version = "secs-public-audit-bundle-v99".into();
+    assert!(unknown.verify_local_public_audit().is_err());
+}
+
+#[test]
+fn external_public_audit_dtos_reject_unknown_and_raw_output_fields() {
+    let bundle_json = include_str!("fixtures/public_audit/bundle_v2_chain_v2_with_output.json");
+    let anchor_json = include_str!("fixtures/public_audit/anchor_v1.json");
+    for path in [
+        vec!["unexpected"],
+        vec!["chain", "unexpected"],
+        vec!["signer_keys", "0", "unexpected"],
+        vec!["receipts", "0", "raw_output"],
+        vec!["receipts", "0", "output_projection", "unexpected"],
+    ] {
+        let mut value: serde_json::Value = serde_json::from_str(bundle_json).unwrap();
+        let mut cursor = &mut value;
+        for segment in &path[..path.len() - 1] {
+            cursor = if let Ok(index) = segment.parse::<usize>() {
+                &mut cursor.as_array_mut().unwrap()[index]
+            } else {
+                &mut cursor.as_object_mut().unwrap()[*segment]
+            };
+        }
+        cursor.as_object_mut().unwrap().insert(
+            path.last().unwrap().to_string(),
+            serde_json::json!("SENTINEL_RAW_EXECUTION_OUTPUT"),
+        );
+        assert!(serde_json::from_value::<PublicAuditBundle>(value).is_err());
+    }
+
+    let mut anchor: serde_json::Value = serde_json::from_str(anchor_json).unwrap();
+    anchor
+        .as_object_mut()
+        .unwrap()
+        .insert("unexpected".into(), true.into());
+    assert!(
+        serde_json::from_value::<server::public_audit::ExternalAuditAnchorRecord>(anchor).is_err()
+    );
+}
+
+#[tokio::test]
+async fn rehashed_schema_v3_outputless_receipt_cannot_be_relabelled_as_v1() {
+    let ledger = memory_ledger().await;
+    let context = context("ctx-public-audit-v3-downgrade");
+    ledger
+        .record_receipt(&signed_receipt(
+            "r-public-v3-outputless",
+            &context,
+            1_770_000_020,
+        ))
+        .await
+        .unwrap();
+    let mut bundle = ledger
+        .export_public_audit_bundle_for_context(
+            "ctx-public-audit-v3-downgrade",
+            [(
+                "verifier:public-audit-test",
+                signer_key().verifying_key().as_bytes(),
+            )],
+            1_770_000_100,
+        )
+        .await
+        .unwrap();
+    assert_eq!(bundle.receipts[0].schema_version, 3);
+    assert!(bundle.receipts[0].output_projection.is_none());
+
+    bundle.version = "secs-public-audit-bundle-v1".into();
+    bundle.chain.algorithm_version = "secs-public-audit-chain-v1".into();
+    let mut previous = None;
+    for entry in &mut bundle.receipts {
+        entry.previous_entry_hash_hex = previous;
+        entry.entry_hash_hex.clear();
+        entry.entry_hash_hex =
+            server::public_audit::sha256_hex(&serde_json::to_vec(entry).unwrap());
+        previous = Some(entry.entry_hash_hex.clone());
+    }
+    let mut root_preimage = bundle.version.as_bytes().to_vec();
+    for entry in &bundle.receipts {
+        root_preimage.extend_from_slice(entry.entry_hash_hex.as_bytes());
+    }
+    bundle.chain.root_hash_hex = server::public_audit::sha256_hex(&root_preimage);
+
+    assert!(bundle.verify_local_public_audit().is_err());
+}

@@ -1,0 +1,187 @@
+"""Read-only source-package integrity checks; never authority or custody admission."""
+import argparse
+import hashlib
+import json
+from pathlib import Path, PurePosixPath
+import re
+import sys
+import tomllib
+
+COMMIT = '7e32f132549236ec78ebd9ec8bf364ec66b33721'
+NATIVE_MANIFEST_SHA256 = 'c482dd23a4b32f1b6515cddcdc478985a0341a4263120befb0f95d60963b9456'
+FIXTURE_MANIFEST_SHA256 = 'd729333cd6fe026ff2b79b7edeeee29faaa8e74a828b260807828456740edf5c'
+CUSTODY_MANIFEST_SHA256 = 'f3a5d9aed996cad7dc5c810869803e8a8b1d17c0edfd92557678ee0e56088cd5'
+PRIVATE_FILES_SHA256 = {
+    'src/lib.rs': '56a29e496705bab57cbaafa03df727c11be417f8a34763faae8e5011ee53f968',
+    'src/service_store.rs': '395adb059ff229e8f4e3f043600f043a6ad0db1ebc84430dac9cbb54c7f1f7b8',
+    'src/service_store_tests.rs': 'b901f40761ee3e1033c80f965ec05bd01d5a7cbb91286f919d107887d4b36d5f',
+}
+GENERIC_LOCK_SHA256 = '7f5b976bf78a15870e698c0dab8dae608274dfcc02b4f233558e634143f7424f'
+GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
+PACKAGE = 'crates/castalia-wallet-service-holder'
+VENDOR = 'vendor/secS-magik-7e32f13'
+GENERIC_MEMBERS = ['crates/castalia-wallet-cli', 'crates/castalia-wallet-private-files', 'crates/castalia-wallet-presentation', 'crates/castalia-wallet-core', 'crates/castalia-wallet-native']
+EXCLUSIONS = [PACKAGE, VENDOR, VENDOR + '/core', VENDOR + '/server', VENDOR + '/permissions', VENDOR + '/crates/secs-service-call-contract']
+
+# Replaced only after reviewed Native Stage B is committed and exported by actual git archive.
+STAGE_B_COMMIT = '3484dc40b86f0497ca5d34d2545a5f1b652fb660'
+STAGE_B_MANIFEST_SHA256 = '34fb72ed625b735721bc4386cfda66658f98b92fdca549bd4be835303207af13'
+STAGE_B_VENDOR = PACKAGE + '/vendor/secS-service-b'
+STAGE_B_FS = STAGE_B_VENDOR + '/vendor/castalia-wallet-private-files-9cc8140'
+STAGE_B_FS_SOURCE_SHA256 = '0f6f7fa87424c99dbca1718d5d391563d5958f812a232e7449d61f77508c4434'
+HOLDER_REGISTRY_SHA256 = '214e310642b7c3f0dc641f57a62a85eee5ab499a15d576fdb322131ddddfc4f0'
+GENERIC_MANIFEST_SHA256 = 'e23c951b6847201e9d7fabf60f363d88630f313cd010e3f307258dbf56cc9110'
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def verify(root):
+    errors = []
+    def check_hash(path, expected, label):
+        if not path.is_file() or path.is_symlink() or sha(path) != expected:
+            errors.append(label + ': ' + str(path.relative_to(root)))
+            return False
+        return True
+    def inventory(base, entries, label, excluded=()):
+        paths = []
+        for entry in entries:
+            rel = PurePosixPath(entry['path'])
+            if rel.is_absolute() or '..' in rel.parts or str(rel) in paths:
+                errors.append(label + ' inventory: invalid or duplicate path')
+                continue
+            paths.append(str(rel))
+            check_hash(base / str(rel), entry['sha256'], label + ' sha256')
+        actual = []
+        for path in base.rglob('*'):
+            if path.is_symlink():
+                errors.append(label + ' inventory: symlink ' + str(path.relative_to(base)))
+            elif path.is_file() and str(path.relative_to(base)) not in excluded:
+                actual.append(str(path.relative_to(base)))
+        if set(paths) != set(actual):
+            errors.append(label + ' inventory: missing or extra files')
+    native_path = root / (VENDOR + '.source.json')
+    if check_hash(native_path, NATIVE_MANIFEST_SHA256, 'native manifest'):
+        native = json.loads(native_path.read_text())
+        if native['commit'] != COMMIT or len(native['source_files']) != 302:
+            errors.append('native inventory: wrong commit or count')
+        inventory(root / VENDOR, native['source_files'], 'native')
+    # Both retained exports remain immutable; only the new complete export is selected.
+    selected_path = root / (STAGE_B_VENDOR + '.source.json')
+    if check_hash(selected_path, STAGE_B_MANIFEST_SHA256, 'native service-b manifest'):
+        selected = json.loads(selected_path.read_text())
+        if STAGE_B_COMMIT is None or selected.get('commit') != STAGE_B_COMMIT:
+            errors.append('native service-b manifest: uncommitted or wrong actual revision')
+        inventory(root / STAGE_B_VENDOR, selected['source_files'], 'native service-b')
+    fs_path = root / (STAGE_B_FS + '.source.json')
+    if check_hash(fs_path, STAGE_B_FS_SOURCE_SHA256, 'shared FS manifest'):
+        shared = json.loads(fs_path.read_text())
+        if shared['commit'] != '9cc814075704f1ae4a55b0f0ac17ecb2449c578f' or len(shared['source_files']) != 4 or shared['license_origin'] is not None:
+            errors.append('shared FS manifest: origin/count/license drift')
+        inventory(root / STAGE_B_FS, shared['source_files'], 'shared FS')
+    for relative in [VENDOR, STAGE_B_VENDOR, STAGE_B_FS]:
+        path = root / relative
+        if any(item.is_symlink() for item in [path, *path.parents] if item != root and item.is_relative_to(root)):
+            errors.append('native inventory: symlink in source root ' + relative)
+    check_hash(root / 'Cargo.toml', GENERIC_MANIFEST_SHA256, 'generic manifest baseline')
+    fixture_dir = root / PACKAGE / 'tests/fixtures'
+    fixture_manifest = fixture_dir / 'SOURCE.json'
+    if check_hash(fixture_manifest, FIXTURE_MANIFEST_SHA256, 'fixture manifest'):
+        fixture = json.loads(fixture_manifest.read_text())
+        inventory(fixture_dir, fixture['files'], 'fixture', ['SOURCE.json'])
+    custody_dir = root / PACKAGE / 'tests/custody-vectors'
+    if check_hash(custody_dir / 'SOURCE.json', CUSTODY_MANIFEST_SHA256, 'custody manifest'):
+        custody = json.loads((custody_dir / 'SOURCE.json').read_text())
+        inventory(custody_dir, custody['files'], 'custody vector', ['SOURCE.json'])
+    for rel, digest in PRIVATE_FILES_SHA256.items():
+        check_hash(root / 'crates/castalia-wallet-private-files' / rel, digest, 'private-files source')
+    check_hash(root / 'Cargo.lock', GENERIC_LOCK_SHA256, 'generic lock')
+    check_hash(root / 'scripts/presentation-boundary.test.mjs', GENERIC_GUARD_SHA256, 'generic guard')
+    main = tomllib.loads((root / 'Cargo.toml').read_text())['workspace']
+    if main['members'] != GENERIC_MEMBERS or not set(EXCLUSIONS).issubset(main.get('exclude', [])):
+        errors.append('generic workspace: member/exclusion drift')
+    package = root / PACKAGE
+    native_lock = tomllib.loads((root / STAGE_B_VENDOR / 'Cargo.lock').read_text())['package']
+    registry = {(p['name'], p['version'], p['source']): p.get('checksum')
+                for p in native_lock if p.get('source', '').startswith('registry+')}
+    holder_lock = tomllib.loads((package / 'Cargo.lock').read_text())['package']
+    rows = [{key: item[key] for key in ['name', 'version', 'source', 'checksum']} for item in holder_lock if item.get('source', '').startswith('registry+')]
+    if len(rows) != 186 or hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(',', ':')).encode()).hexdigest() != HOLDER_REGISTRY_SHA256:
+        errors.append('holder registry: bounded baseline row drift')
+    seen = set()
+    for item in holder_lock:
+        key = (item['name'], item['version'], item.get('source'))
+        if key in seen:
+            errors.append('holder registry: duplicate lock entry ' + item['name'])
+        seen.add(key)
+        source = item.get('source')
+        if source is not None and (not source.startswith('registry+')
+                                   or key not in registry
+                                   or registry[key] != item.get('checksum')):
+            errors.append('holder registry: source/version/checksum drift ' + item['name'])
+    manifest = tomllib.loads((package / 'Cargo.toml').read_text())
+    if 'workspace' not in manifest or manifest['package'].get('publish') is not False:
+        errors.append('holder workspace: missing independent root or publish=false')
+    def check_unconditional(owner, name, expected_path, label):
+        declarations = []
+        def collect(container, target):
+            for kind in ['dependencies', 'dev-dependencies', 'build-dependencies']:
+                for key, value in container.get(kind, {}).items():
+                    if key == name or isinstance(value, dict) and value.get('package') == name:
+                        declarations.append((kind, target, key, value))
+        collect(owner, None)
+        for target, container in owner.get('target', {}).items():
+            collect(container, target)
+        valid = len(declarations) == 1
+        if valid:
+            kind, target, key, value = declarations[0]
+            valid = (kind == 'dependencies' and target is None and key == name and isinstance(value, dict)
+                     and value.get('path') == expected_path and value.get('optional', False) is False
+                     and value.get('package', name) == name and 'git' not in value and 'registry' not in value)
+        if not valid:
+            errors.append('unconditional declaration: ' + label)
+    check_unconditional(manifest, 'server', 'vendor/secS-service-b/server', 'holder -> server')
+    dependencies = manifest['dependencies']
+    expected = {'castalia-wallet-private-files': 'vendor/secS-service-b/vendor/castalia-wallet-private-files-9cc8140', 'server': 'vendor/secS-service-b/server', 'libsec-core': 'vendor/secS-service-b/core', 'secs-service-call-contract': 'vendor/secS-service-b/crates/secs-service-call-contract'}
+    for name, path in expected.items():
+        if dependencies.get(name, {}).get('path') != path:
+            errors.append('holder dependency: wrong immutable path for ' + name)
+    if manifest.get('dev-dependencies', {}).get('secs-permissions', {}).get('path') != 'vendor/secS-service-b/permissions':
+        errors.append('holder dependency: wrong immutable path for secs-permissions')
+    foreign = ['vendor/secS-service-b'] + ['vendor/secS-service-b/' + item for item in ['core', 'client', 'server', 'permissions', 'panel', 'crates/secs-service-call-contract', 'vendor/castalia-wallet-private-files-9cc8140']]
+    if not set(foreign).issubset(manifest['workspace'].get('exclude', [])):
+        errors.append('holder workspace: missing new foreign exclusions')
+    server_manifest = tomllib.loads((root / STAGE_B_VENDOR / 'server/Cargo.toml').read_text())
+    check_unconditional(server_manifest, 'castalia-wallet-private-files', '../vendor/castalia-wallet-private-files-9cc8140', 'server -> shared FS')
+    server_fs = server_manifest['dependencies']['castalia-wallet-private-files']['path']
+    holder_fs = dependencies.get('castalia-wallet-private-files', {}).get('path', '')
+    if (root / STAGE_B_VENDOR / 'server' / server_fs).resolve() != (package / holder_fs).resolve():
+        errors.append('shared FS identity: server and holder manifest paths differ')
+    for table in ['dependencies', 'dev-dependencies', 'build-dependencies']:
+        for name, value in manifest.get(table, {}).items():
+            if isinstance(value, dict):
+                if 'git' in value or 'registry' in value:
+                    errors.append('holder dependency: unexpected remote source ' + name)
+                if 'path' in value:
+                    path = Path(value['path'])
+                    target = (package / path).resolve()
+                    if path.is_absolute() or not target.is_relative_to(root.resolve()):
+                        errors.append('holder dependency: operator path ' + name)
+    for source in (package / 'src').glob('*.rs'):
+        text = source.read_text()
+        if re.search(r'include_(?:bytes|str)!\s*\(\s*"(?:/|[A-Za-z]:)', text) or re.search(r'#\[path\s*=\s*"(?:/|[A-Za-z]:)', text):
+            errors.append('absolute include: ' + str(source.relative_to(root)))
+    return errors
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--repo-root', type=Path, default=Path(__file__).resolve().parents[3])
+    args = parser.parse_args()
+    try:
+        errors = verify(args.repo_root.resolve())
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors = ['source package unreadable: ' + str(error)]
+    print(json.dumps({'source_integrity': not errors, 'native_commit': COMMIT, 'native_files': 302, 'selected_native_stage_b_commit': STAGE_B_COMMIT, 'source_pin_committed': STAGE_B_COMMIT is not None, 'production_qualified': False, 'errors': errors}, indent=2))
+    return 1 if errors else 0
+
+if __name__ == '__main__':
+    sys.exit(main())

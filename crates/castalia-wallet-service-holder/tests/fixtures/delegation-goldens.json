@@ -1,0 +1,286 @@
+{
+  "schema": "castalia.wallet-service-delegation.preimage-review.v1",
+  "status": "independently_computed_python_no_signing_before_native_source",
+  "native_reader_source_sha256": "8411a60a693eaf47cf352f129fc2202a8f75fc85090d3743dc0b765aea61ac63",
+  "descriptor_source_sha256": "7382aa6aebe19ab86b4ed62503db1a10d752a5addc45c537b52e41e899ac1086",
+  "synthetic_descriptor": {
+    "opcode": 66,
+    "name": "runtime.run.create.v1",
+    "payload_schema": "application/json",
+    "output_profile": null,
+    "target_kind": "receiver_production_handler",
+    "required_credentials": [],
+    "required_capabilities": [],
+    "accepted_evidence": [],
+    "required_authority_mode": null,
+    "replay_scope": "session_opcode_nonce",
+    "max_ttl_seconds": 60,
+    "handler_id": "fixture/runtime.run.create.v1",
+    "dev_binding": false,
+    "range": "operator_defined",
+    "disclosure_policy": {
+      "policy_id": "fixture",
+      "policy_version": 1,
+      "permissions": []
+    }
+  },
+  "descriptor_preimage_hex": "76657273696f6e3a33303a736563732d64657363726970746f722d66696e6765727072696e742d76310a6f70636f64653a323a34320a6f7065726174696f6e3a32313a72756e74696d652e72756e2e6372656174652e76310a7061796c6f61645f736368656d613a31363a6170706c69636174696f6e2f6a736f6e0a6f75747075745f70726f66696c655f70726573656e743a353a66616c73650a7461726765745f6b696e643a32373a72656365697665725f70726f64756374696f6e5f68616e646c65720a72657175697265645f617574686f726974795f6d6f64653a303a0a7265706c61795f73636f70653a32303a73657373696f6e5f6f70636f64655f6e6f6e63650a6d61785f74746c5f7365636f6e64733a323a36300a68616e646c65725f69643a32393a666978747572652f72756e74696d652e72756e2e6372656174652e76310a6465765f62696e64696e673a353a66616c73650a72616e67653a31363a6f70657261746f725f646566696e65640a646973636c6f737572655f706f6c6963795f69643a373a666978747572650a646973636c6f737572655f706f6c6963795f76657273696f6e3a313a310a",
+  "descriptor_sha256": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+  "vectors": [
+    {
+      "name": "wallet_delegation",
+      "policy": {
+        "schema": "secs.service-receiver-policy.v1",
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "not_before": 0,
+        "not_after": 185,
+        "max_ttl_seconds": 60,
+        "principals": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked": false
+          }
+        ],
+        "descriptors": [
+          {
+            "operation": "runtime.run.create.v1",
+            "opcode": 66,
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60
+          }
+        ],
+        "rules": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "active": true
+          },
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "deny",
+            "not_before": 165,
+            "not_after": 180,
+            "active": true
+          }
+        ]
+      },
+      "canonical_utf8": "{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"holder:fixture\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"holder:key\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"}],\"schema\":\"secs.service-receiver-policy.v1\"}",
+      "preimage_hex": "7b226170706c69636174696f6e223a2272756e74696d65222c2261756469656e6365223a2272756e74696d653a2f2f72656365697665722d6c6f63616c222c2264657363726970746f7273223a5b7b2266696e6765727072696e74223a2234303135313161653434646639373032623366343535356532396636643031656165646265313265643230393466313937613237363538363038636539666335222c2268616e646c65725f6964223a22666978747572652f72756e74696d652e72756e2e6372656174652e7631222c226d61785f74746c5f7365636f6e6473223a36302c226f70636f6465223a36362c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631227d5d2c226d61785f74746c5f7365636f6e6473223a36302c226e6f745f6166746572223a3138352c226e6f745f6265666f7265223a302c227072696e636970616c73223a5b7b226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a302c227265766f6b6564223a66616c73652c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c2272756c6573223a5b7b22616374697665223a747275652c22656666656374223a22616c6c6f77222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3137352c226e6f745f6265666f7265223a302c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d2c7b22616374697665223a747275652c22656666656374223a2264656e79222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a3136352c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c22736368656d61223a22736563732e736572766963652d72656365697665722d706f6c6963792e7631227d",
+      "sha256": "b39983349a55029d501615895aa0c36fe53548317ecb26f14d322a553057d69f",
+      "request_case": {
+        "operation": "runtime.run.create.v1",
+        "resource": "runs/run-1",
+        "subject_id": "holder:fixture",
+        "key_id": "holder:key",
+        "issued_at": 100,
+        "requested_ttl": 60,
+        "native_prepare_expected_expires_at": 160,
+        "accepts_original_expiry_160": true
+      }
+    },
+    {
+      "name": "separate_receiver_policy",
+      "policy": {
+        "schema": "secs.service-receiver-policy.v1",
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "not_before": 90,
+        "not_after": 200,
+        "max_ttl_seconds": 60,
+        "principals": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "not_before": 90,
+            "not_after": 200,
+            "revoked": false
+          }
+        ],
+        "descriptors": [
+          {
+            "operation": "runtime.run.create.v1",
+            "opcode": 66,
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60
+          }
+        ],
+        "rules": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "allow",
+            "not_before": 90,
+            "not_after": 200,
+            "active": true
+          }
+        ]
+      },
+      "canonical_utf8": "{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":200,\"not_before\":90,\"principals\":[{\"key_id\":\"holder:key\",\"not_after\":200,\"not_before\":90,\"revoked\":false,\"subject_id\":\"holder:fixture\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"holder:key\",\"not_after\":200,\"not_before\":90,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"}],\"schema\":\"secs.service-receiver-policy.v1\"}",
+      "preimage_hex": "7b226170706c69636174696f6e223a2272756e74696d65222c2261756469656e6365223a2272756e74696d653a2f2f72656365697665722d6c6f63616c222c2264657363726970746f7273223a5b7b2266696e6765727072696e74223a2234303135313161653434646639373032623366343535356532396636643031656165646265313265643230393466313937613237363538363038636539666335222c2268616e646c65725f6964223a22666978747572652f72756e74696d652e72756e2e6372656174652e7631222c226d61785f74746c5f7365636f6e6473223a36302c226f70636f6465223a36362c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631227d5d2c226d61785f74746c5f7365636f6e6473223a36302c226e6f745f6166746572223a3230302c226e6f745f6265666f7265223a39302c227072696e636970616c73223a5b7b226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3230302c226e6f745f6265666f7265223a39302c227265766f6b6564223a66616c73652c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c2272756c6573223a5b7b22616374697665223a747275652c22656666656374223a22616c6c6f77222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3230302c226e6f745f6265666f7265223a39302c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c22736368656d61223a22736563732e736572766963652d72656365697665722d706f6c6963792e7631227d",
+      "sha256": "bd66b1feb03aac58bde658f5cc8286847f6d1aff4fdb12b2e22b768c53a1929d",
+      "request_case": {
+        "operation": "runtime.run.create.v1",
+        "resource": "runs/run-1",
+        "subject_id": "holder:fixture",
+        "key_id": "holder:key",
+        "issued_at": 100,
+        "requested_ttl": 60,
+        "native_prepare_expected_expires_at": 160,
+        "accepts_original_expiry_160": true
+      }
+    },
+    {
+      "name": "wallet_future_deny",
+      "policy": {
+        "schema": "secs.service-receiver-policy.v1",
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "not_before": 0,
+        "not_after": 185,
+        "max_ttl_seconds": 60,
+        "principals": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked": false
+          }
+        ],
+        "descriptors": [
+          {
+            "operation": "runtime.run.create.v1",
+            "opcode": 66,
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60
+          }
+        ],
+        "rules": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "active": true
+          },
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "deny",
+            "not_before": 150,
+            "not_after": 180,
+            "active": true
+          }
+        ]
+      },
+      "canonical_utf8": "{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"holder:fixture\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"holder:key\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":150,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"}],\"schema\":\"secs.service-receiver-policy.v1\"}",
+      "preimage_hex": "7b226170706c69636174696f6e223a2272756e74696d65222c2261756469656e6365223a2272756e74696d653a2f2f72656365697665722d6c6f63616c222c2264657363726970746f7273223a5b7b2266696e6765727072696e74223a2234303135313161653434646639373032623366343535356532396636643031656165646265313265643230393466313937613237363538363038636539666335222c2268616e646c65725f6964223a22666978747572652f72756e74696d652e72756e2e6372656174652e7631222c226d61785f74746c5f7365636f6e6473223a36302c226f70636f6465223a36362c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631227d5d2c226d61785f74746c5f7365636f6e6473223a36302c226e6f745f6166746572223a3138352c226e6f745f6265666f7265223a302c227072696e636970616c73223a5b7b226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a302c227265766f6b6564223a66616c73652c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c2272756c6573223a5b7b22616374697665223a747275652c22656666656374223a22616c6c6f77222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3137352c226e6f745f6265666f7265223a302c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d2c7b22616374697665223a747275652c22656666656374223a2264656e79222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a3135302c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c22736368656d61223a22736563732e736572766963652d72656365697665722d706f6c6963792e7631227d",
+      "sha256": "d842175bf48b3bb22f329bcbdce8d22c59f521e8003666e8c7bf7d0bfac1fb51",
+      "request_case": {
+        "operation": "runtime.run.create.v1",
+        "resource": "runs/run-1",
+        "subject_id": "holder:fixture",
+        "key_id": "holder:key",
+        "issued_at": 100,
+        "requested_ttl": 60,
+        "native_prepare_expected_expires_at": 150,
+        "accepts_original_expiry_160": false
+      }
+    },
+    {
+      "name": "wallet_array_reordered",
+      "policy": {
+        "schema": "secs.service-receiver-policy.v1",
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "not_before": 0,
+        "not_after": 185,
+        "max_ttl_seconds": 60,
+        "principals": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked": false
+          }
+        ],
+        "descriptors": [
+          {
+            "operation": "runtime.run.create.v1",
+            "opcode": 66,
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60
+          }
+        ],
+        "rules": [
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "deny",
+            "not_before": 165,
+            "not_after": 180,
+            "active": true
+          },
+          {
+            "subject_id": "holder:fixture",
+            "key_id": "holder:key",
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "active": true
+          }
+        ]
+      },
+      "canonical_utf8": "{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"holder:fixture\"}],\"rules\":[{\"active\":true,\"effect\":\"deny\",\"key_id\":\"holder:key\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"},{\"active\":true,\"effect\":\"allow\",\"key_id\":\"holder:key\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"holder:fixture\"}],\"schema\":\"secs.service-receiver-policy.v1\"}",
+      "preimage_hex": "7b226170706c69636174696f6e223a2272756e74696d65222c2261756469656e6365223a2272756e74696d653a2f2f72656365697665722d6c6f63616c222c2264657363726970746f7273223a5b7b2266696e6765727072696e74223a2234303135313161653434646639373032623366343535356532396636643031656165646265313265643230393466313937613237363538363038636539666335222c2268616e646c65725f6964223a22666978747572652f72756e74696d652e72756e2e6372656174652e7631222c226d61785f74746c5f7365636f6e6473223a36302c226f70636f6465223a36362c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631227d5d2c226d61785f74746c5f7365636f6e6473223a36302c226e6f745f6166746572223a3138352c226e6f745f6265666f7265223a302c227072696e636970616c73223a5b7b226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a302c227265766f6b6564223a66616c73652c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c2272756c6573223a5b7b22616374697665223a747275652c22656666656374223a2264656e79222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3138302c226e6f745f6265666f7265223a3136352c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d2c7b22616374697665223a747275652c22656666656374223a22616c6c6f77222c226b65795f6964223a22686f6c6465723a6b6579222c226e6f745f6166746572223a3137352c226e6f745f6265666f7265223a302c226f7065726174696f6e223a2272756e74696d652e72756e2e6372656174652e7631222c227265736f75726365223a2272756e732f72756e2d31222c227265736f757263655f6d61746368223a226578616374222c227375626a6563745f6964223a22686f6c6465723a66697874757265227d5d2c22736368656d61223a22736563732e736572766963652d72656365697665722d706f6c6963792e7631227d",
+      "sha256": "a0492fa8a28f5eaf08d8410d7efce29e580a00a57e4f7dc5c41b210cb09999be",
+      "request_case": {
+        "operation": "runtime.run.create.v1",
+        "resource": "runs/run-1",
+        "subject_id": "holder:fixture",
+        "key_id": "holder:key",
+        "issued_at": 100,
+        "requested_ttl": 60,
+        "native_prepare_expected_expires_at": 160,
+        "accepts_original_expiry_160": true
+      }
+    }
+  ],
+  "public_keys": "Copied existing public fixture bytes only. No key creation or signing.",
+  "production_descriptor_coverage": 0
+}

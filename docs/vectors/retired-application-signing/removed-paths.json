@@ -1,0 +1,177 @@
+{
+  "sourceRevision": "58d32a40559ffff0a9d99411f967b0889524c994",
+  "files": [
+    {
+      "path": "apps/chrome-extension/src/devgraph-bridge.ts",
+      "sha256": "15d9ec36f4076a712f402c115a3f12246e59148ca56b1fe7339d96f4b9a76f8e"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-confirmation.html",
+      "sha256": "6b221a6de6235688528b618dfd417468e2d4360e08386d7eb59a5352e372efdd"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-confirmation.ts",
+      "sha256": "a6239d06906d03be46ec6ecfe3ad80bbc5674f338a7aa5a53de2e4913c6a0a29"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-content-router.ts",
+      "sha256": "128bc420b2b301d206409445f4e66eaab21cbaf943aff74204950e0b0e4299e1"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-native-control.ts",
+      "sha256": "486d8bc1adc56a36bb02a20c0e1db190ea0d36ca8ed91e0f9a48b3f95bf06e81"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-operation-broker.ts",
+      "sha256": "72cd0aaad415bcd6ce5cef04bd99169e7373f494ae99af660ede5671a796f98d"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-preview-confirmation.html",
+      "sha256": "237e77ff98540fe7bab6bc3edcbc445e9d776fcb91ebbbdda27edd4fd73b23da"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-preview-confirmation.ts",
+      "sha256": "2def67666c93851ffc6cf9eded9a4bf5b451992086554f1aa22ffc43474c0690"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-preview-runtime.ts",
+      "sha256": "de50140af53b5983c5e8f413bf6e32fcddc9355e2a1f8717a862600edfe8ad18"
+    },
+    {
+      "path": "apps/chrome-extension/src/devgraph-work-consent.ts",
+      "sha256": "cbc6f818cb215c816aaf74c6c1644d5990e304d0671ae2b557dc383ba5e4d5e9"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-bridge.test.ts",
+      "sha256": "082b840d3ccd093b1748d40a3918e7dfb60e4a75f144c152568c38f89645b62a"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-confirmation-ui.test.ts",
+      "sha256": "251bc61d3c3f02640409631c3a179e01e3b951a751393ea21d61975d0c65637d"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-content-router.test.ts",
+      "sha256": "bb7985581cab5a9c677bb73d2e86340a9fda9efdcd32321f37abd0e23b3665d6"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-lifecycle.test.ts",
+      "sha256": "7d7707d523e94e9ac62dc99f693a5d9fa25c1b681e32c01a3dfcb0a25d8ff04d"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-operation-broker.test.ts",
+      "sha256": "44281ca73537211683ebda57cb1e3698ecca08384deb114ffc81bf1808d05604"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-preview-runtime.test.ts",
+      "sha256": "26b6caf9d0889a2a727fbb5b42458d92a9f22fee23eaa3cf5be912905e6ebfe2"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-provider.test.ts",
+      "sha256": "2acf94f941de72c60c13c7aeaa5075f92880a2104dce8c40c4dd732198b0b06c"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-sdk-integration.mts",
+      "sha256": "38c88e3727826bffb2162ddddb60843c1a2fe67d18fed5807625a37f3dfe8cac"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-work-consent.test.ts",
+      "sha256": "fcfa77f7dd264c434d96fbc2320013f93d01b2dae1c0daccc36d9826766fb2b8"
+    },
+    {
+      "path": "apps/chrome-extension/test/devgraph-work-wasm.test.ts",
+      "sha256": "2cfa4969688ff4dbca9fdbc600204461edd252bd88a92e4cd7adca6507d09b51"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/devgraph_work.rs",
+      "sha256": "a820bc5f2cbc5e88879b78bcaed566b71b41e6f501d46f516bfc063802d9231c"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/devgraph_work.rs",
+      "sha256": "c95668ee35a7ebb829018df7b8c41acc6fceacc922e310f6d3941a102e23c610"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/Cargo.toml",
+      "sha256": "c4f71ae3fb185a5cc09785fb3a25f3af0ab5c5a0ce018c34bc02fb5bcc960edb"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/src/main.rs",
+      "sha256": "af2718828c7cc047412452ba65535d9a981ec4819facae6d66cf8491afebfa1c"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/src/private_files.rs",
+      "sha256": "22d84732875b7954060ff869e39143d3b3f781d37e71551c77caf85825bc40a2"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/src/work.rs",
+      "sha256": "73959dba36727890d590636b2c9dcc63bc89d30f55eb79c5d6081010da410d6c"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/cli.rs",
+      "sha256": "e74a722e9f9495227c3801955cac5f72b2cc3d98db3e1dcb4a31aae9407dadd5"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/invalid-requests.json",
+      "sha256": "b0743408e3b0a8532df74456d59b887c9fea607ec742bd769235b87b3ce703e5"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/fixtures/arena-v1/requests.json",
+      "sha256": "ac9c4ce70c547186980f6ca04c5bda69b3b9c0c4c8df2b4153bc9d5fc4796881"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/fixtures/named-work-v1/requests.json",
+      "sha256": "7f6aacb8e98b4f1fbd5b0cf005ee2b57df4d93de5be79e6e930104c99370458a"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/identity_check.rs",
+      "sha256": "8e3ef9e67de3161630c1fc8fb3aa5a480dd75af4dab987ea8f5294293fc6c0d9"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/identity_create.rs",
+      "sha256": "71cb23a26678f84dd4e12441facb911a07adc405afbbb4012450d2490665c789"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/identity_export.rs",
+      "sha256": "6645f43a04c1604e50182eb4c5efdb8f8cc9c8053cfaba1ecac6e530f84896f2"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-cli/tests/named_work.rs",
+      "sha256": "e6dd1c3b160f0eb0e804ef34e2b8e1835f5ef94e37c4829d714b1e0316309838"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-presentation/Cargo.toml",
+      "sha256": "8cdc0345a038a245ff80d6a2d8c270f94d09dbdc98c979a7a272de1c5e1769fa"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-presentation/src/lib.rs",
+      "sha256": "2bef8cd23d845d0acb0b841f1b26489e268470e86fbc220fab12fe72c6221309"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c"
+    },
+    {
+      "path": "crates/castalia-wallet-devgraph-presentation/tests/presentation.rs",
+      "sha256": "d25b9d1447b9c3a8bfec23460fa8fa84d2de9e661612a5cb136d7dbcd0915cd1"
+    },
+    {
+      "path": "packages/core/src/devgraph-issue-create-v1.ts",
+      "sha256": "ffbd5f923f6b5c2e87dffe0b0f069f4494603ebe7ccec3dd4c348d0fdba33a24"
+    },
+    {
+      "path": "packages/core/test/devgraph-issue-create-v1.test.ts",
+      "sha256": "799c44cfb5653f8401385e4875ff71917fbdc5eede580d8292a1273d9a22a8d1"
+    },
+    {
+      "path": "scripts/devgraph-preview-config.mjs",
+      "sha256": "e6cda74103f5d325b34541500d18b9849ede70d1c9e4e061f3f606be61ce80b9"
+    },
+    {
+      "path": "scripts/devgraph-preview-config.test.mjs",
+      "sha256": "0192976b5fa9020885d9fb091e57615e88161edb46ef2674a880c43a38185239"
+    },
+    {
+      "path": "scripts/package-devgraph-preview-extension.mjs",
+      "sha256": "6cb85555375f547596aab3bc6f3a3f9a1da1c941c6a1356eb2c0ed396104dbca"
+    }
+  ]
+}

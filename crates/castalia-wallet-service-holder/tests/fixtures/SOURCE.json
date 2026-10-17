@@ -1,0 +1,29 @@
+{
+  "schema": "castalia.wallet-service-holder.public-fixtures.v1",
+  "fixture_only": true,
+  "production_qualified": false,
+  "source": "accepted public Wallet owner-input format revision2; native public signed fixtures remain unchanged in pinned vendor source",
+  "native_commit": "7e32f132549236ec78ebd9ec8bf364ec66b33721",
+  "files": [
+    {
+      "path": "bundle-oracle.json",
+      "sha256": "435ee1286b76bc766984489cbbfcb9f9aee82b177b8d0b579156043d3d2d9d8c",
+      "original_review_sha256": "bf8dc273f8959fc4c408c3d2a39729df00f3053d0ac0938bbb0723e9e1e7fff4"
+    },
+    {
+      "path": "delegation-goldens.json",
+      "sha256": "2bf6934cffb2bf2522344d1863d8e6c4424dfde565140139be6fca2f5366fa3e",
+      "original_review_sha256": "2bf6934cffb2bf2522344d1863d8e6c4424dfde565140139be6fca2f5366fa3e"
+    },
+    {
+      "path": "wallet-owner-input.fixture.json",
+      "sha256": "7bacddca6fa20a1199339df087d5d2b230d107a226cd98c67ffe3074e0b22532",
+      "original_review_sha256": "7bacddca6fa20a1199339df087d5d2b230d107a226cd98c67ffe3074e0b22532"
+    },
+    {
+      "path": "wallet-owner-input.schema.json",
+      "sha256": "245a85cca3f34f226e22084b8aa4c31a849dde134bf4365d0baa21b069b217f5",
+      "original_review_sha256": "245a85cca3f34f226e22084b8aa4c31a849dde134bf4365d0baa21b069b217f5"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "castalia.source-snapshot.v1",
+  "repository": "https://github.com/ZenithResearch/castalia-web",
+  "revision": "3827722f0eff12408c7a6639de75a2d6040f2a8b",
+  "files": {
+    "src/castaway.ts": "ccd4064a530ebf547c019ac4a6d104c191d9af7dd8982fae559af2fedfd51840",
+    "src/membership.ts": "0bda19f5158c2ffa84c9a36a3ca52f1c5e779eef933ec42bc93515f8eb9979f6",
+    "src/scoped.ts": "2ee8c3295998e9bea3b53da392557cc2cb90b4e134a88ac2d1246d3a0656b824"
+  },
+  "purpose": "Compatibility reference. Rust ports preserve these membership transcripts, Castaway sections and validation. Not an executable network trust source."
+}

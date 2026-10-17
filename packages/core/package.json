@@ -1,0 +1,27 @@
+{
+  "name": "@castalia-wallet/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./membership-presentation-v2": {
+      "types": "./dist/membership-presentation-v2.d.ts",
+      "default": "./dist/membership-presentation-v2.js"
+    }
+  },
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "npm run build --workspace @castalia-wallet/provider-types && tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@castalia-wallet/provider-types": "0.0.0",
+    "@noble/hashes": "^2.3.0"
+  }
+}

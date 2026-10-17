@@ -1,0 +1,1078 @@
+{
+  "schema": "castalia.membership-contract-v1",
+  "status": "accepted",
+  "acceptedAt": "2026-08-12",
+  "memberKey": {
+    "suite": "Ed25519",
+    "generation": "OS CSPRNG in the extension-owned execution context",
+    "publicKeyEncoding": "32 raw bytes; lowercase hexadecimal in JSON",
+    "privateKeyExportEncoding": "PKCS#8 DER inside the encrypted custody payload only",
+    "scope": [
+      "membership enrollment possession",
+      "fresh membership session possession",
+      "bounded policy issuer root where a consumer explicitly accepts Ed25519"
+    ],
+    "nonScope": [
+      "hybrid or post-quantum Dregg turn signing",
+      "Castalia admission authority",
+      "membership lifecycle authority"
+    ]
+  },
+  "custody": {
+    "owner": "Castalia Wallet extension",
+    "recordSchema": "castalia.wallet-custody.v1",
+    "recoveryFileExtension": ".castalia-recovery",
+    "legacyRecoveryFileExtensionsAcceptedForImport": [".castalia-wallet"],
+    "kdf": {
+      "name": "Argon2id",
+      "version": 19,
+      "saltBytes": 16,
+      "memoryKiB": 65536,
+      "iterations": 3,
+      "parallelism": 1,
+      "derivedKeyBytes": 32
+    },
+    "aead": {
+      "name": "AES-256-GCM",
+      "nonceBytes": 12,
+      "tagBits": 128,
+      "associatedData": "canonical UTF-8 JSON of the custody header excluding ciphertext"
+    },
+    "unlock": "user-created passphrase; plaintext key and derived key remain memory-only and are cleared on lock, extension restart, or replacement",
+    "recoveryConsequence": "every valid export is another copy of the same signing authority; deleting one copy does not revoke any other copy",
+    "passphraseEncoding": "Unicode NFC, then UTF-8; empty passphrases reject",
+    "jsonCanonicalization": "RFC 8785 JSON Canonicalization Scheme (JCS)",
+    "binaryEncoding": "unpadded base64url per RFC 4648 section 5",
+    "containerFields": {
+      "schema": "literal castalia.wallet-custody.v1",
+      "keySuite": "literal Ed25519",
+      "publicKey": "64 lowercase hexadecimal characters",
+      "createdAt": "unsigned Unix epoch milliseconds encoded as a JSON integer",
+      "kdf": "object with literal name/version and integer memoryKiB/iterations/parallelism/derivedKeyBytes plus salt as unpadded base64url",
+      "aead": "object with literal name/tagBits plus nonce as unpadded base64url",
+      "ciphertext": "unpadded base64url of AES-GCM ciphertext with the 16-byte authentication tag appended"
+    },
+    "plaintextFields": {
+      "schema": "literal castalia.wallet-secret.v1",
+      "keyId": "lowercase hex BLAKE3 of the 32-byte raw public key",
+      "privateKeyPkcs8": "unpadded base64url PKCS#8 DER",
+      "createdAt": "must exactly equal the outer createdAt integer"
+    },
+    "associatedDataFields": [
+      "schema",
+      "keySuite",
+      "publicKey",
+      "createdAt",
+      "kdf",
+      "aead"
+    ],
+    "tagPlacement": "the 16-byte GCM tag is appended to ciphertext before base64url encoding",
+    "importValidation": [
+      "strictly parse exact outer fields and encodings before KDF work",
+      "derive Argon2id key and authenticate AES-GCM using exact JCS header AAD",
+      "strictly parse exact plaintext fields after authentication",
+      "parse PKCS#8 as Ed25519 and reject any other algorithm or trailing bytes",
+      "derive raw 32-byte public key from PKCS#8 and constant-time compare with outer publicKey",
+      "ordinary BLAKE3-256 of derived raw public key must equal plaintext keyId",
+      "outer and plaintext createdAt must exactly match",
+      "on any failure return one closed invalid_wallet_file error and persist no state or plaintext"
+    ],
+    "interoperabilityVectors": "castalia-wallet-custody-v1.vector.json; contains deterministic public test secrets only and positive/tamper/mismatched-key cases"
+  },
+  "identities": {
+    "applicantOfficialDreggCellId": {
+      "owner": "Dregg adapter selected by Castalia Control",
+      "requestSelectable": false,
+      "function": "CellId::derive_raw(ownerPublicKey, tokenId)",
+      "tokenIdFunction": "BLAKE3(networkId || 0x00 || tokenLabel || 0x00 || profileVersionU32LE)",
+      "tokenLabel": "castalia-official-cell-v1",
+      "dependsOnApplicationCommitment": false
+    },
+    "membershipCellId": {
+      "owner": "Dregg factory birth path",
+      "requestSelectable": false,
+      "function": "CellId::derive_raw(castaliaAuthorityPublicKey, birthTokenId)",
+      "birthTokenIdFunction": "BLAKE3('castalia/membership-birth-token/v1\u0000' || factoryId || applicationCommitment || birthNonceU64LE)",
+      "dependsOnApplicationCommitment": true,
+      "requiredDreggEffect": "Effect::CreateCellFromFactory { factory_vk, owner_pubkey, token_id, params }",
+      "requiredCreatedCellSemantics": "CellId::derive_raw(owner_pubkey, token_id)",
+      "forbiddenApi": "legacy dregg_create_from_factory tool deriving from factory VK, cell name, or receipt-chain nonce",
+      "pinnedSourceProfile": "castalia-local-v1-source-profile.json"
+    }
+  },
+  "control": {
+    "operatorSubmission": "Castalia Control invokes a narrowly scoped Dregg adapter; operator keys are loaded from process-local secret configuration or an external signer and never from browser requests or ordinary application JSON",
+    "bindingDomain": "castalia/control-membership-binding/v1\u0000",
+    "sessionDomain": "castalia/control-session/v1\u0000",
+    "bindingSigner": "dedicated Ed25519 key distinct from Castalia lifecycle/operator authority",
+    "walletTrustRoot": "release/profile-pinned Control binding public key and Dregg network/federation authority roots; Web cannot override them",
+    "applicationDomain": "castalia/member-application/v1\u0000",
+    "bindingEncoding": "fixed order, unsigned 32-bit little-endian length prefix before each variable byte string; fixed-width integers little-endian",
+    "sessionEncoding": "same framing rule as bindingEncoding",
+    "closedHttpErrors": [
+      "malformed",
+      "unknown_field",
+      "duplicate_field",
+      "unsupported_version",
+      "origin_not_allowed",
+      "body_too_large",
+      "capacity_exhausted",
+      "rate_limited",
+      "challenge_not_found",
+      "challenge_expired",
+      "challenge_attempts_exhausted",
+      "presentation_invalid",
+      "presentation_mismatch",
+      "application_rejected",
+      "application_submitted",
+      "upstream_ambiguous",
+      "upstream_unavailable",
+      "membership_not_active",
+      "binding_invalid",
+      "internal_error"
+    ],
+    "localTrustProfile": "castalia-local-v1-source-profile.json",
+    "bindingTranscriptFields": [
+      "domain literal",
+      "keyId",
+      "applicationId",
+      "origin",
+      "ownerPublicKey",
+      "canonicalApplicationBytes",
+      "applicationCommitment",
+      "membershipCellId",
+      "dreggNetworkId",
+      "dreggFederationId",
+      "authorityPublicKey",
+      "factoryId",
+      "childProgramVk",
+      "creationReceiptId",
+      "creationReceiptHead",
+      "issuedAtMsU64LE",
+      "expiresAtMsU64LE"
+    ],
+    "sessionTranscriptFields": [
+      "domain literal",
+      "sessionChallengeId",
+      "origin",
+      "audience",
+      "applicationId",
+      "membershipCellId",
+      "activeGenerationU64LE",
+      "activeReceiptHead",
+      "ownerPublicKey",
+      "nonce",
+      "issuedAtMsU64LE",
+      "expiresAtMsU64LE",
+      "requestedScope"
+    ]
+  },
+  "wire": {
+    "challengeRequest": {
+      "method": "POST",
+      "path": "/v1/membership/challenges",
+      "headers": {
+        "Origin": "required exact normalized allowed origin",
+        "Content-Type": "literal application/json"
+      },
+      "bodyFields": {
+        "ownerPublicKey": "hex32",
+        "requestedClass": "integer 1 or 2"
+      },
+      "success": {
+        "status": 201,
+        "bodyFields": {
+          "challengeId": "base64url16",
+          "application": "transcripts.application exact JSON projection",
+          "applicationCommitment": "hex32",
+          "challenge": "transcripts.enrollmentChallenge exact JSON projection",
+          "expiresAt": "unixMs"
+        }
+      }
+    },
+    "applicationRequest": {
+      "method": "POST",
+      "path": "/v1/membership/applications",
+      "headers": {
+        "Origin": "must equal challenged origin",
+        "Content-Type": "literal application/json"
+      },
+      "bodyFields": {
+        "challengeId": "base64url16",
+        "application": "transcripts.application exact JSON projection",
+        "presentation": "transcripts.walletPresentation exact JSON object"
+      },
+      "success": {
+        "status": 202,
+        "bodyFields": {
+          "applicationId": "base64url16",
+          "state": "literal submitted",
+          "retryAfterMs": "integer 100..60000"
+        }
+      }
+    },
+    "statusRequest": {
+      "method": "GET",
+      "path": "/v1/membership/applications/{applicationId}",
+      "headers": {
+        "Origin": "must equal application origin"
+      }
+    },
+    "statusResponse": {
+      "status": 200,
+      "bodyFields": {
+        "applicationId": "base64url16",
+        "state": "enums.membershipState",
+        "generation": "safe non-negative integer",
+        "changedAt": "unixMs",
+        "binding": "absent until authoritative pending receipt; then transcripts.controlBinding exact JSON object",
+        "receiptRef": "absent until receipt; otherwise hex32",
+        "retryAfterMs": "required 100..60000 only for submitted; absent for terminal states"
+      }
+    },
+    "activateRequest": {
+      "method": "POST",
+      "path": "/v1/operator/memberships/{applicationId}/activate",
+      "browserAccessible": false,
+      "headers": {
+        "Authorization": "operatorAuthentication exact Castalia-Operator-V1 header; browser credentials and Bearer fallback reject",
+        "Content-Type": "literal application/json"
+      },
+      "bodyFields": {
+        "expectedState": "literal pending",
+        "expectedGeneration": "literal 0",
+        "reasonCode": "enums.operatorReasonCode key; local accepted values approved or manual-review-complete",
+        "changedAt": "unixMs from operator service clock"
+      },
+      "success": {
+        "status": 202,
+        "bodyFields": {
+          "applicationId": "base64url16",
+          "state": "literal pending",
+          "operationState": "literal submitted",
+          "retryAfterMs": "integer 100..60000"
+        }
+      }
+    },
+    "sessionChallengeRequest": {
+      "method": "POST",
+      "path": "/v1/sessions/challenges",
+      "headers": {
+        "Origin": "required exact application origin",
+        "Content-Type": "literal application/json"
+      },
+      "bodyFields": {
+        "applicationId": "base64url16"
+      },
+      "success": {
+        "status": 201,
+        "bodyFields": {
+          "sessionChallengeId": "base64url16",
+          "challenge": "transcripts.sessionChallenge exact JSON object",
+          "expiresAt": "unixMs"
+        }
+      }
+    },
+    "sessionExchangeRequest": {
+      "method": "POST",
+      "path": "/v1/sessions/exchange",
+      "headers": {
+        "Origin": "must equal session challenge origin",
+        "Content-Type": "literal application/json"
+      },
+      "bodyFields": {
+        "sessionChallengeId": "base64url16",
+        "presentation": "transcripts.walletPresentation exact JSON object carrying sessionChallenge"
+      },
+      "success": {
+        "status": 204,
+        "body": "empty",
+        "cookie": "HttpOnly; SameSite=Lax; Path=/; Secure when HTTPS; Max-Age <= 3600"
+      }
+    }
+  },
+  "canonicalTypes": {
+    "hex32": "JSON string of exactly 64 lowercase hexadecimal characters decoding to 32 bytes",
+    "base64url16": "unpadded RFC 4648 section 5 base64url decoding to exactly 16 bytes",
+    "unixMs": "JSON integer in [0, 9007199254740991] representing UTC Unix epoch milliseconds",
+    "u64le": "exactly 8 unsigned little-endian bytes in signed transcripts",
+    "bytes": "unsigned U32 little-endian byte length followed by exactly that many bytes",
+    "string": "UTF-8 bytes framed as bytes; Unicode NFC required; malformed UTF-8 rejects",
+    "json": "UTF-8 RFC 8259 object; duplicate keys, unknown keys, non-integers, negative integers, and unsafe integers reject unless the field definition says otherwise",
+    "domainSeparator": "Every domain ending shown with JSON \\u0000 contains one actual U+0000 code point encoded as the single byte 0x00 in UTF-8; the two bytes 0x5c 0x30 are forbidden."
+  },
+  "enums": {
+    "requestedClass": {
+      "individual": 1,
+      "institutional": 2
+    },
+    "applicationKind": {
+      "castaliaMembership": 7
+    },
+    "applicationVersion": {
+      "v1": 1
+    },
+    "signatureSuite": {
+      "ed25519": 1
+    },
+    "membershipState": [
+      "submitted",
+      "pending",
+      "active",
+      "suspended",
+      "revoked",
+      "membership_expired",
+      "rejected"
+    ],
+    "sessionScope": [
+      "castalia-web"
+    ],
+    "operatorReasonCode": {
+      "approved": 1,
+      "manual-review-complete": 2
+    }
+  },
+  "transcripts": {
+    "application": {
+      "domain": "castalia/member-application/v1\u0000",
+      "encoding": "literal domain bytes followed by raw 32-byte fields, then U64LE integer fields; no generic length prefixes",
+      "orderedFields": [
+        {
+          "name": "factoryId",
+          "type": "hex32/raw32"
+        },
+        {
+          "name": "programId",
+          "type": "hex32/raw32"
+        },
+        {
+          "name": "applicantOfficialDreggCellId",
+          "type": "hex32/raw32"
+        },
+        {
+          "name": "ownerPublicKey",
+          "type": "hex32/raw32"
+        },
+        {
+          "name": "applicationKind",
+          "type": "u64le",
+          "allowed": [
+            7
+          ]
+        },
+        {
+          "name": "applicationVersion",
+          "type": "u64le",
+          "allowed": [
+            1
+          ]
+        },
+        {
+          "name": "applicationNonce",
+          "type": "u64le",
+          "minimum": 1
+        },
+        {
+          "name": "membershipClass",
+          "type": "u64le",
+          "allowed": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "jurisdictionCode",
+          "type": "u64le",
+          "source": "Control policy; ISO 3166-1 numeric or 0 for local fixture"
+        },
+        {
+          "name": "applicationFlags",
+          "type": "u64le",
+          "source": "Control policy bitset; unknown set bits reject"
+        },
+        {
+          "name": "createdAt",
+          "type": "u64le",
+          "unit": "Unix seconds for CASTMEM1 v1 compatibility"
+        }
+      ],
+      "commitment": "ordinary BLAKE3-256 over exact transcript bytes; lowercase hex in JSON"
+    },
+    "enrollmentChallenge": {
+      "domain": "castalia/wallet-membership-enrollment/v2\u0000",
+      "encoding": "literal domain bytes followed by each ordered field using canonicalTypes bytes/string/u64le as declared",
+      "orderedFields": [
+        {
+          "name": "version",
+          "type": "u64le",
+          "allowed": [
+            2
+          ]
+        },
+        {
+          "name": "challengeId",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "nonce",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "origin",
+          "type": "string"
+        },
+        {
+          "name": "audience",
+          "type": "string"
+        },
+        {
+          "name": "operation",
+          "type": "string",
+          "literal": "castalia.membership.enroll"
+        },
+        {
+          "name": "ownerPublicKey",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "applicationCommitment",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "signatureSuite",
+          "type": "u64le",
+          "allowed": [
+            1
+          ]
+        },
+        {
+          "name": "issuedAt",
+          "type": "u64le/unixMs"
+        },
+        {
+          "name": "expiresAt",
+          "type": "u64le/unixMs"
+        }
+      ]
+    },
+    "walletPresentation": {
+      "jsonFields": [
+        "schema",
+        "ownerPublicKey",
+        "challenge",
+        "signatureSuite",
+        "signature"
+      ],
+      "constraints": {
+        "schema": "literal castalia.wallet-membership-presentation.v2",
+        "ownerPublicKey": "hex32 and exact challenge owner",
+        "challenge": "exact enrollmentChallenge or sessionChallenge object received; wallet may not rewrite it",
+        "signatureSuite": "literal Ed25519",
+        "signature": "unpadded base64url of exactly 64 Ed25519 signature bytes over exact canonical challenge transcript"
+      }
+    },
+    "controlBinding": {
+      "domain": "castalia/control-membership-binding/v1\u0000",
+      "encoding": "literal domain, then ordered fields; variable fields use canonicalTypes bytes and integers use u64le",
+      "orderedFields": [
+        {
+          "name": "keyId",
+          "type": "string",
+          "constraints": "must equal wallet-pinned Control binding key ID"
+        },
+        {
+          "name": "applicationId",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "origin",
+          "type": "string",
+          "constraints": "normalized exact origin"
+        },
+        {
+          "name": "ownerPublicKey",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "canonicalApplicationBytes",
+          "type": "bytes",
+          "constraints": "exact transcripts.application bytes"
+        },
+        {
+          "name": "applicationCommitment",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "membershipCellId",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "dreggNetworkId",
+          "type": "string",
+          "constraints": "must equal pinned profile networkId"
+        },
+        {
+          "name": "dreggFederationId",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "authorityPublicKey",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "factoryId",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "childProgramVk",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "creationReceiptId",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "creationReceiptHead",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "issuedAt",
+          "type": "u64le/unixMs"
+        },
+        {
+          "name": "expiresAt",
+          "type": "u64le/unixMs",
+          "constraints": "greater than issuedAt and no longer than profile maximum"
+        }
+      ],
+      "jsonFields": [
+        "schema",
+        "keyId",
+        "payload",
+        "signatureSuite",
+        "signature"
+      ],
+      "constraints": {
+        "schema": "literal castalia.control-membership-binding.v1",
+        "keyId": "must equal pinned profile key ID",
+        "payload": "object containing every ordered field with exact canonical types",
+        "signatureSuite": "literal Ed25519",
+        "signature": "unpadded base64url 64-byte signature over canonical binding transcript"
+      }
+    },
+    "sessionChallenge": {
+      "domain": "castalia/control-session/v1\u0000",
+      "encoding": "literal domain, then ordered fields; variable fields use canonicalTypes bytes and integers use u64le",
+      "orderedFields": [
+        {
+          "name": "version",
+          "type": "u64le",
+          "allowed": [
+            1
+          ]
+        },
+        {
+          "name": "sessionChallengeId",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "origin",
+          "type": "string",
+          "constraints": "normalized exact application origin"
+        },
+        {
+          "name": "audience",
+          "type": "string",
+          "constraints": "must equal pinned Control audience"
+        },
+        {
+          "name": "applicationId",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "membershipCellId",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "activeGeneration",
+          "type": "u64le",
+          "constraints": "positive exact observed generation"
+        },
+        {
+          "name": "activeReceiptHead",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "ownerPublicKey",
+          "type": "bytes/hex32"
+        },
+        {
+          "name": "nonce",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "issuedAt",
+          "type": "u64le/unixMs"
+        },
+        {
+          "name": "expiresAt",
+          "type": "u64le/unixMs",
+          "constraints": "greater than issuedAt and within session TTL maximum"
+        },
+        {
+          "name": "requestedScope",
+          "type": "string",
+          "allowed": [
+            "castalia-web"
+          ]
+        }
+      ],
+      "jsonFields": [
+        "version",
+        "sessionChallengeId",
+        "origin",
+        "audience",
+        "applicationId",
+        "membershipCellId",
+        "activeGeneration",
+        "activeReceiptHead",
+        "ownerPublicKey",
+        "nonce",
+        "issuedAt",
+        "expiresAt",
+        "requestedScope"
+      ],
+      "constraints": {
+        "version": "literal 1",
+        "requestedScope": "closed enum castalia-web",
+        "activeGeneration": "positive safe integer encoded U64LE in transcript",
+        "allIdsAndNonce": "use exact canonicalTypes; unknown fields reject"
+      }
+    }
+  },
+  "provenance": {
+    "origin": {
+      "transport": "Origin header only",
+      "authority": "Control exact allowlist normalization",
+      "callerOverride": false
+    },
+    "ownerPublicKey": {
+      "transport": "challenge body",
+      "authority": "untrusted until presentation verifies exact possession",
+      "callerOverride": true
+    },
+    "requestedClass": {
+      "transport": "challenge body enum 1|2",
+      "authority": "Control may preserve, narrow, or reject; never broaden",
+      "callerOverride": true
+    },
+    "jurisdictionCode": {
+      "transport": "none",
+      "authority": "Control policy profile",
+      "callerOverride": false
+    },
+    "applicationFlags": {
+      "transport": "none",
+      "authority": "Control policy profile",
+      "callerOverride": false
+    },
+    "applicantOfficialDreggCellId": {
+      "transport": "none",
+      "authority": "pinned Dregg adapter derivation/provisioning",
+      "callerOverride": false
+    },
+    "factoryId": {
+      "transport": "none",
+      "authority": "pinned local/staging/production trust profile",
+      "callerOverride": false
+    },
+    "programId": {
+      "transport": "none",
+      "authority": "pinned local/staging/production trust profile",
+      "callerOverride": false
+    },
+    "applicationNonce": {
+      "transport": "none",
+      "authority": "Control CSPRNG/durable uniqueness",
+      "callerOverride": false
+    },
+    "createdAt": {
+      "transport": "none",
+      "authority": "Control clock; Unix seconds for application v1",
+      "callerOverride": false
+    },
+    "issuedAt": {
+      "transport": "none",
+      "authority": "Control clock; Unix milliseconds",
+      "callerOverride": false
+    },
+    "expiresAt": {
+      "transport": "none",
+      "authority": "Control clock plus bounded TTL",
+      "callerOverride": false
+    },
+    "audience": {
+      "transport": "none",
+      "authority": "Control profile",
+      "callerOverride": false
+    },
+    "operation": {
+      "transport": "none",
+      "authority": "protocol literal",
+      "callerOverride": false
+    },
+    "signatureSuite": {
+      "transport": "none",
+      "authority": "protocol literal Ed25519/1",
+      "callerOverride": false
+    },
+    "applicationCommitment": {
+      "transport": "returned in challenge and resubmitted with application",
+      "authority": "ordinary BLAKE3-256 recomputed independently from exact application transcript by wallet, Control, and Dregg",
+      "callerOverride": false
+    },
+    "birthNonce": {
+      "transport": "none",
+      "authority": "Control durable outbox reservation; positive unique U64",
+      "callerOverride": false
+    },
+    "membershipCellId": {
+      "transport": "none",
+      "authority": "Dregg canonical CreateCellFromFactory semantics over authority key and Control-reserved birth token",
+      "callerOverride": false
+    },
+    "applicationId": {
+      "transport": "Control response then path/body reference",
+      "authority": "Control CSPRNG 16 bytes stored with exact application; reference never grants authority",
+      "callerOverride": false
+    },
+    "challengeId": {
+      "transport": "Control challenge response then application request reference",
+      "authority": "Control CSPRNG 16 bytes, capacity/TTL/state tracked",
+      "callerOverride": false
+    },
+    "challengeNonce": {
+      "transport": "inside signed enrollment challenge",
+      "authority": "Control CSPRNG 16 bytes",
+      "callerOverride": false
+    },
+    "sessionChallengeId": {
+      "transport": "Control response then exchange request reference",
+      "authority": "Control CSPRNG 16 bytes, independently capacity/TTL/state tracked",
+      "callerOverride": false
+    },
+    "sessionNonce": {
+      "transport": "inside signed session challenge",
+      "authority": "Control CSPRNG 16 bytes",
+      "callerOverride": false
+    },
+    "creationReceiptId": {
+      "transport": "Control binding after Dregg reconciliation",
+      "authority": "authenticated Dregg receipt for exact factory birth",
+      "callerOverride": false
+    },
+    "creationReceiptHead": {
+      "transport": "Control binding after Dregg reconciliation",
+      "authority": "authenticated Dregg per-cell receipt head at Pending birth",
+      "callerOverride": false
+    },
+    "activeReceiptHead": {
+      "transport": "session challenge and status projection",
+      "authority": "fresh authenticated Dregg receipt head for exact Active generation",
+      "callerOverride": false
+    },
+    "activeGeneration": {
+      "transport": "session challenge and status projection",
+      "authority": "monotonic generation read from authenticated exact membership cell",
+      "callerOverride": false
+    },
+    "requestedScope": {
+      "transport": "none in v1",
+      "authority": "Control protocol literal castalia-web; Web cannot broaden",
+      "callerOverride": false
+    },
+    "controlBindingKeyId": {
+      "transport": "signed binding JSON",
+      "authority": "Control release/profile and wallet pin",
+      "callerOverride": false
+    },
+    "controlBindingIssuedAt": {
+      "transport": "signed binding JSON",
+      "authority": "Control clock",
+      "callerOverride": false
+    },
+    "controlBindingExpiresAt": {
+      "transport": "signed binding JSON",
+      "authority": "Control clock plus profile maximum",
+      "callerOverride": false
+    },
+    "dreggNetworkId": {
+      "transport": "signed binding JSON",
+      "authority": "pinned trust profile",
+      "callerOverride": false
+    },
+    "dreggFederationId": {
+      "transport": "signed binding JSON",
+      "authority": "pinned trust profile plus authenticated Dregg evidence",
+      "callerOverride": false
+    },
+    "authorityPublicKey": {
+      "transport": "signed binding JSON",
+      "authority": "pinned Castalia/Dregg trust profile",
+      "callerOverride": false
+    },
+    "childProgramVk": {
+      "transport": "signed binding JSON",
+      "authority": "pinned authority-bound Dregg program profile and authenticated cell evidence",
+      "callerOverride": false
+    },
+    "operatorReasonCode": {
+      "transport": "operator-only activation body",
+      "authority": "authenticated operator chooses one closed enum value",
+      "callerOverride": false
+    },
+    "operatorChangedAt": {
+      "transport": "operator-only activation body",
+      "authority": "authenticated operator service clock validated for monotonicity",
+      "callerOverride": false
+    }
+  },
+  "stateMachine": {
+    "initial": "challenge_issued",
+    "terminal": [
+      "challenge_expired",
+      "revoked",
+      "membership_expired",
+      "rejected"
+    ],
+    "transitions": [
+      [
+        "challenge_issued",
+        "valid_presentation",
+        "submitted",
+        "member possession + Control"
+      ],
+      [
+        "challenge_issued",
+        "ttl_elapsed",
+        "challenge_expired",
+        "Control clock/GC"
+      ],
+      [
+        "submitted",
+        "pending_cell_receipt_confirmed",
+        "pending",
+        "Control+Dregg adapter"
+      ],
+      [
+        "submitted",
+        "policy_refused",
+        "rejected",
+        "Castalia admission policy"
+      ],
+      [
+        "pending",
+        "activate",
+        "active",
+        "Castalia operator"
+      ],
+      [
+        "active",
+        "suspend",
+        "suspended",
+        "Castalia operator"
+      ],
+      [
+        "suspended",
+        "resume",
+        "active",
+        "Castalia operator"
+      ],
+      [
+        "pending|active|suspended",
+        "revoke",
+        "revoked",
+        "Castalia operator"
+      ],
+      [
+        "pending|active|suspended",
+        "expire",
+        "membership_expired",
+        "Castalia operator/time policy"
+      ]
+    ]
+  },
+  "saga": {
+    "idempotencyKey": "ordinary BLAKE3-256 of UTF8 castalia/pending-cell/v1\u0000 followed by raw applicationCommitment",
+    "steps": [
+      "lock challenge; revalidate TTL, attempts, owner, application, presentation, and unused state",
+      "in one local transaction reserve outbox capacity, mark challenge consumed, insert immutable submitted application, and enqueue create_pending_cell",
+      "commit before Dregg; return 202 submitted",
+      "lease worker submits exact canonical CreateCellFromFactory intent",
+      "authoritative receipt reconciliation must match idempotency key, application commitment, membershipCellId, factory and authority before submitted to pending",
+      "timeout remains submitted/upstream_ambiguous and reconciles before retry",
+      "restart reclaims expired leases; concurrent workers admit one authoritative birth and one pending transition"
+    ],
+    "forbidden": "no claimed cross-store atomic transaction; no blind retry after ambiguous outcome"
+  },
+  "bounds": {
+    "jsonRequestBytes": {
+      "default": 65536,
+      "hardMax": 262144
+    },
+    "presentationBytes": {
+      "default": 16384,
+      "hardMax": 65536
+    },
+    "enrollmentChallengeTtlMs": {
+      "default": 60000,
+      "hardMax": 300000,
+      "futureSkewMs": 5000
+    },
+    "sessionChallengeTtlMs": {
+      "default": 30000,
+      "hardMax": 60000
+    },
+    "outstandingEnrollmentGlobal": {
+      "default": 10000,
+      "hardMax": 50000
+    },
+    "outstandingEnrollmentPerOrigin": {
+      "default": 128,
+      "hardMax": 1024
+    },
+    "outstandingEnrollmentPerOwner": {
+      "default": 8,
+      "hardMax": 32
+    },
+    "outstandingSessionGlobal": {
+      "default": 2000,
+      "hardMax": 10000
+    },
+    "outstandingSessionPerOrigin": {
+      "default": 64,
+      "hardMax": 256
+    },
+    "outstandingSessionPerOwnerApplication": {
+      "default": 2,
+      "hardMax": 8
+    },
+    "enrollmentFailedAttempts": 5,
+    "sessionFailedAttempts": 3,
+    "ratesPerMinute": {
+      "enrollmentIssuePerOrigin": 10,
+      "enrollmentIssuePerOwner": 3,
+      "verificationPerSource": 30,
+      "verificationPerOwner": 10,
+      "sessionIssuePerOrigin": 10,
+      "sessionIssuePerOwner": 5,
+      "sessionIssuePerApplication": 3,
+      "sessionExchangePerSource": 20,
+      "sessionExchangePerOrigin": 10,
+      "sessionExchangePerOwner": 5
+    },
+    "concurrency": {
+      "cryptoDefault": 32,
+      "cryptoHardMax": 128,
+      "sessionDefault": 16,
+      "sessionHardMax": 64,
+      "dreggDefault": 8,
+      "dreggHardMax": 32
+    },
+    "outboxBacklog": {
+      "default": 10000,
+      "hardMax": 50000,
+      "overload": "capacity_exhausted before challenge consumption"
+    },
+    "outboxRetry": {
+      "initialMs": 1000,
+      "maxMs": 60000,
+      "attempts": 12,
+      "after": "operator-visible hold"
+    },
+    "gc": {
+      "enrollmentCadenceMs": 10000,
+      "sessionCadenceMs": 10000,
+      "rule": "never delete locked, in-flight, consumed-reference, or leased rows; release capacity only after committed deletion"
+    },
+    "tests": "every bound at limit-1, limit, limit+1 plus deterministic expiry/lock, GC/in-flight, failed-attempt, one-winner, outbox reservation, lease recovery, and overload races"
+  },
+  "operatorAuthentication": {
+    "headerName": "Authorization",
+    "scheme": "Castalia-Operator-V1",
+    "wire": "Castalia-Operator-V1 <keyId>.<timestampMs>.<nonce>.<signature>",
+    "segments": {
+      "keyId": "ASCII [a-z0-9-], 1..64 bytes, must equal pinned operator key ID",
+      "timestampMs": "canonical unsigned decimal Unix epoch milliseconds with no leading zero unless value is zero",
+      "nonce": "unpadded base64url decoding to exactly 16 bytes",
+      "signature": "unpadded base64url decoding to exactly 64 Ed25519 signature bytes"
+    },
+    "signedTranscript": {
+      "domain": "castalia/control-operator-request/v1\u0000",
+      "orderedFields": [
+        {
+          "name": "keyId",
+          "type": "string"
+        },
+        {
+          "name": "timestampMs",
+          "type": "u64le/unixMs"
+        },
+        {
+          "name": "nonce",
+          "type": "bytes/base64url16"
+        },
+        {
+          "name": "httpMethod",
+          "type": "string",
+          "constraints": "uppercase literal POST"
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "constraints": "exact normalized route path with application ID substituted; no query or fragment"
+        },
+        {
+          "name": "bodyHash",
+          "type": "bytes/hex32",
+          "constraints": "ordinary BLAKE3-256 of RFC 8785 JCS request body"
+        }
+      ]
+    },
+    "validation": {
+      "clockSkewMs": 30000,
+      "nonceTtlMs": 60000,
+      "singleUse": true,
+      "keyLookup": "pinned local/staging/production operator public key by keyId",
+      "failClosed": [
+        "missing or malformed header",
+        "unknown key ID",
+        "timestamp outside skew",
+        "replayed nonce",
+        "wrong method/path/body hash",
+        "invalid signature"
+      ],
+      "replayKey": "tuple (operator keyId, raw 16-byte nonce)",
+      "replayStore": "shared durable strongly consistent store used by every Control replica",
+      "atomicRule": "after signature/timestamp/body validation and before any outbox or lifecycle mutation, atomically insert replayKey with accepted timestamp and expiry; unique conflict returns replay without invoking handler",
+      "retention": "retain until max(request timestamp + clockSkewMs + nonceTtlMs, insertion time + nonceTtlMs)",
+      "concurrency": "concurrent duplicates across threads/replicas have exactly one insert winner; all losers fail closed",
+      "crashSemantics": "a committed nonce reservation remains consumed even if the operation crashes; retry requires a newly signed nonce and relies on application operation idempotency",
+      "test": "deterministic barriers prove one winner, zero loser handler calls, durable restart rejection, and shared-replica conflict"
+    }
+  },
+  "originCanonicalization": {
+    "input": "the serialized browser Origin header as ASCII/UTF-8; exactly one origin, no list",
+    "algorithm": [
+      "reject absent, empty, null, opaque origins, C0 controls, whitespace, userinfo, query, fragment, or any path other than empty or /",
+      "parse as an absolute URL using WHATWG URL semantics",
+      "scheme must be lowercase http or https after parsing; other schemes reject",
+      "host is the WHATWG ASCII host: DNS labels lowercased and IDNA ToASCII; reject invalid IDNA, empty host, and any DNS host with a trailing dot",
+      "IPv4 uses canonical dotted-decimal WHATWG serialization; IPv6 uses lowercase compressed WHATWG bracketed serialization",
+      "remove port 80 for http and 443 for https; retain every other canonical decimal port; reject invalid/out-of-range ports",
+      "output ASCII scheme://host[:port] with no trailing slash"
+    ],
+    "securityRule": "compare and sign only the canonical output; allowlist entries are canonicalized at startup and duplicate aliases reject configuration",
+    "vectorsFile": "castalia-origin-v1.vector.json"
+  }
+}

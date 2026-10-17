@@ -1,0 +1,37 @@
+name: Public source checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: '1.96.0'
+          targets: wasm32-unknown-unknown
+      - name: Install checksum-pinned wasm-pack 0.14.0
+        shell: bash
+        run: |
+          curl --fail --location --silent --show-error https://github.com/wasm-bindgen/wasm-pack/releases/download/v0.14.0/wasm-pack-v0.14.0-x86_64-unknown-linux-musl.tar.gz --output "$RUNNER_TEMP/wasm-pack.tar.gz"
+          echo '278a8d668085821f4d1a637bd864f1713f872b0ae3a118c77562a308c0abfe8d  '"$RUNNER_TEMP/wasm-pack.tar.gz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/wasm-pack"
+          tar -xzf "$RUNNER_TEMP/wasm-pack.tar.gz" -C "$RUNNER_TEMP/wasm-pack" --strip-components=1
+          install -m 0755 "$RUNNER_TEMP/wasm-pack/wasm-pack" "$CARGO_HOME/bin/wasm-pack"
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: npm run typecheck
+      - run: python3 crates/castalia-wallet-service-holder/tools/verify_sources.py
+      - run: python3 crates/castalia-wallet-service-holder/tools/fixture_goldens.py
+      - run: python3 crates/castalia-wallet-service-holder/tools/test_verify_sources.py
+      - run: python3 crates/castalia-wallet-service-holder/tools/test_verify_package_ids.py

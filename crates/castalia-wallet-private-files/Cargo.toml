@@ -1,0 +1,14 @@
+[package]
+name = "castalia-wallet-private-files"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+libc = "0.2"
+getrandom = "0.2"
+hex = "0.4"
+zeroize = "1"
+
+[dev-dependencies]
+tempfile = "3"

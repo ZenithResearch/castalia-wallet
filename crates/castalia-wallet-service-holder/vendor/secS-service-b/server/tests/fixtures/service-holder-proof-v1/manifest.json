@@ -1,0 +1,83 @@
+{
+  "schema": "secs.service-holder-proof-fixtures.v1",
+  "fixture_only": true,
+  "production_qualified": false,
+  "private_material_exported": false,
+  "files": [
+    {
+      "path": "bundle-vectors.json",
+      "bytes": 2419,
+      "sha256": "1e4d4bb4e5f751cfaf5ebdc056e00cf65cbd1a2097c4e3cc4f53b535acb762f1"
+    },
+    {
+      "path": "challenge.bin",
+      "bytes": 2067,
+      "sha256": "80812bc5bcc343648384e419ae806b3dd49551fa14de9b3c62f864c402ce910f"
+    },
+    {
+      "path": "holder-public.bin",
+      "bytes": 32,
+      "sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092"
+    },
+    {
+      "path": "holder-transcript.bin",
+      "bytes": 2164,
+      "sha256": "63206b927d781a9d25b24913a9f14840df24402d38291d735137b282d1674685"
+    },
+    {
+      "path": "issuer-public.bin",
+      "bytes": 32,
+      "sha256": "f31f5d967197f8859f3fb184cee0857fd4c36bf520b4389b1cbc6b4e1b14ab04"
+    },
+    {
+      "path": "issuer-transcript.bin",
+      "bytes": 1981,
+      "sha256": "32d92942b18dc3d7c658b7ec0ddaed1187e37ee94de7948fad85a6986ab09cb2"
+    },
+    {
+      "path": "packet.bin",
+      "bytes": 2254,
+      "sha256": "7415cac876e5e5f0b220d31e44d46c559623a2673f4617e38733574db2104d2a"
+    },
+    {
+      "path": "proof.bin",
+      "bytes": 1803,
+      "sha256": "fa1bfa48bd195008c602ca3cf2de7a02d9ea32d63e0fa014726c6a58cc06db71"
+    },
+    {
+      "path": "service/challenge.bin",
+      "bytes": 1948,
+      "sha256": "c4cb2fb99094797602f7ecaea2cc3cd27e989d9a9da5a1a5038190c976b59b99"
+    },
+    {
+      "path": "service/holder-public.bin",
+      "bytes": 32,
+      "sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092"
+    },
+    {
+      "path": "service/holder-transcript.bin",
+      "bytes": 2045,
+      "sha256": "bf98f55925f9270cdad6b69a4117a54b76a9f79bb84bc9460db16f4e5d06ddf2"
+    },
+    {
+      "path": "service/issuer-public.bin",
+      "bytes": 32,
+      "sha256": "f31f5d967197f8859f3fb184cee0857fd4c36bf520b4389b1cbc6b4e1b14ab04"
+    },
+    {
+      "path": "service/issuer-transcript.bin",
+      "bytes": 1862,
+      "sha256": "3094c3fdb2e93391de8df9496cab7307bc41b3133216647347354d05fb46157c"
+    },
+    {
+      "path": "service/packet.bin",
+      "bytes": 2135,
+      "sha256": "792b78a8b0dd4c99111524220f0dfe7ed2c552af8dc78634948319c0b9d2c0db"
+    },
+    {
+      "path": "service/proof.bin",
+      "bytes": 1813,
+      "sha256": "6fbaf1e0ae62014ac2d04f1ada632c95eccb2bc34930075b61ae0494f9737b76"
+    }
+  ]
+}

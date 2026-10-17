@@ -1,0 +1,438 @@
+{
+  "schema": "castalia.filesystem.package.v1",
+  "source": {
+    "repository": "https://github.com/ZenithResearch/castalia-filesystem",
+    "revision": "446ff13ec1073507844797705fe2de7b8187a61a",
+    "dirty": false,
+    "mode": "candidate"
+  },
+  "tools": {
+    "rustToolchain": "nightly-2026-06-21",
+    "rustHost": "aarch64-apple-darwin",
+    "walrus": "0.26.4",
+    "rustc": "rustc 1.98.0-nightly (8b6558a02 2026-06-20)",
+    "cargo": "cargo 1.98.0-nightly (a595d0da2 2026-06-20)",
+    "node": "24.18.0",
+    "wasmPack": "wasm-pack 0.14.0",
+    "wasmBindgen": "wasm-bindgen 0.2.127"
+  },
+  "locks": {
+    "Cargo.lock": "8142b882a33358c29ace3f88926ae2ec47cb6a9d8e67520c97ada7c9de215bec",
+    "castalia-filesystem-wasm/Cargo.lock": "601f89718915629691306bb1086a15459569d1bff79fd61a17bcf86885bbf1cf",
+    "package-lock.json": "ec4733480501469adff9c6498799dc4ed3bcb5580a9a052b0cc6c185c8d62e2c",
+    "provenance/wasm-bindgen-cli-0.2.127.Cargo.lock": "420a0f944d2521032fbdc6a46d1519b7943ffe8254d019dc37ab8865428fceb9"
+  },
+  "normalization": "canonical-build-paths-and-remove-only-wasm-name-section",
+  "files": [
+    {
+      "path": "LICENSE",
+      "size": 34523,
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+    },
+    {
+      "path": "README.md",
+      "size": 3233,
+      "sha256": "c45d9cb0b8915908d1c24db0d215388195874935b372b961e56e7a3768324a95"
+    },
+    {
+      "path": "SNAPSHOT-V1.md",
+      "size": 1307,
+      "sha256": "7f79beb7ca62a14f5d679ed24402c5316e91a30679ba8caf0e946f82b560a626"
+    },
+    {
+      "path": "docs/AGPL-DISTRIBUTION.md",
+      "size": 2617,
+      "sha256": "ec5b7947a61aeff22d714302191fcb3d917056aa7d913fc43e1027036c436adc"
+    },
+    {
+      "path": "docs/BROWSER-ADAPTER.md",
+      "size": 6755,
+      "sha256": "d62c0443e6f7b6469e8f934a534e3252bc9b4c4bd0d7573ccc42c6ce84b32157"
+    },
+    {
+      "path": "docs/BROWSER-REGISTRATION-V1.md",
+      "size": 9994,
+      "sha256": "4da5c40f053d3666eed2481e6854d00807485a0c03856ddf8fc4cf3562b0f7f2"
+    },
+    {
+      "path": "docs/CANDIDATE-BUILDS.md",
+      "size": 3878,
+      "sha256": "11193a211d7db8d5dab1adefb19b9c11b89498c3c0cc79a539398685dabc98da"
+    },
+    {
+      "path": "docs/FILES-KEYS-V1.md",
+      "size": 3317,
+      "sha256": "3be9de38cc9920c33dafa935270c38bf0f946c983266797c21dacbb39b987022"
+    },
+    {
+      "path": "docs/IDENTITY-MAPPING.md",
+      "size": 6561,
+      "sha256": "5079ac8ecf67463c917a70875828beffc35689b98b952d40751feb374587dcfc"
+    },
+    {
+      "path": "docs/PRIVATE-SHIPPING.md",
+      "size": 7441,
+      "sha256": "d4227dd58647ff3f34620c1d3bbe0b1d3bdb08eeed2bec4819daf1a01ba466b8"
+    },
+    {
+      "path": "docs/SNAPSHOT-V1.md",
+      "size": 1307,
+      "sha256": "7f79beb7ca62a14f5d679ed24402c5316e91a30679ba8caf0e946f82b560a626"
+    },
+    {
+      "path": "docs/SOURCE-PROVENANCE.md",
+      "size": 3244,
+      "sha256": "8d4ec4966796554b2333d623becd740e053191351089ca777d75099d09191bca"
+    },
+    {
+      "path": "docs/THIRD-PARTY-NOTICES.md",
+      "size": 3886,
+      "sha256": "bf6bfe64e343aeb6713336cb3ed865c6b6d99a741ad9351ec46c5bf8fb4c0f78"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "size": 1842,
+      "sha256": "8e1678cb5f633351ed535d88591c17ef1bba33737b704900bda500afd6344b5f"
+    },
+    {
+      "path": "docs/history/BROWSER-BRIDGE.md",
+      "size": 2133,
+      "sha256": "a58d6254e6c02c01172d55ea8d9e50a9f754df7243932b0f833189c767947907"
+    },
+    {
+      "path": "docs/history/FILESYSTEM-SNAPSHOT-V1.md",
+      "size": 7656,
+      "sha256": "d26b4e1c00398a0727c04eddbae9e2b2c372e8e21f4c5b40eca15a22ca82475d"
+    },
+    {
+      "path": "docs/provider-neutrality.md",
+      "size": 1828,
+      "sha256": "30d959b1f2144c4d359250835ea9a13da98f2c9e568271f1512a1f867ff26c62"
+    },
+    {
+      "path": "licenses/cargo-runtime-notices.txt",
+      "size": 301391,
+      "sha256": "125ed25db5ad5684e6297541127145878d9fb7701825f407f0077e12e3749f89"
+    },
+    {
+      "path": "licenses/rust-standard-library.html",
+      "size": 1435128,
+      "sha256": "7807d12c0c8a196ae3b47ada81ddc92ab2a835d8eb68788c440e656a21de3201"
+    },
+    {
+      "path": "licenses/zip-js-BSD-3-Clause.txt",
+      "size": 1501,
+      "sha256": "1b7ebc8d7889ed25491484ab2b102370742ca6c0b26650a0c62cc2269b579b84"
+    },
+    {
+      "path": "node/.gitignore",
+      "size": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "node/LICENSE",
+      "size": 34523,
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+    },
+    {
+      "path": "node/README.md",
+      "size": 993,
+      "sha256": "901de5b0a6624415abebc4ceeadd087a089e208ca3ae3c5d2156c2108438cb11"
+    },
+    {
+      "path": "node/castalia_filesystem_wasm.d.ts",
+      "size": 2804,
+      "sha256": "5f31915e5b95dd82acf189f9cd26d98d91b853246b8b855dbfac06aa45ad8c1c"
+    },
+    {
+      "path": "node/castalia_filesystem_wasm.js",
+      "size": 24713,
+      "sha256": "47d1cc8252f7a2beb693ca14af7229aec91373ef1e302bfaa8e2faad3cd9b9a8"
+    },
+    {
+      "path": "node/castalia_filesystem_wasm_bg.wasm",
+      "size": 337031,
+      "sha256": "28b6d64c5e38c97986216485d6eabaa9a6101a53695b0815ed4960a8cc3af230"
+    },
+    {
+      "path": "node/castalia_filesystem_wasm_bg.wasm.d.ts",
+      "size": 3413,
+      "sha256": "12d4d7c9b7072d061da8538bdfab58dade4894e7739efa1b6c88fc3938895ae6"
+    },
+    {
+      "path": "node/package.json",
+      "size": 597,
+      "sha256": "b3a6eede0680171e769d065152a1f7e85d8452823a6fbe45f61f9e5b70d84486"
+    },
+    {
+      "path": "package-lock.json",
+      "size": 40806,
+      "sha256": "ec4733480501469adff9c6498799dc4ed3bcb5580a9a052b0cc6c185c8d62e2c"
+    },
+    {
+      "path": "package.json",
+      "size": 2090,
+      "sha256": "c570ed962dfe8e15e07dd071e23215d56e8b73eff478b9deef41826f21190421"
+    },
+    {
+      "path": "packages/browser/src/address.mjs",
+      "size": 1540,
+      "sha256": "fe26f8219d871e8f60bf05f37d1daf7208b4ed0adab163f4e32d15659247da69"
+    },
+    {
+      "path": "packages/browser/src/bounded-zip-output.mjs",
+      "size": 881,
+      "sha256": "2784572c64a0e570456c40728e3bc7bbf8388d2cc8d2a372bf17ee9d8cd63771"
+    },
+    {
+      "path": "packages/browser/src/catalog-format.mjs",
+      "size": 1867,
+      "sha256": "fc27cf00bb0e1b82405b06af4750004a606aed9d36764bb6a4ae4a5ec7ac9123"
+    },
+    {
+      "path": "packages/browser/src/catalog.mjs",
+      "size": 5723,
+      "sha256": "2262be54c6afba0a8d16ea4200fbe30ffea8aa753ab85908c32df3e58b379ad4"
+    },
+    {
+      "path": "packages/browser/src/database.d.mts",
+      "size": 698,
+      "sha256": "4358c1a23770c95035f3a16863d4a62ba3b567d7642b4762bbddf36359b0b7f3"
+    },
+    {
+      "path": "packages/browser/src/database.mjs",
+      "size": 2384,
+      "sha256": "9bd01c951857c648bb484cb903d105627b440f1aef05526a7503c76e6d99ca08"
+    },
+    {
+      "path": "packages/browser/src/files-key-contract.d.mts",
+      "size": 3621,
+      "sha256": "8fda5f7835c85922cd7833765a94e33ecc6e1079c26b3cd8b29ec04a489aa98c"
+    },
+    {
+      "path": "packages/browser/src/files-key-contract.mjs",
+      "size": 8524,
+      "sha256": "1a8a691ee68c42dcb60fccb663931bb5b8532bba6dfdf6171d376e3256b94172"
+    },
+    {
+      "path": "packages/browser/src/filesystem-client.mjs",
+      "size": 4822,
+      "sha256": "4b1cda2e0bb3e182f6aea2fefee0f537e4962389b16504632e13b38cfb6c8369"
+    },
+    {
+      "path": "packages/browser/src/import-zip.mjs",
+      "size": 7323,
+      "sha256": "772409e91b9f7dbdb2265654ab0fd1f8d486183d10384b9e8fc2064fbc25c656"
+    },
+    {
+      "path": "packages/browser/src/index.d.mts",
+      "size": 6517,
+      "sha256": "9964bb09047110bb5075da2cdd8d1c898c3d7713825f5d1248da60103cebb05e"
+    },
+    {
+      "path": "packages/browser/src/index.mjs",
+      "size": 279,
+      "sha256": "8b7cc5aeaaef5730bcc2f62367319de12db37adb342cc88420f924db484fb073"
+    },
+    {
+      "path": "packages/browser/src/legacy-copy.mjs",
+      "size": 889,
+      "sha256": "f71764aa729e9156336f4a907c0b7b4d065c30016d2175126a906bcbb2931b61"
+    },
+    {
+      "path": "packages/browser/src/operation-object-cache.mjs",
+      "size": 1234,
+      "sha256": "d49d2a4d76ecab1837ca406cfc868aa4ea4d5af115a57c8f317f52e6bcab7e95"
+    },
+    {
+      "path": "packages/browser/src/opfs-object-reader.mjs",
+      "size": 2200,
+      "sha256": "aa4d764c9d0dae2bbe325b6c9ec29229c1e26e8f366a365a6945d4a696dcafb7"
+    },
+    {
+      "path": "packages/browser/src/opfs-object-writer.mjs",
+      "size": 2946,
+      "sha256": "70861be590e6da196cbb6710337c826774cb09bc58e7bd301392f4d86e315931"
+    },
+    {
+      "path": "packages/browser/src/reclaim.mjs",
+      "size": 4288,
+      "sha256": "3ec370df92e70bd0061049b0a9c12ef02e2e3c3018bcd88b0bda7cf68772dd08"
+    },
+    {
+      "path": "packages/browser/src/registration-crypto.mjs",
+      "size": 1475,
+      "sha256": "a1cf89ed75ca0554670ba57fa1eda7e1500d57641ced6b7e106c10876d31bd34"
+    },
+    {
+      "path": "packages/browser/src/registration-membership.mjs",
+      "size": 3917,
+      "sha256": "bb5fde5b8fba84d66494e8a86798fefd9304185072046e142f8c1123acc36b7c"
+    },
+    {
+      "path": "packages/browser/src/registration-store.d.mts",
+      "size": 3003,
+      "sha256": "28b9e8b5968f934c40ed631ce4b4b5f86e39a130b4063759f8d87b2beaaf85bf"
+    },
+    {
+      "path": "packages/browser/src/registration-store.mjs",
+      "size": 21837,
+      "sha256": "bce1cf441f5d59d3a3a7f4113444c149056f3186cbd2b41e24c30f6a6803708e"
+    },
+    {
+      "path": "packages/browser/src/registration.d.mts",
+      "size": 4753,
+      "sha256": "e69c0aaf3a7cbe2679c891a2c86f19b192b4f61739201a8919a80b6a77644bf7"
+    },
+    {
+      "path": "packages/browser/src/registration.mjs",
+      "size": 11666,
+      "sha256": "e0f7e00e5e5b2715f01d17218ca5a5290721efd6cf6278fc1ec9291186a5eee8"
+    },
+    {
+      "path": "packages/browser/src/runtime.mjs",
+      "size": 15635,
+      "sha256": "25661391aae59b5d13285ef1c0261c44f5a3d9757caff2b4227e29c9beaa53d3"
+    },
+    {
+      "path": "packages/browser/src/shipping-archive.mjs",
+      "size": 8161,
+      "sha256": "8893511158db52756a879765b89e4006a18dbe1a3b96721e76db2674be0191a9"
+    },
+    {
+      "path": "packages/browser/src/shipping-contract.mjs",
+      "size": 8619,
+      "sha256": "dcd6944b0f515d8e3e1c1f1b743287cf15ac78d33d1b6a11ba280c05ff32125c"
+    },
+    {
+      "path": "packages/browser/src/shipping-receipts.d.mts",
+      "size": 2235,
+      "sha256": "f40537f1e7097ba4d7855a42729195ca5a027ff9d038727f5885d25991f38951"
+    },
+    {
+      "path": "packages/browser/src/shipping-receipts.mjs",
+      "size": 5779,
+      "sha256": "2bd9fc2e3012890696f18b857327b2d66d2ce8db9faaee0027ab5a3442978215"
+    },
+    {
+      "path": "packages/browser/src/shipping-store.mjs",
+      "size": 9218,
+      "sha256": "ae74f8e0d521b4141156908e837e04ec2347edc9dda1911e8ace16eb7b8e5be2"
+    },
+    {
+      "path": "packages/browser/src/shipping-worker.d.mts",
+      "size": 330,
+      "sha256": "29d465816ac381274788de8cf92441d39a299804c4f744bc83154a107ab3e342"
+    },
+    {
+      "path": "packages/browser/src/shipping-worker.mjs",
+      "size": 4275,
+      "sha256": "51dc2ea1563ffdeeb7994ba8a9d31ba6b1356cc884a771d40560897cd90f2ba0"
+    },
+    {
+      "path": "packages/browser/src/shipping.d.mts",
+      "size": 4203,
+      "sha256": "d78240a6306913d9d315fb976f22f002631805db85b21c206de02a316170ec67"
+    },
+    {
+      "path": "packages/browser/src/shipping.mjs",
+      "size": 37368,
+      "sha256": "24d4db921f8917c8f9bf5f1074cf191d5900a027e0564f612d30b56f19d2f674"
+    },
+    {
+      "path": "packages/browser/src/worker.d.mts",
+      "size": 406,
+      "sha256": "151aefd060bd554adb203bed5cb609d1abdce7f25118c01d1f0f123dae8c3a16"
+    },
+    {
+      "path": "packages/browser/src/worker.mjs",
+      "size": 3059,
+      "sha256": "e00a3571811253d97d032af197ebb6b0d405684e3d524cc53ae361b31eec1cc5"
+    },
+    {
+      "path": "packages/browser/src/workspace-storage.mjs",
+      "size": 3210,
+      "sha256": "061b20905dc2adba26c7c9c50534e6309ce1d8034349530d040d465939342f0a"
+    },
+    {
+      "path": "provenance/browser-extraction.json",
+      "size": 2845,
+      "sha256": "9fd23a498fa15a97584337aa9b7debe1560148827667a1aa8f15c1249d2869b1"
+    },
+    {
+      "path": "provenance/browser-retained-tests.json",
+      "size": 1885,
+      "sha256": "703eade3328a6be9b3c0aedbaa0f08baf68ba94328687cf483258d79b9feb95a"
+    },
+    {
+      "path": "provenance/browser-supplemental-origins.json",
+      "size": 29970,
+      "sha256": "a21907c1799bb8e74efca68bc713879a427b2e21d3dff81f690ac0e08691f6ec"
+    },
+    {
+      "path": "provenance/build-tools.json",
+      "size": 726,
+      "sha256": "88e9ce35ce2a5aaac749a460ff5001c26ac61c5f5816b3b2505f53c3a23f7cb1"
+    },
+    {
+      "path": "provenance/extraction.json",
+      "size": 6535,
+      "sha256": "eeab74fb79a3a85945b18012d87d4c42141f07bf08cd75cecf90521fa53015e9"
+    },
+    {
+      "path": "provenance/notices.json",
+      "size": 25118,
+      "sha256": "1202ab5c99dce7ee9d2ca67886bb0f42123c0f93da94f9b0cd761a553500849c"
+    },
+    {
+      "path": "provenance/private-shipping.json",
+      "size": 3892,
+      "sha256": "6e9305a4f64501e3bd1d413fac0f196e3bd4e9dde066c94d8959bea3eadd3ce7"
+    },
+    {
+      "path": "provenance/wasm-bindgen-cli-0.2.127.Cargo.lock",
+      "size": 59375,
+      "sha256": "420a0f944d2521032fbdc6a46d1519b7943ffe8254d019dc37ab8865428fceb9"
+    },
+    {
+      "path": "web/.gitignore",
+      "size": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1"
+    },
+    {
+      "path": "web/LICENSE",
+      "size": 34523,
+      "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+    },
+    {
+      "path": "web/README.md",
+      "size": 993,
+      "sha256": "901de5b0a6624415abebc4ceeadd087a089e208ca3ae3c5d2156c2108438cb11"
+    },
+    {
+      "path": "web/castalia_filesystem_wasm.d.ts",
+      "size": 7160,
+      "sha256": "ab00661f57baeff14e8f281e4e193b8f2dc2311b140f7b26717ba117d9ac03db"
+    },
+    {
+      "path": "web/castalia_filesystem_wasm.js",
+      "size": 27806,
+      "sha256": "1ac1c790b1462c36ee057d38e2126dd4c3c945c11c39e9cebba838ac2800b875"
+    },
+    {
+      "path": "web/castalia_filesystem_wasm_bg.wasm",
+      "size": 337031,
+      "sha256": "28b6d64c5e38c97986216485d6eabaa9a6101a53695b0815ed4960a8cc3af230"
+    },
+    {
+      "path": "web/castalia_filesystem_wasm_bg.wasm.d.ts",
+      "size": 3413,
+      "sha256": "12d4d7c9b7072d061da8538bdfab58dade4894e7739efa1b6c88fc3938895ae6"
+    },
+    {
+      "path": "web/package.json",
+      "size": 660,
+      "sha256": "c0a8acaec0f377ce5f227783e0942b789a2c524e07f2677c6f1c665e775e17f5"
+    }
+  ]
+}

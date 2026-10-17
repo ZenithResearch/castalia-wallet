@@ -1,0 +1,3674 @@
+{
+  "schema": "zenith.wallet-public-disclosure-evidence.v1",
+  "findings": 522,
+  "unclassified": 0,
+  "categories": {
+    "Fixed local-storage property name, not stored custody data": 1,
+    "Repeated synthetic public-key display input": 1,
+    "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c": 68,
+    "Explicit public synthetic vector, fixed 0x07 seed and 0x09 data key, repeated-byte binding IDs": 1,
+    "Derived public token IDs from documented repeated-byte public input vector": 2,
+    "RFC 8032 vector #1 test key; documented passphrase, sequential salt/nonce; full WASM custody vector tests passed": 3,
+    "Public actor key and signature presentation; does not contain a private seed": 1,
+    "Explicit public SHA-256 digest field, 32 digest bytes; no key material": 442,
+    "Public authentication protocol scheme name in assertion": 2,
+    "Public token identifier in deterministic compatibility fixture": 1
+  },
+  "details": [
+    {
+      "path": "apps/chrome-extension/src/state/custody-state.ts",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "86d9fa9a6715bdea6ecd645cfbd72dd03b7067fb5bcdf6cccedfa0c91de342b2",
+      "evidence": "Fixed local-storage property name, not stored custody data"
+    },
+    {
+      "path": "apps/chrome-extension/test/member-key-display.test.ts",
+      "line": 8,
+      "rule": "generic-api-key",
+      "file_sha256": "cc83536383eb7477afd0a5ed9ffbfb4f8162dce700df54f1c0ccdae097418ee9",
+      "evidence": "Repeated synthetic public-key display input"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/README.md",
+      "line": 192,
+      "rule": "generic-api-key",
+      "file_sha256": "dc089e3b3c038346d14e2abdb4164046bcb7defa42fe5002e2547cd5d87c4e39",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/devgraph_issue_create_v1/wallet-presentation.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "35333326f0aa8af0b227beda4298c2a537fb2f29176016f3b2bed5b262e0ab9c",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/devgraph_issue_create_v1/unsigned-projection.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "409c5d3f9282b864f7e5877a45a6270dd3d3fb19e43d565bc32ec3b154b3f910",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/devgraph_issue_create_v1/signed-projection.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "88c21b1e7b9f4f73125ff014e1f38ea2f34656e05caf9647326e5cc20b83d921",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "docs/contracts/files-key-wrap-v1.vector.json",
+      "line": 11,
+      "rule": "generic-api-key",
+      "file_sha256": "1ae9d1d5bc148667475374cd472373d3df2477a189b9811f6a2376dfb0846a4a",
+      "evidence": "Explicit public synthetic vector, fixed 0x07 seed and 0x09 data key, repeated-byte binding IDs"
+    },
+    {
+      "path": "docs/contracts/castalia-membership-cell-derivation-v1.vector.json",
+      "line": 13,
+      "rule": "generic-api-key",
+      "file_sha256": "d90e232ba20bd11f89b87d29ed6f839fb2d45a72c25a780c0dd9feb41ff33d40",
+      "evidence": "Derived public token IDs from documented repeated-byte public input vector"
+    },
+    {
+      "path": "docs/contracts/castalia-membership-cell-derivation-v1.vector.json",
+      "line": 15,
+      "rule": "generic-api-key",
+      "file_sha256": "d90e232ba20bd11f89b87d29ed6f839fb2d45a72c25a780c0dd9feb41ff33d40",
+      "evidence": "Derived public token IDs from documented repeated-byte public input vector"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 29,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 68,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 109,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 148,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 189,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 228,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 269,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 308,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 349,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 388,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 429,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 467,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 508,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 545,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 586,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 621,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 672,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 711,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 773,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 813,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 876,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 924,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 977,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1019,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1071,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1113,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1165,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1207,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1259,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1301,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "docs/contracts/castalia-wallet-custody-v1.vector.json",
+      "line": 12,
+      "rule": "generic-api-key",
+      "file_sha256": "c2e90523e2789bfd9d56d085d7c8bc4eeed7c35da04c43e0678bc5ece8898cc2",
+      "evidence": "RFC 8032 vector #1 test key; documented passphrase, sequential salt/nonce; full WASM custody vector tests passed"
+    },
+    {
+      "path": "docs/contracts/castalia-wallet-custody-v1.vector.json",
+      "line": 13,
+      "rule": "generic-api-key",
+      "file_sha256": "c2e90523e2789bfd9d56d085d7c8bc4eeed7c35da04c43e0678bc5ece8898cc2",
+      "evidence": "RFC 8032 vector #1 test key; documented passphrase, sequential salt/nonce; full WASM custody vector tests passed"
+    },
+    {
+      "path": "docs/contracts/castalia-wallet-custody-v1.vector.json",
+      "line": 15,
+      "rule": "generic-api-key",
+      "file_sha256": "c2e90523e2789bfd9d56d085d7c8bc4eeed7c35da04c43e0678bc5ece8898cc2",
+      "evidence": "RFC 8032 vector #1 test key; documented passphrase, sequential salt/nonce; full WASM custody vector tests passed"
+    },
+    {
+      "path": "docs/vectors/devgraph-issue-create-v1/wallet-presentation.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "35333326f0aa8af0b227beda4298c2a537fb2f29176016f3b2bed5b262e0ab9c",
+      "evidence": "Public actor key and signature presentation; does not contain a private seed"
+    },
+    {
+      "path": "docs/vectors/credential-presentation-v2.json",
+      "line": 12,
+      "rule": "generic-api-key",
+      "file_sha256": "e7ae13c12963dd18fcfe15193167d93fd87a92c8dac51a9469174f25c1645a0a",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 9,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 30,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 51,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 72,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 93,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 114,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 135,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 156,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 177,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 199,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 222,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 245,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 267,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 289,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "docs/vectors/retired-application-signing/castalia-wallet-devgraph-presentation/tests/fixtures/presentations.json",
+      "line": 311,
+      "rule": "generic-api-key",
+      "file_sha256": "64a318f54d229a2166a0dbbb4e0a191563ba72e9ebbd8ba8b132f3382cd1d47c",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 34,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 84,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 89,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 153,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 203,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 208,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 272,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 322,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 327,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 391,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 441,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 446,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 510,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 560,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 565,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 629,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 679,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 684,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 744,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 794,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 799,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 858,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 908,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 913,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 980,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1030,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1035,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1116,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1166,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1171,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1253,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1303,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1308,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1388,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1438,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1443,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1517,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1567,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1572,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1646,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1696,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1701,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1775,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1825,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1830,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1894,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1944,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1949,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2010,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2060,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2065,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2124,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2174,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2179,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2246,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2296,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2301,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2376,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 34,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 84,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 89,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 150,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 200,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 205,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 266,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 316,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 321,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 381,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 431,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 436,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 516,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 567,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 572,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 685,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 735,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 740,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 834,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 884,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 889,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 983,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1033,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1038,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1132,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1182,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1187,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1281,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1331,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1336,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1430,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1481,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1486,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1611,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1661,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1666,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1760,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1810,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1815,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1899,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1949,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1954,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2048,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2098,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2103,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2178,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2228,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2233,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2308,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "scripts/verify-d0-contract.test.mjs",
+      "line": 70,
+      "rule": "generic-api-key",
+      "file_sha256": "7cbcb01b22facf2bd7ad134f96877b1f1b9ce5e1ec1266019aed8abe7f1c14a0",
+      "evidence": "Public authentication protocol scheme name in assertion"
+    },
+    {
+      "path": "scripts/verify-d0-contract.test.mjs",
+      "line": 72,
+      "rule": "generic-api-key",
+      "file_sha256": "7cbcb01b22facf2bd7ad134f96877b1f1b9ce5e1ec1266019aed8abe7f1c14a0",
+      "evidence": "Public authentication protocol scheme name in assertion"
+    },
+    {
+      "path": "docs/vectors/castalia-permissionless-membership-v2.vector.json",
+      "line": 7,
+      "rule": "generic-api-key",
+      "file_sha256": "81b66d9c1f66cae9e057079f8f46206c94c31c01f170c289a37aa705100f7ebf",
+      "evidence": "Public token identifier in deterministic compatibility fixture"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2426,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2431,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2516,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2566,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2571,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2651,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2701,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2706,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2791,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2841,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2846,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2358,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2363,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2438,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2488,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2493,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2568,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2618,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2623,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2698,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2748,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2753,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2838,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/README.md",
+      "line": 192,
+      "rule": "generic-api-key",
+      "file_sha256": "dc089e3b3c038346d14e2abdb4164046bcb7defa42fe5002e2547cd5d87c4e39",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2888,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2893,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2987,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3037,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3042,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3136,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3186,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3191,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3265,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3315,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3320,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3384,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/devgraph_issue_create_v1/unsigned-projection.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "409c5d3f9282b864f7e5877a45a6270dd3d3fb19e43d565bc32ec3b154b3f910",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/devgraph_issue_create_v1/signed-projection.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "88c21b1e7b9f4f73125ff014e1f38ea2f34656e05caf9647326e5cc20b83d921",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/devgraph_issue_create_v1/wallet-presentation.json",
+      "line": 1,
+      "rule": "generic-api-key",
+      "file_sha256": "35333326f0aa8af0b227beda4298c2a537fb2f29176016f3b2bed5b262e0ab9c",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3434,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3439,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3496,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3546,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3551,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3608,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3658,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3663,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3727,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3777,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3782,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3839,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3889,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3894,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3951,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4001,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4006,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4070,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4120,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4125,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4182,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4232,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4237,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4294,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4344,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4349,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4413,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4463,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4468,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 29,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 68,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 109,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 148,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 189,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 228,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 269,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 308,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 349,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 388,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 429,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 467,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 508,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 545,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 586,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 621,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 672,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 711,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 773,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 813,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 876,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 924,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 977,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1019,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1071,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1113,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1165,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1207,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1259,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/named-work-v1/signed-vectors.json",
+      "line": 1301,
+      "rule": "generic-api-key",
+      "file_sha256": "e70e959bb2b7dc5194f902bd7259da07d41a46fcef35c3a3b2ca567eb1b3d874",
+      "evidence": "Exact flagged line already in public secS-magik commit 11e7128e49c6df57f53e4c8b05e72d4bc78d798c"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4525,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4575,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4580,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4637,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4687,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4692,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4756,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4806,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4811,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4868,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4918,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4923,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4980,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5030,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5035,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5099,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5149,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5154,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5211,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5261,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5266,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5333,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5383,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5388,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5462,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5512,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5517,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5591,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5641,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5646,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5730,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5780,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5785,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5878,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5928,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5933,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5994,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6044,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6049,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6109,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6159,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "crates/castalia-wallet-service-holder/vendor/secS-service-b/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6164,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 34,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 84,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 89,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 153,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 203,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 208,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 272,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 322,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 327,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 391,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 441,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 446,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 510,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 560,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 565,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 629,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 679,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 684,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 744,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 794,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 799,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 858,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 908,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 913,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 980,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1030,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1035,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1116,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1166,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1171,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1253,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1303,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1308,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1388,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1438,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1443,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1517,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1567,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1572,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1646,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1696,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1701,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1775,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1825,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1830,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1894,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1944,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 1949,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2010,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2060,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2065,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2124,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2174,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2179,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2246,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2296,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2301,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2376,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 34,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 84,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 89,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 150,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 200,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 205,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 266,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 316,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 321,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 381,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 431,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 436,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 516,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 567,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 572,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 685,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 735,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 740,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 834,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 884,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 889,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 983,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1033,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1038,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1132,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1182,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1187,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1281,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1331,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1336,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1430,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1481,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1486,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1611,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1661,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1666,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1760,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1810,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1815,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1899,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1949,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 1954,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2048,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2098,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2103,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2178,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2228,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2233,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2308,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2426,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2431,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2516,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2566,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2571,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2651,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2701,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2706,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2791,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2841,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/signed-vectors.json",
+      "line": 2846,
+      "rule": "generic-api-key",
+      "file_sha256": "ecee714bdd76fe25fb9ad9cdb9ea01b54292391945a6349a1c20f4b57f182773",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2358,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2363,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2438,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2488,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2493,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2568,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2618,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2623,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2698,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2748,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2753,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2838,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2888,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2893,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 2987,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3037,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3042,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3136,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3186,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3191,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3265,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3315,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3320,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3384,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3434,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3439,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3496,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3546,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3551,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3608,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3658,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3663,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3727,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3777,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3782,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3839,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3889,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3894,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 3951,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4001,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4006,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4070,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4120,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4125,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4182,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4232,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4237,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4294,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4344,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4349,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4413,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4463,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4468,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4525,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4575,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4580,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4637,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4687,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4692,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4756,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4806,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4811,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4868,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4918,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4923,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 4980,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5030,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5035,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5099,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5149,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5154,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5211,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5261,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5266,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5333,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5383,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5388,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5462,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5512,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5517,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5591,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5641,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5646,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5730,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5780,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5785,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5878,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5928,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5933,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 5994,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6044,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6049,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6109,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6159,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    },
+    {
+      "path": "vendor/secS-magik-7e32f13/server/tests/fixtures/credential-v2/progress-signed-vectors.json",
+      "line": 6164,
+      "rule": "generic-api-key",
+      "file_sha256": "a51f9735e52f59c1c90993125c47d2d14baf29a6f4fc2a3c65e5ac65e6ec68ea",
+      "evidence": "Explicit public SHA-256 digest field, 32 digest bytes; no key material"
+    }
+  ],
+  "operator_files_included": false
+}

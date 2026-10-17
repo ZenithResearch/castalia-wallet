@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confirm membership proof · Castalia</title>
+  <link rel="stylesheet" href="confirmation.css" />
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Castalia Member Key</p>
+    <h1>Confirm possession proof</h1>
+    <p class="lede">This proves that your wallet controls the Member Key that Castalia will recognize. It does not reveal the private key or start a web session.</p>
+    <dl aria-label="Membership proof details">
+      <div><dt>Site</dt><dd id="origin">Loading…</dd></div>
+      <div><dt>Member Key</dt><dd id="fingerprint">—</dd></div>
+      <div><dt>Issued</dt><dd id="issued-at">—</dd></div>
+      <div><dt>Expires</dt><dd id="expires-at">—</dd></div>
+    </dl>
+    <p id="status" role="status"></p>
+    <div class="actions">
+      <button id="deny" type="button" disabled>Don’t sign</button>
+      <button id="approve" type="button" disabled>Sign proof</button>
+    </div>
+  </main>
+  <script src="../dist/confirmation.js"></script>
+</body>
+</html>

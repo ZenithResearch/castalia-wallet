@@ -1,0 +1,250 @@
+//! Runtime schema ontology for local SQLite-backed server surfaces.
+//!
+//! DDL lives here so runtime modules do not carry inline table definitions. This
+//! is intentionally still runtime SQL: secS-magik is not using SQLx offline
+//! metadata or migrations yet, but table ownership and uniqueness boundaries are
+//! named in one place.
+
+use sqlx::SqlitePool;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RuntimeTable {
+    pub name: &'static str,
+    pub ddl: &'static str,
+}
+
+pub const EVENTS_TABLE: RuntimeTable = RuntimeTable {
+    name: "events",
+    ddl: "CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp INTEGER NOT NULL,
+        event_kind TEXT NOT NULL,
+        packet_hash BLOB,
+        opcode INTEGER,
+        operation TEXT,
+        handler_id TEXT,
+        reason TEXT
+    );",
+};
+
+pub const RECEIPTS_TABLE: RuntimeTable = RuntimeTable {
+    name: "receipts",
+    ddl: "CREATE TABLE IF NOT EXISTS receipts (
+        receipt_id TEXT PRIMARY KEY,
+        schema_version INTEGER NOT NULL DEFAULT 1,
+        context_id TEXT,
+        timestamp INTEGER NOT NULL,
+        kind TEXT NOT NULL,
+        packet_hash BLOB NOT NULL,
+        session_id BLOB NOT NULL,
+        nonce BLOB NOT NULL,
+        opcode INTEGER NOT NULL,
+        operation TEXT,
+        decision TEXT NOT NULL,
+        reason TEXT,
+        handler_id TEXT,
+        authenticator_kind TEXT NOT NULL,
+        signer_key_id TEXT NOT NULL,
+        evidence_summary TEXT NOT NULL DEFAULT '[]',
+        output_schema_id TEXT,
+        output_byte_count INTEGER,
+        output_digest_sha256 BLOB,
+        signature BLOB NOT NULL
+    );",
+};
+
+pub const REPLAY_RESERVATIONS_TABLE: RuntimeTable = RuntimeTable {
+    name: "replay_reservations",
+    ddl: "CREATE TABLE IF NOT EXISTS replay_reservations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        reserved_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL,
+        replay_scope TEXT NOT NULL,
+        session_id BLOB NOT NULL,
+        opcode INTEGER NOT NULL,
+        nonce BLOB NOT NULL,
+        packet_hash BLOB NOT NULL,
+        context_id TEXT NOT NULL,
+        signer_key_id TEXT NOT NULL,
+        UNIQUE(session_id, opcode, nonce, replay_scope)
+    );",
+};
+
+pub const DEVGRAPH_AUTHORITY_REPLAY_RESERVATIONS_TABLE: RuntimeTable = RuntimeTable {
+    name: "devgraph_authority_replay_reservations",
+    ddl: "CREATE TABLE IF NOT EXISTS devgraph_authority_replay_reservations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        reserved_at INTEGER NOT NULL,
+        expires_at INTEGER NOT NULL,
+        replay_scope TEXT NOT NULL CHECK(replay_scope = 'session:operation:nonce'),
+        session_id BLOB NOT NULL,
+        operation TEXT NOT NULL,
+        nonce BLOB NOT NULL,
+        actor_id TEXT NOT NULL,
+        audience TEXT NOT NULL,
+        resource TEXT NOT NULL,
+        request_digest_sha256 TEXT NOT NULL,
+        idempotency_key_digest_sha256 TEXT NOT NULL,
+        receiver_policy_id TEXT NOT NULL,
+        receiver_policy_version INTEGER NOT NULL,
+        receiver_policy_digest_sha256 TEXT NOT NULL,
+        wallet_presentation_digest_sha256 TEXT NOT NULL,
+        secs_context_id TEXT NOT NULL,
+        secs_verifier_key_id TEXT NOT NULL,
+        issued_at INTEGER NOT NULL,
+        UNIQUE(session_id, operation, nonce)
+    );",
+};
+
+/// Initialized only when the separately enabled v2 authority is used.
+pub const DEVGRAPH_AUTHORITY_V2_REPLAY_TABLE: RuntimeTable = RuntimeTable {
+    name: "devgraph_authority_v2_replay",
+    ddl: "CREATE TABLE IF NOT EXISTS devgraph_authority_v2_replay (
+        session_id TEXT NOT NULL CHECK(length(session_id) = 32),
+        operation TEXT NOT NULL,
+        nonce TEXT NOT NULL CHECK(length(nonce) = 32),
+        expires_at INTEGER NOT NULL,
+        projection BLOB NOT NULL,
+        PRIMARY KEY(session_id, operation, nonce)
+    );",
+};
+
+pub const SCOPED_NULLIFIER_USES_TABLE: RuntimeTable = RuntimeTable {
+    name: "scoped_nullifier_uses",
+    ddl: "CREATE TABLE IF NOT EXISTS scoped_nullifier_uses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        recorded_at INTEGER NOT NULL,
+        domain_fingerprint TEXT NOT NULL,
+        commitment_fingerprint TEXT NOT NULL,
+        commitment_storage_hash TEXT NOT NULL,
+        context_id TEXT NOT NULL,
+        operation TEXT NOT NULL,
+        resource_kind TEXT NOT NULL,
+        domain_version TEXT NOT NULL,
+        UNIQUE(domain_fingerprint, commitment_storage_hash)
+    );",
+};
+
+pub const AUDIT_PUBLICATION_STATUS_TABLE: RuntimeTable = RuntimeTable {
+    name: "audit_publication_status",
+    ddl: "CREATE TABLE IF NOT EXISTS audit_publication_status (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        idempotency_key TEXT NOT NULL UNIQUE,
+        bundle_version TEXT NOT NULL,
+        chain_algorithm_version TEXT NOT NULL,
+        chain_scope TEXT NOT NULL,
+        root_hash_hex TEXT NOT NULL,
+        receipt_count INTEGER NOT NULL,
+        target_kind TEXT NOT NULL,
+        target_ref_digest_hex TEXT,
+        status TEXT NOT NULL,
+        attempt_count INTEGER NOT NULL DEFAULT 0,
+        last_error TEXT,
+        published_at INTEGER,
+        updated_at INTEGER NOT NULL
+    );",
+};
+
+pub const NODE_TELEMETRY_TABLE: RuntimeTable = RuntimeTable {
+    name: "node_telemetry",
+    ddl: "CREATE TABLE IF NOT EXISTS node_telemetry (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        opcode INTEGER NOT NULL,
+        payload_size INTEGER NOT NULL,
+        operation TEXT NOT NULL DEFAULT 'unverified.prototype'
+    );",
+};
+
+pub const LEDGER_TABLES: &[RuntimeTable] = &[
+    EVENTS_TABLE,
+    RECEIPTS_TABLE,
+    REPLAY_RESERVATIONS_TABLE,
+    DEVGRAPH_AUTHORITY_REPLAY_RESERVATIONS_TABLE,
+    SCOPED_NULLIFIER_USES_TABLE,
+    AUDIT_PUBLICATION_STATUS_TABLE,
+];
+pub const TELEMETRY_TABLES: &[RuntimeTable] = &[NODE_TELEMETRY_TABLE];
+
+pub async fn apply_schema(pool: &SqlitePool, tables: &[RuntimeTable]) -> Result<(), sqlx::Error> {
+    for table in tables {
+        sqlx::query(table.ddl).execute(pool).await?;
+        if table.name == "receipts" {
+            ensure_receipts_columns(pool).await?;
+        }
+        if table.name == "node_telemetry" {
+            ensure_node_telemetry_columns(pool).await?;
+        }
+    }
+    Ok(())
+}
+
+async fn ensure_receipts_columns(pool: &SqlitePool) -> Result<(), sqlx::Error> {
+    ensure_column(
+        pool,
+        "receipts",
+        "schema_version",
+        "ALTER TABLE receipts ADD COLUMN schema_version INTEGER NOT NULL DEFAULT 1",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "receipts",
+        "context_id",
+        "ALTER TABLE receipts ADD COLUMN context_id TEXT",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "receipts",
+        "evidence_summary",
+        "ALTER TABLE receipts ADD COLUMN evidence_summary TEXT NOT NULL DEFAULT '[]'",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "receipts",
+        "output_schema_id",
+        "ALTER TABLE receipts ADD COLUMN output_schema_id TEXT",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "receipts",
+        "output_byte_count",
+        "ALTER TABLE receipts ADD COLUMN output_byte_count INTEGER",
+    )
+    .await?;
+    ensure_column(
+        pool,
+        "receipts",
+        "output_digest_sha256",
+        "ALTER TABLE receipts ADD COLUMN output_digest_sha256 BLOB",
+    )
+    .await
+}
+
+async fn ensure_node_telemetry_columns(pool: &SqlitePool) -> Result<(), sqlx::Error> {
+    ensure_column(
+        pool,
+        "node_telemetry",
+        "operation",
+        "ALTER TABLE node_telemetry ADD COLUMN operation TEXT NOT NULL DEFAULT 'unverified.prototype'",
+    )
+    .await
+}
+
+async fn ensure_column(
+    pool: &SqlitePool,
+    table: &str,
+    column: &str,
+    alter_sql: &str,
+) -> Result<(), sqlx::Error> {
+    let pragma = format!("PRAGMA table_info({table})");
+    let existing: Vec<(i64, String, String, i64, Option<String>, i64)> =
+        sqlx::query_as(&pragma).fetch_all(pool).await?;
+    if !existing.iter().any(|(_, name, _, _, _, _)| name == column) {
+        sqlx::query(alter_sql).execute(pool).await?;
+    }
+    Ok(())
+}

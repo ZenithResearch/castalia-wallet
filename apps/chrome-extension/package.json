@@ -1,0 +1,19 @@
+{
+  "name": "@castalia-wallet/chrome-extension",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node ../../scripts/build-castalia-wallet-wasm.mjs && npm run build --workspace @castalia-wallet/zenith-membership && npm run build --workspace @castalia-wallet/provider-types && npm run build --workspace @castalia-wallet/core && npm run build --workspace @castalia-wallet/dregg-adapter && tsx --test test/*.test.ts",
+    "build": "node ../../scripts/build-castalia-wallet-wasm.mjs && npm run build --workspace @castalia-wallet/zenith-membership && npm run build --workspace @castalia-wallet/provider-types && npm run build --workspace @castalia-wallet/core && npm run build --workspace @castalia-wallet/dregg-adapter && npx tsc -p tsconfig.json --noEmit false && node ../../scripts/bundle-castalia-extension.mjs",
+    "typecheck": "npm run build --workspace @castalia-wallet/zenith-membership && npm run build --workspace @castalia-wallet/provider-types && npm run build --workspace @castalia-wallet/core && npm run build --workspace @castalia-wallet/dregg-adapter && tsc -p tsconfig.json --noEmit",
+    "build:extension": "node ../../scripts/bundle-castalia-extension.mjs"
+  },
+  "dependencies": {
+    "@castalia-wallet/core": "0.0.0",
+    "@castalia-wallet/dregg-adapter": "0.0.0",
+    "@castalia-wallet/provider-types": "0.0.0",
+    "@castalia-wallet/zenith-membership": "0.0.0",
+    "@castalia/filesystem": "https://codeload.github.com/ZenithResearch/castalia-filesystem/tar.gz/446ff13ec1073507844797705fe2de7b8187a61a"
+  }
+}

@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:private:castalia:wallet-service-custody-plan:v1",
+  "description": "Proposed private native service custody metadata only; supplemental canonical integer, duplicate, cross-field and filesystem rules are normative in contract.md. Not authority wire.",
+  "$defs": {
+    "state": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "castalia.wallet-service-custody-state.v1"
+        },
+        "store_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}(?![\\s\\S])"
+        },
+        "subject_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[!-~]+(?![\\s\\S])"
+        },
+        "purpose": {
+          "const": "secs-service-holder-proof.v1"
+        },
+        "application": {
+          "enum": [
+            "runtime",
+            "service"
+          ]
+        },
+        "state_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "key_generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "key_id": {
+          "type": "string",
+          "pattern": "^service-ed25519:sha256:[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "public_key_hex": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "public_key_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "state": {
+          "enum": [
+            "unconfigured",
+            "active",
+            "revoked"
+          ]
+        },
+        "created_at": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "key_created_at": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "published_at": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "not_before": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "not_after": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "revoked_at": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "previous_state_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_input_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "store_id",
+        "subject_id",
+        "purpose",
+        "application",
+        "state_revision",
+        "key_generation",
+        "key_id",
+        "public_key_hex",
+        "public_key_sha256",
+        "state",
+        "created_at",
+        "key_created_at",
+        "published_at",
+        "not_before",
+        "not_after",
+        "revoked_at",
+        "previous_state_sha256",
+        "owner_input_sha256"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "revoked_at": {
+                "type": "null"
+              },
+              "owner_input_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "owner_input_sha256": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "revoked"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "revoked_at": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "revoked_at": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state_revision": {
+                "const": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "previous_state_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "previous_state_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "current": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "castalia.wallet-service-custody-current.v1"
+        },
+        "store_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}(?![\\s\\S])"
+        },
+        "state_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "state_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "schema",
+        "store_id",
+        "state_revision",
+        "state_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "clock": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "castalia.wallet-service-custody-clock.v1"
+        },
+        "store_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}(?![\\s\\S])"
+        },
+        "observed_at": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "schema",
+        "store_id",
+        "observed_at"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

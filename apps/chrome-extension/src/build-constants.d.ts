@@ -1,0 +1,5 @@
+declare const __CASTALIA_ZENITH_MEMBERSHIP_ISSUER_URL__: string
+declare const __CASTALIA_ZENITH_MEMBERSHIP_ISSUER_KEY_ID__: string
+declare const __CASTALIA_ZENITH_MEMBERSHIP_ISSUER_PUBLIC_KEY__: string
+
+declare const __CASTALIA_PRESENTATION_TRUST_PINS__: unknown[]

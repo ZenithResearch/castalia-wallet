@@ -1,0 +1,22 @@
+{
+  "name": "@castalia-wallet/provider-types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@castalia-wallet/zenith-membership": "0.0.0",
+    "@castalia/filesystem": "https://codeload.github.com/ZenithResearch/castalia-filesystem/tar.gz/446ff13ec1073507844797705fe2de7b8187a61a"
+  }
+}

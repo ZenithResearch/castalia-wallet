@@ -1,0 +1,90 @@
+:root {
+  color: #062c72;
+  background: #fffdf5;
+  font-family: "Courier New", Courier, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; margin: 0; }
+
+body {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, #edf4ff 0 28%, #fffdf5 65%);
+}
+
+.flow {
+  position: relative;
+  width: min(100%, 420px);
+  padding: 40px 36px 32px;
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  border: 0;
+  background: transparent;
+  color: #064dbd;
+  font: 400 28px/1 Arial, sans-serif;
+  cursor: pointer;
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: #064dbd;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  color: #062c72;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(38px, 10vw, 52px);
+  font-weight: 400;
+  line-height: .98;
+  letter-spacing: -.04em;
+}
+
+.intro, .requester, .status, .boundary { line-height: 1.55; }
+.intro { margin: 20px 0 0; color: #496a9f; font-size: 15px; }
+.requester { margin: 18px 0 0; color: #496a9f; font-size: 12px; }
+.requester strong {
+  color: #062c72;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
+}
+.rule { height: 1px; margin: 30px 0 24px; background: #bdd2f4; }
+.status { min-height: 48px; margin: 0 0 22px; color: #063d93; font-size: 13px; }
+
+.field { margin: 0 0 20px; }
+.field label { display: block; margin-bottom: 8px; color: #062c72; font-size: 12px; font-weight: 700; }
+.field input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #8faddd;
+  background: #fff;
+  color: #062c72;
+  font: 16px/1.2 "Courier New", Courier, monospace;
+  padding: 12px;
+}
+.field input:focus-visible { outline: 2px solid #064dbd; outline-offset: 2px; }
+.field p { margin: 8px 0 0; color: #6b7f9f; font-size: 11px; line-height: 1.45; }
+
+.primary {
+  width: 100%;
+  min-height: 58px;
+  border: 1px solid #064dbd;
+  background: #064dbd;
+  color: white;
+  font: 700 16px/1 "Courier New", Courier, monospace;
+  cursor: pointer;
+}
+.primary:hover, .primary:focus-visible { background: #063d93; }
+.primary:disabled { cursor: wait; opacity: .65; }
+
+.boundary { margin: 24px 0 0; color: #6b7f9f; font-size: 11px; }

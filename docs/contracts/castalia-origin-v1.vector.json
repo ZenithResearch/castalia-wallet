@@ -1,0 +1,44 @@
+{
+  "schema": "castalia.origin-canonicalization.v1",
+  "positive": [
+    {
+      "input": "HTTPS://Example.COM:443",
+      "output": "https://example.com"
+    },
+    {
+      "input": "http://Example.COM:80/",
+      "output": "http://example.com"
+    },
+    {
+      "input": "https://Example.COM:8443",
+      "output": "https://example.com:8443"
+    },
+    {
+      "input": "https://b\u00fccher.example",
+      "output": "https://xn--bcher-kva.example"
+    },
+    {
+      "input": "http://[2001:0db8:0:0:0:0:0:1]:80",
+      "output": "http://[2001:db8::1]"
+    },
+    {
+      "input": "http://127.000.000.001",
+      "output": "http://127.0.0.1"
+    }
+  ],
+  "reject": [
+    "null",
+    "",
+    " https://example.com",
+    "https://example.com ",
+    "https://user@example.com",
+    "https://example.com/path",
+    "https://example.com?x=1",
+    "https://example.com#x",
+    "https://example.com.",
+    "ftp://example.com",
+    "file:///tmp/x",
+    "https://[::1",
+    "https://example.com:99999"
+  ]
+}

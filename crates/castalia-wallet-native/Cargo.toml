@@ -1,0 +1,14 @@
+[package]
+name = "castalia-wallet-native"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+castalia-wallet-core = { path = "../castalia-wallet-core" }
+serde_json = "1"
+zeroize = "1"

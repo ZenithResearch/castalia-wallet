@@ -1,0 +1,14 @@
+{
+  "schema": "castalia.canonical-build-tools.v1",
+  "platform": "linux-x64",
+  "wasm-bindgen": {
+    "version": "0.2.127",
+    "archiveSha256": "61d4a7dc85acfa0d2354ccc0b8361928c7e52a746d17f28ebaa795ed3dc1614a",
+    "executableSha256": "f36dbe1938e78a79ce34d0ab3700907555161e293954f6f35bf6785a2f0cf916"
+  },
+  "wasm-opt": {
+    "version": "117",
+    "archiveSha256": "3dc677006555b355ea2da5e82602065a161d5e83eaefd3f759afa00b96e83212",
+    "executableSha256": "621b5a984f16d0323ea7aa8b389ac9ccda0950ddee5de0e99292970129f571ed"
+  }
+}

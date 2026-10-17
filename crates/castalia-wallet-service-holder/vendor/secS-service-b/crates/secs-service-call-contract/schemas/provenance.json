@@ -1,0 +1,21 @@
+{
+  "schema": "secs.service-schema-provenance.v1",
+  "files": [
+    {
+      "name": "runtime-v1.schema.json",
+      "source": "process-runtime/contracts/runtime-v1.schema.json",
+      "sha256": "c3dd6334a9e8e920c27f8c7d9edcef1e8ca1addec21690237fb817f0079c4059"
+    },
+    {
+      "name": "service.command.v1.schema.json",
+      "source": "service-management/contracts/service.command.v1.schema.json",
+      "sha256": "050142062980eaf202ea7dcf1992bd5cb348b8f958282de7595508b8714c58ef"
+    },
+    {
+      "name": "service.query.v1.schema.json",
+      "source": "service-management/contracts/service.query.v1.schema.json",
+      "sha256": "390f1a5259bb557f3fd99ff26fd8809f2291f9edbbe5a8555316aefc57cb5d50"
+    }
+  ],
+  "scope": "Exact public contract copies; no domain implementation or credentials"
+}

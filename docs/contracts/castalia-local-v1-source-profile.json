@@ -1,0 +1,43 @@
+{
+  "schema": "castalia.local-trust-profile.v1",
+  "claim": "local fixture and source contract only; not a deployment or production trust profile",
+  "dregg": {
+    "repository": "bananawalnut/castalia",
+    "observedHead": "c08967ca2bf2d5fcf25561e070f9a46efc54774b",
+    "worktreeState": "dirty prototype; D1 must land or reproduce the pinned semantics before consumption",
+    "sourceFingerprints": {
+      "turn/src/executor/apply.rs": "sha256:49e0d5763a662ff2f6f18a9d6adb4c92de9c13d913a9d6e89a3dcbf98180ffcd",
+      "starbridge-apps/castalia-membership/src/lib.rs": "sha256:b55b6207524b7410e47a80d82d926e6a6615ba0b793debfaab59f2e4448fed68"
+    },
+    "requiredEffect": "Effect::CreateCellFromFactory",
+    "requiredCreatedCellFormula": "CellId::derive_raw(owner_pubkey, token_id)",
+    "forbiddenApi": "legacy dregg_create_from_factory",
+    "networkId": "castalia-local-v1",
+    "federationId": "4444444444444444444444444444444444444444444444444444444444444444",
+    "castaliaAuthorityPublicKey": "4141414141414141414141414141414141414141414141414141414141414141",
+    "factoryId": "7875a8806604c495a1871984b43c75033ff624979e7670cefed246a7ee65ec28",
+    "childProgramVk": "85e6900567162bcacde6c522d04917ed96cf33664c85ddb116005c3b779c009a",
+    "receiptProfile": "D2 pending: no Active-independent-verification claim until authenticated receipt bytes, predecessor continuity, checkpoint and freshness rules are committed"
+  },
+  "control": {
+    "audience": "http://127.0.0.1:8787",
+    "allowedWebOrigin": "http://127.0.0.1:5173",
+    "bindingKeyId": "castalia-control-local-fixture-ed25519-1",
+    "bindingPublicKey": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+    "keyProvenance": "RFC 8032 test vector 1 public key; local deterministic fixtures only; private seed must never be used outside tests",
+    "operatorAuthentication": {
+      "keyId": "castalia-control-local-operator-ed25519-1",
+      "publicKey": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c",
+      "keyProvenance": "RFC 8032 test vector 2 public key; deterministic local fixtures only; corresponding private seed forbidden outside tests",
+      "scheme": "Castalia-Operator-V1"
+    }
+  },
+  "http": {
+    "challengePath": "/v1/membership/challenges",
+    "applicationPath": "/v1/membership/applications",
+    "statusPathTemplate": "/v1/membership/applications/{applicationId}",
+    "activatePathTemplate": "/v1/operator/memberships/{applicationId}/activate",
+    "sessionChallengePath": "/v1/sessions/challenges",
+    "sessionExchangePath": "/v1/sessions/exchange"
+  }
+}
