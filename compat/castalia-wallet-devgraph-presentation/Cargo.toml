@@ -1,0 +1,15 @@
+[package]
+name = "castalia-wallet-devgraph-presentation"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Portable, closed Devgraph named Work wallet presentation contract."
+
+[dependencies]
+base64 = "0.22"
+ed25519-dalek = { version = "2.2", default-features = false, features = ["alloc"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+devgraph-work-protocol = { git = "https://github.com/ZenithResearch/devgraph.git", rev = "3454db330ec4a1b42352367652b2a0ceb5a066c4" }
+
+[workspace]

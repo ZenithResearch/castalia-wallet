@@ -1,0 +1,22 @@
+{
+  "schema": "castalia.retired-public-build-compatibility.v1",
+  "origin_revision": "3216144e8df04582e921810462845efc8c2cf390",
+  "selected_subtree": "crates/castalia-wallet-devgraph-presentation",
+  "changes": [
+    "Manifest repeats the identical public Devgraph protocol revision instead of inheriting it from the old workspace.",
+    "A separate workspace boundary keeps this retired compatibility crate out of the active Wallet workspace."
+  ],
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "origin_sha256": "8cdc0345a038a245ff80d6a2d8c270f94d09dbdc98c979a7a272de1c5e1769fa",
+      "sha256": "10ba67dac0ec9ee51eaad2f348c3fcde5c538b3ba48ad779a77da0d90d4145da"
+    },
+    {
+      "path": "src/lib.rs",
+      "origin_sha256": "2bef8cd23d845d0acb0b841f1b26489e268470e86fbc220fab12fe72c6221309",
+      "sha256": "2bef8cd23d845d0acb0b841f1b26489e268470e86fbc220fab12fe72c6221309"
+    }
+  ],
+  "scope": "Retired public-contract compatibility only; no private seed/custody source, signing service, policy, operator state or Git history. Current Wallet Native exports remain unchanged. No new license grant is inferred; original selected crate has no license file or field."
+}
