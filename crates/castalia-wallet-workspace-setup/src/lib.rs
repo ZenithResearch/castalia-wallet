@@ -618,5 +618,7 @@ fn create_selected(path: &Path, expected_sha256: &str, input: Input) -> Result<V
     held.revalidate().map_err(|_| SetupError)?;
     Ok(receipt)
 }
+mod renewal;
+pub use renewal::{renew_from_plan, resume_renewal_from_plan, RenewalError};
 #[cfg(test)]
 mod tests;

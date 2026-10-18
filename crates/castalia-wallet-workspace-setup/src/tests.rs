@@ -675,3 +675,6 @@ async fn stable_identity_can_be_configured_after_policy_expiry_without_extending
     assert!(a.acquire_query(&raw).await.is_err());
     assert!(a.complete_query(&raw, &proof).await.is_err());
 }
+
+#[path = "renewal_tests.rs"]
+mod renewal_tests;

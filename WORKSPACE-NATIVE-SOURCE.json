@@ -1,7 +1,7 @@
 {
   "schema": "castalia.workspace-native-public-source.v1",
-  "origin_private_revision": "10cbcc2a412cac1bf7fd96583ad27991db466e20",
-  "qualification_summary_sha256": "d1a1d7dee0b0e271daa30fbff89c88dcd335cb1a394d5dcfa6411d74deabd0fd",
+  "origin_private_revision": "eb7b21305d9058d993f9a60aa9d4add2c34eb839",
+  "qualification_summary_sha256": "d0e160b6cc3feeab0b4b5505658caff597e4d84c2d451cd2702cb77d8e339322",
   "selected_subtrees": [
     "crates/castalia-wallet-service-holder",
     "crates/castalia-wallet-local-review-setup",
@@ -10236,33 +10236,43 @@
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/Cargo.lock",
-      "sha256": "91c92b42992676882b1b268cdfc5b058801badd4a6a51a3c4d1fb4227a756529",
-      "bytes": 45427
+      "sha256": "5ccdb7bbcd43a5843692f26bd318e9957f7640aa37ec31b7d6898f34dc31da75",
+      "bytes": 45436
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/Cargo.toml",
-      "sha256": "f56d4a9a0d9cf496166bb7dc52767eb03ef7ce75290e0ed48bb8559b234c9280",
-      "bytes": 1111
+      "sha256": "9bd7056880613ab68cfc7349a1134d66f2ebdce6db06d55e4797ef9565ce64c7",
+      "bytes": 1207
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/README.md",
-      "sha256": "bdefc7db4aa237ce899048782d95fe9efba13740dfc4a2169d67070c5ca8e93f",
-      "bytes": 5366
+      "sha256": "bbb02dfb3e0510f286d28ea425f89b30cde25ec80935fa521a08ed02c5d9f4b0",
+      "bytes": 11207
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/src/lib.rs",
-      "sha256": "fa00db3b68df41b5f6d4f86a85b8a004be2a14e72c89d03b30a2a99249b60db6",
-      "bytes": 25252
+      "sha256": "c7907fe72c527792195b28112d248994fc53c14fa7f367db1c80e680e2b4b429",
+      "bytes": 25341
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/src/main.rs",
-      "sha256": "eb5353e65dff2c743800922ead52a59414aa5d6d4359f1e9785f23f1205dd70b",
-      "bytes": 915
+      "sha256": "5d907deec154123468388ac8012f7b56f24a84ce40fd2849d72d8e3b9e04163a",
+      "bytes": 3413
+    },
+    {
+      "path": "crates/castalia-wallet-workspace-setup/src/renewal.rs",
+      "sha256": "7537fbeb3f99abed6bd06575328058ec2a7d8a91199b1d2d72ecd82496d35b53",
+      "bytes": 35423
+    },
+    {
+      "path": "crates/castalia-wallet-workspace-setup/src/renewal_tests.rs",
+      "sha256": "206ec8eb8daa947637d3f55c58f47798468db763d8ff111db2c352079378a43e",
+      "bytes": 21515
     },
     {
       "path": "crates/castalia-wallet-workspace-setup/src/tests.rs",
-      "sha256": "3effa6b8fbb07ab9db42f78ad4090fa4837e6e1f7dee7194cb403dbae9fa869f",
-      "bytes": 27210
+      "sha256": "f9e1d561f28c7c65c0042e1158b8d92beae715615911625abe8c959a81a18879",
+      "bytes": 27259
     }
   ]
 }
