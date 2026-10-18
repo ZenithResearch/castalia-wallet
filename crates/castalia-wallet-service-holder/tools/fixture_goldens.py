@@ -8,7 +8,7 @@ import sys
 
 PACKAGE = Path(__file__).resolve().parents[1]
 ROOT = PACKAGE.parents[1]
-VENDOR = PACKAGE / 'vendor/secS-service-b'
+VENDOR = PACKAGE / 'vendor/secS-service-authority-a7100a7'
 FIXTURES = PACKAGE / 'tests/fixtures'
 
 def field(name, value):

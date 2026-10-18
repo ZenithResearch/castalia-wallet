@@ -1,0 +1,66 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { workspace = true }
+libsec-core = { path = "../core" }
+secs-permissions = { path = "../permissions" }
+secs-service-call-contract = { path = "../crates/secs-service-call-contract" }
+castalia-wallet-private-files = { path = "../vendor/castalia-wallet-private-files-9cc8140" }
+bincode.workspace = true
+serde.workspace = true
+serde_json = { version = "1", features = ["raw_value"] }
+ed25519-dalek.workspace = true
+sha2.workspace = true
+async-trait = "0.1.89"
+clap = { version = "4.4", features = ["derive"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite"] }
+serial_test = "3.5"
+rand.workspace = true
+x25519-dalek = { version = "2.0", default-features = false, features = ["static_secrets"] }
+libc = "0.2"
+zeroize = "1"
+url = "=2.5.8"
+
+[[bin]]
+name = "secs-gateway"
+path = "src/bin/secs-gateway.rs"
+
+[[bin]]
+name = "secz"
+path = "src/bin/secz.rs"
+
+[[bin]]
+name = "secs-permctl"
+path = "src/bin/secs-permctl.rs"
+
+[[bin]]
+name = "secs-devgraph-issue-create-v1"
+path = "src/bin/secs-devgraph-issue-create-v1.rs"
+
+[[bin]]
+name = "secs-devgraph-issue-create-v1-wallet"
+path = "src/bin/secs-devgraph-issue-create-v1-wallet.rs"
+
+[[bin]]
+name = "secs-devgraph-work-v1"
+path = "src/bin/secs-devgraph-work-v1.rs"
+
+[[bin]]
+name = "secs-devgraph-work-v2"
+path = "src/bin/secs-devgraph-work-v2.rs"
+
+[features]
+# Conformance only: signed bytes must not depend on transitive serde_json features.
+hostile-json-features = ["serde_json/preserve_order", "serde_json/arbitrary_precision"]
+
+[dev-dependencies]
+serde_yaml = "0.9"
+tempfile = "=3.27.0"
+tokio = { workspace = true, features = ["test-util"] }
+
+[[bin]]
+name = "secs-frank-result"
+path = "src/bin/secs-frank-result.rs"

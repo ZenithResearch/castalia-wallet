@@ -1,0 +1,31 @@
+{
+  "schema": "secs.service-planning-static-selection-fixtures.v1",
+  "reader": "service-management.contracts.Command.parse + planning.validate_plan_payload",
+  "cases": [
+    {
+      "name": "one",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.revise\",\"payload\":{\"carry_forward\":[{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"}],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\",\"superseded_run_id\":\"prior-run\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "distinct",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.revise\",\"payload\":{\"carry_forward\":[{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"},{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"another\"}],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\",\"superseded_run_id\":\"prior-run\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": true
+    },
+    {
+      "name": "duplicate",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.revise\",\"payload\":{\"carry_forward\":[{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"},{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"}],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\",\"superseded_run_id\":\"prior-run\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "collision",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.revise\",\"payload\":{\"carry_forward\":[{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"}],\"inputs\":{\"carried\":\"new input\",\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\",\"superseded_run_id\":\"prior-run\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    },
+    {
+      "name": "approve-nonempty",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[{\"attempt_id\":\"prior-attempt\",\"expected_output_digest\":\"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"output_name\":\"output\",\"run_id\":\"prior-run\",\"step_id\":\"prior-step\",\"target_input\":\"carried\"}],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"\ud83c\udf38\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "reader_accepts": false
+    }
+  ]
+}

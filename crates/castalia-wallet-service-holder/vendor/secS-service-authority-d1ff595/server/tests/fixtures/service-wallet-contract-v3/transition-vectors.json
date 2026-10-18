@@ -1,0 +1,2395 @@
+{
+  "schema": "process.wallet-transition-policy.proposed-vectors.v3",
+  "fixture_only": true,
+  "no_keys_signatures_or_state_mutations": true,
+  "source_revision": "7e32f132549236ec78ebd9ec8bf364ec66b33721",
+  "preimage_domain": "secs-wallet-transition-target-policy-v1 plus zero byte",
+  "preimage_field_order": [
+    "profile",
+    "native_bundle_profile",
+    "target_policy_sha256",
+    "target_policy_bytes",
+    "old_native_generation",
+    "old_native_bundle_sha256",
+    "old_wallet_reference_sha256",
+    "mutation",
+    "wallet_request_sha256",
+    "transition_id"
+  ],
+  "vectors": [
+    {
+      "name": "1-configure",
+      "target_policy": {
+        "schema": "secs.wallet-native-target-policy.v1",
+        "native_bundle_profile": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        }
+      },
+      "target_policy_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"native_bundle_profile\":\"secs.service-owner-bundle.v2\",\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.wallet-native-target-policy.v1\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180}",
+      "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689",
+      "target_policy_bytes": 2760,
+      "old_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 1,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 1,
+          "key_generation": 1,
+          "state": "unconfigured",
+          "current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+          "custody_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+          "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+          "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        }
+      },
+      "old_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":1,\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea\",\"custody_state_sha256\":\"8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f\",\"delegation_policy_sha256\":null,\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":1,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "old_native_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37",
+      "target_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 2,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 2,
+          "key_generation": 1,
+          "state": "active",
+          "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+          "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+          "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+          "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+          "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+        }
+      },
+      "target_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":2,\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "target_native_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+      "request": {
+        "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+        "requested_not_before": null,
+        "requested_not_after": null,
+        "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+      },
+      "outcome_record": {
+        "schema": "secs.wallet-current-outcome.v3",
+        "transition_id": "00000000000000000000000000000001",
+        "old_wallet_reference_sha256": "dd4f842dc7874f6ae97af2573db388c9fade1bdf3c16d060b2304ced90b793ac",
+        "old_native_cas": {
+          "generation": 1,
+          "bundle_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37"
+        },
+        "mutation": "configure",
+        "request_sha256": "053e3135d03ae643d990c3d0c508664bdf915c15303408af970cb7892f55c46b",
+        "wallet_reference": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 2,
+          "key_generation": 1,
+          "state": "active",
+          "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+          "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+          "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+          "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+          "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+        },
+        "relation": "configured",
+        "observed_at": 121,
+        "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+      },
+      "outcome_utf8": "{\"mutation\":\"configure\",\"observed_at\":121,\"old_native_cas\":{\"bundle_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"generation\":1},\"old_wallet_reference_sha256\":\"dd4f842dc7874f6ae97af2573db388c9fade1bdf3c16d060b2304ced90b793ac\",\"relation\":\"configured\",\"request_sha256\":\"053e3135d03ae643d990c3d0c508664bdf915c15303408af970cb7892f55c46b\",\"schema\":\"secs.wallet-current-outcome.v3\",\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\",\"transition_id\":\"00000000000000000000000000000001\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "outcome_sha256": "3f4ced6711cc93cece2a5e51db01b8a34b9eb951bf91c466c23b51b7a868a326",
+      "marker_stages": [
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000001",
+            "stage": "prepared",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 1,
+              "key_generation": 1,
+              "state": "unconfigured",
+              "current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+              "custody_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 1,
+              "bundle_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37"
+            },
+            "old_native_image_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37",
+            "request": {
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "started_at": 120,
+            "observed_outcome": null,
+            "target_native": null,
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":null,\"old_native_cas\":{\"bundle_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"generation\":1},\"old_native_image_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea\",\"custody_state_sha256\":\"8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f\",\"delegation_policy_sha256\":null,\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":1,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"prepared\",\"started_at\":120,\"target_native\":null,\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"transition_id\":\"00000000000000000000000000000001\"}",
+          "marker_sha256": "4062db51268adbe97ef75f638dfa01f19c6d4025438d5615e0b09c5dade1f6bb"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000001",
+            "stage": "outcome_recorded",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 1,
+              "key_generation": 1,
+              "state": "unconfigured",
+              "current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+              "custody_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 1,
+              "bundle_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37"
+            },
+            "old_native_image_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37",
+            "request": {
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "started_at": 120,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 2,
+                "key_generation": 1,
+                "state": "active",
+                "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+                "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+                "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+                "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+                "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+                "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+              },
+              "relation": "configured",
+              "outcome_sha256": "3f4ced6711cc93cece2a5e51db01b8a34b9eb951bf91c466c23b51b7a868a326",
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 2,
+                "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+              },
+              "target_image_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":{\"outcome_sha256\":\"3f4ced6711cc93cece2a5e51db01b8a34b9eb951bf91c466c23b51b7a868a326\",\"relation\":\"configured\",\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"generation\":1},\"old_native_image_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea\",\"custody_state_sha256\":\"8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f\",\"delegation_policy_sha256\":null,\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":1,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"outcome_recorded\",\"started_at\":120,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"target_image_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"transition_id\":\"00000000000000000000000000000001\"}",
+          "marker_sha256": "3f5566a30112180083d24e367187ef49cc867b1a534a8bb08e68adb9c8b34e29"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000001",
+            "stage": "native_published",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 1,
+              "key_generation": 1,
+              "state": "unconfigured",
+              "current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+              "custody_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 1,
+              "bundle_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37"
+            },
+            "old_native_image_sha256": "63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37",
+            "request": {
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "started_at": 120,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 2,
+                "key_generation": 1,
+                "state": "active",
+                "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+                "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+                "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+                "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+                "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+                "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+              },
+              "relation": "configured",
+              "outcome_sha256": "3f4ced6711cc93cece2a5e51db01b8a34b9eb951bf91c466c23b51b7a868a326",
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 2,
+                "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+              },
+              "target_image_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+              "target_policy_sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":{\"outcome_sha256\":\"3f4ced6711cc93cece2a5e51db01b8a34b9eb951bf91c466c23b51b7a868a326\",\"relation\":\"configured\",\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"generation\":1},\"old_native_image_sha256\":\"63e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea\",\"custody_state_sha256\":\"8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f\",\"delegation_policy_sha256\":null,\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":1,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"native_published\",\"started_at\":120,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"target_image_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"target_policy_sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"8e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e243689\"},\"transition_id\":\"00000000000000000000000000000001\"}",
+          "marker_sha256": "e2dab100b7e2f433c730ecab39597ca07154fc06f34cca9c3d3bd7cfc37627e0"
+        }
+      ],
+      "policy_binding_preimage_hex": "736563732d77616c6c65742d7472616e736974696f6e2d7461726765742d706f6c6963792d763100000770726f66696c6500000023736563732e77616c6c65742d6e61746976652d7461726765742d706f6c6963792e763100156e61746976655f62756e646c655f70726f66696c650000001c736563732e736572766963652d6f776e65722d62756e646c652e763200147461726765745f706f6c6963795f736861323536000000208e7201c4512d2584990f682cfa7eeec1ba7ff84c7d4d2b4c02bf3d813e24368900137461726765745f706f6c6963795f6279746573000000080000000000000ac800156f6c645f6e61746976655f67656e65726174696f6e00000008000000000000000100186f6c645f6e61746976655f62756e646c655f7368613235360000002063e60c48002ad94dfb42f2ae1b06ab84d58619cbbb2ceea4b9306f8570028d37001b6f6c645f77616c6c65745f7265666572656e63655f73686132353600000020dd4f842dc7874f6ae97af2573db388c9fade1bdf3c16d060b2304ced90b793ac00086d75746174696f6e00000009636f6e666967757265001577616c6c65745f726571756573745f73686132353600000020053e3135d03ae643d990c3d0c508664bdf915c15303408af970cb7892f55c46b000d7472616e736974696f6e5f69640000001000000000000000000000000000000001",
+      "policy_binding_sha256": "9832a76e6ff9b7fa0fb5c5947ebb8607afe8e7654293517710e4ab00797bcb37",
+      "recover_before_outcome_requires_retained_policy_bytes": true,
+      "authority_claim": "public mathematical full-policy/lifecycle DTO only; no actual source/custody/issuer success or qualification"
+    },
+    {
+      "name": "2-rotate",
+      "target_policy": {
+        "schema": "secs.wallet-native-target-policy.v1",
+        "native_bundle_profile": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        }
+      },
+      "target_policy_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"native_bundle_profile\":\"secs.service-owner-bundle.v2\",\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.wallet-native-target-policy.v1\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180}",
+      "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+      "target_policy_bytes": 1465,
+      "old_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 2,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 2,
+          "key_generation": 1,
+          "state": "active",
+          "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+          "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+          "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+          "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+          "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+        }
+      },
+      "old_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":2,\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "old_native_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+      "target_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 3,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 3,
+          "key_generation": 2,
+          "state": "unconfigured",
+          "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+          "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        }
+      },
+      "target_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":3,\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "target_native_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+      "request": {
+        "owner_input_sha256": null,
+        "requested_not_before": 0,
+        "requested_not_after": 180,
+        "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+      },
+      "outcome_record": {
+        "schema": "secs.wallet-current-outcome.v3",
+        "transition_id": "00000000000000000000000000000002",
+        "old_wallet_reference_sha256": "7118a70dc9bc4edc21ae370aaa9c486c4b279300b252319b8ac32e36ea0f1512",
+        "old_native_cas": {
+          "generation": 2,
+          "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+        },
+        "mutation": "rotate",
+        "request_sha256": "d7890b0228001c2e135a74553a9c22c34e7c42f4ad7171b370c2f77699b8fa5c",
+        "wallet_reference": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 3,
+          "key_generation": 2,
+          "state": "unconfigured",
+          "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+          "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        },
+        "relation": "rotated_unconfigured",
+        "observed_at": 122,
+        "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+      },
+      "outcome_utf8": "{\"mutation\":\"rotate\",\"observed_at\":122,\"old_native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"old_wallet_reference_sha256\":\"7118a70dc9bc4edc21ae370aaa9c486c4b279300b252319b8ac32e36ea0f1512\",\"relation\":\"rotated_unconfigured\",\"request_sha256\":\"d7890b0228001c2e135a74553a9c22c34e7c42f4ad7171b370c2f77699b8fa5c\",\"schema\":\"secs.wallet-current-outcome.v3\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"transition_id\":\"00000000000000000000000000000002\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "outcome_sha256": "82b852235576a1c667595c57c548470273eeee2df23e6cebb7620088f1255828",
+      "marker_stages": [
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000002",
+            "stage": "prepared",
+            "mutation": "rotate",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 2,
+              "key_generation": 1,
+              "state": "active",
+              "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+              "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+            },
+            "old_native_cas": {
+              "generation": 2,
+              "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+            },
+            "old_native_image_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": 0,
+              "requested_not_after": 180,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 121,
+            "observed_outcome": null,
+            "target_native": null,
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"rotate\",\"observed_outcome\":null,\"old_native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"old_native_image_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":180,\"requested_not_before\":0,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"prepared\",\"started_at\":121,\"target_native\":null,\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000002\"}",
+          "marker_sha256": "f1d2259d412f30bdc2ebf524547a2b4c7f417e45155a791aa2fa532732c5c581"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000002",
+            "stage": "outcome_recorded",
+            "mutation": "rotate",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 2,
+              "key_generation": 1,
+              "state": "active",
+              "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+              "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+            },
+            "old_native_cas": {
+              "generation": 2,
+              "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+            },
+            "old_native_image_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": 0,
+              "requested_not_after": 180,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 121,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 3,
+                "key_generation": 2,
+                "state": "unconfigured",
+                "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+                "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": null,
+                "delegation_policy_sha256": null
+              },
+              "relation": "rotated_unconfigured",
+              "outcome_sha256": "82b852235576a1c667595c57c548470273eeee2df23e6cebb7620088f1255828",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 3,
+                "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+              },
+              "target_image_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"rotate\",\"observed_outcome\":{\"outcome_sha256\":\"82b852235576a1c667595c57c548470273eeee2df23e6cebb7620088f1255828\",\"relation\":\"rotated_unconfigured\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"old_native_image_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":180,\"requested_not_before\":0,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"outcome_recorded\",\"started_at\":121,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"target_image_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000002\"}",
+          "marker_sha256": "e74ded47b287bef8315d8d37f713ef3e6d79f138e3beea382f87160199b41e70"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000002",
+            "stage": "native_published",
+            "mutation": "rotate",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 2,
+              "key_generation": 1,
+              "state": "active",
+              "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+              "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+              "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+              "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+              "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+            },
+            "old_native_cas": {
+              "generation": 2,
+              "bundle_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54"
+            },
+            "old_native_image_sha256": "b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": 0,
+              "requested_not_after": 180,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 121,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 3,
+                "key_generation": 2,
+                "state": "unconfigured",
+                "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+                "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": null,
+                "delegation_policy_sha256": null
+              },
+              "relation": "rotated_unconfigured",
+              "outcome_sha256": "82b852235576a1c667595c57c548470273eeee2df23e6cebb7620088f1255828",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 3,
+                "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+              },
+              "target_image_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"rotate\",\"observed_outcome\":{\"outcome_sha256\":\"82b852235576a1c667595c57c548470273eeee2df23e6cebb7620088f1255828\",\"relation\":\"rotated_unconfigured\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"generation\":2},\"old_native_image_sha256\":\"b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":180,\"requested_not_before\":0,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"native_published\",\"started_at\":121,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"target_image_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000002\"}",
+          "marker_sha256": "a2b26db2fc542bd48486aca4f7591351781c7538ba74bc162952f9d89029acf3"
+        }
+      ],
+      "policy_binding_preimage_hex": "736563732d77616c6c65742d7472616e736974696f6e2d7461726765742d706f6c6963792d763100000770726f66696c6500000023736563732e77616c6c65742d6e61746976652d7461726765742d706f6c6963792e763100156e61746976655f62756e646c655f70726f66696c650000001c736563732e736572766963652d6f776e65722d62756e646c652e763200147461726765745f706f6c6963795f73686132353600000020cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb00137461726765745f706f6c6963795f62797465730000000800000000000005b900156f6c645f6e61746976655f67656e65726174696f6e00000008000000000000000200186f6c645f6e61746976655f62756e646c655f73686132353600000020b6b482c37faff3714cff9db8123cdcf58ec08b0643f08bac3c795b83e4f1cd54001b6f6c645f77616c6c65745f7265666572656e63655f736861323536000000207118a70dc9bc4edc21ae370aaa9c486c4b279300b252319b8ac32e36ea0f151200086d75746174696f6e00000006726f74617465001577616c6c65745f726571756573745f73686132353600000020d7890b0228001c2e135a74553a9c22c34e7c42f4ad7171b370c2f77699b8fa5c000d7472616e736974696f6e5f69640000001000000000000000000000000000000002",
+      "policy_binding_sha256": "4527916b1ab6442dec7033a4f3950c819ef029587ce5e39839ced651cb6f29b7",
+      "recover_before_outcome_requires_retained_policy_bytes": true,
+      "authority_claim": "public mathematical full-policy/lifecycle DTO only; no actual source/custody/issuer success or qualification"
+    },
+    {
+      "name": "3-configure",
+      "target_policy": {
+        "schema": "secs.wallet-native-target-policy.v1",
+        "native_bundle_profile": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        }
+      },
+      "target_policy_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"native_bundle_profile\":\"secs.service-owner-bundle.v2\",\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.wallet-native-target-policy.v1\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180}",
+      "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484",
+      "target_policy_bytes": 2760,
+      "old_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 3,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 3,
+          "key_generation": 2,
+          "state": "unconfigured",
+          "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+          "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        }
+      },
+      "old_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":3,\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "old_native_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+      "target_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 4,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 4,
+          "key_generation": 2,
+          "state": "active",
+          "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+          "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+          "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+        }
+      },
+      "target_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":4,\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "target_native_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+      "request": {
+        "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+        "requested_not_before": null,
+        "requested_not_after": null,
+        "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+      },
+      "outcome_record": {
+        "schema": "secs.wallet-current-outcome.v3",
+        "transition_id": "00000000000000000000000000000003",
+        "old_wallet_reference_sha256": "e7be77a6cea17056f18d5bc0252a3b5f39922ee2cd03919549aec5669b7e8d03",
+        "old_native_cas": {
+          "generation": 3,
+          "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+        },
+        "mutation": "configure",
+        "request_sha256": "915cddc5af420855c43a0e0f38950c4e02267fda0f29801a8fe51450f45bddac",
+        "wallet_reference": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 4,
+          "key_generation": 2,
+          "state": "active",
+          "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+          "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+          "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+        },
+        "relation": "configured",
+        "observed_at": 123,
+        "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+      },
+      "outcome_utf8": "{\"mutation\":\"configure\",\"observed_at\":123,\"old_native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"old_wallet_reference_sha256\":\"e7be77a6cea17056f18d5bc0252a3b5f39922ee2cd03919549aec5669b7e8d03\",\"relation\":\"configured\",\"request_sha256\":\"915cddc5af420855c43a0e0f38950c4e02267fda0f29801a8fe51450f45bddac\",\"schema\":\"secs.wallet-current-outcome.v3\",\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\",\"transition_id\":\"00000000000000000000000000000003\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "outcome_sha256": "3cbf407580fe4521ffce45442d5d3872c66c8125de340053bc2fc9a8d4ca6cb2",
+      "marker_stages": [
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000003",
+            "stage": "prepared",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 3,
+              "key_generation": 2,
+              "state": "unconfigured",
+              "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+              "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 3,
+              "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+            },
+            "old_native_image_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+            "request": {
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "started_at": 122,
+            "observed_outcome": null,
+            "target_native": null,
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":null,\"old_native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"old_native_image_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"prepared\",\"started_at\":122,\"target_native\":null,\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"transition_id\":\"00000000000000000000000000000003\"}",
+          "marker_sha256": "b3709207f19717178a612b644f0fcd6a7b4e126e8f3c15281f9df4f833e46877"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000003",
+            "stage": "outcome_recorded",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 3,
+              "key_generation": 2,
+              "state": "unconfigured",
+              "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+              "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 3,
+              "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+            },
+            "old_native_image_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+            "request": {
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "started_at": 122,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 4,
+                "key_generation": 2,
+                "state": "active",
+                "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+                "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+                "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+              },
+              "relation": "configured",
+              "outcome_sha256": "3cbf407580fe4521ffce45442d5d3872c66c8125de340053bc2fc9a8d4ca6cb2",
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 4,
+                "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+              },
+              "target_image_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":{\"outcome_sha256\":\"3cbf407580fe4521ffce45442d5d3872c66c8125de340053bc2fc9a8d4ca6cb2\",\"relation\":\"configured\",\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"old_native_image_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"outcome_recorded\",\"started_at\":122,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"target_image_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"transition_id\":\"00000000000000000000000000000003\"}",
+          "marker_sha256": "f049558743627b60055616ec10d26fa463d1c3bc7554ba7b5b04c26fe2b8346f"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000003",
+            "stage": "native_published",
+            "mutation": "configure",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 3,
+              "key_generation": 2,
+              "state": "unconfigured",
+              "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+              "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": null,
+              "delegation_policy_sha256": null
+            },
+            "old_native_cas": {
+              "generation": 3,
+              "bundle_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94"
+            },
+            "old_native_image_sha256": "701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94",
+            "request": {
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "started_at": 122,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 4,
+                "key_generation": 2,
+                "state": "active",
+                "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+                "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": null,
+                "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+                "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+              },
+              "relation": "configured",
+              "outcome_sha256": "3cbf407580fe4521ffce45442d5d3872c66c8125de340053bc2fc9a8d4ca6cb2",
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 4,
+                "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+              },
+              "target_image_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+              "target_policy_sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484",
+              "bytes": 2760
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"configure\",\"observed_outcome\":{\"outcome_sha256\":\"3cbf407580fe4521ffce45442d5d3872c66c8125de340053bc2fc9a8d4ca6cb2\",\"relation\":\"configured\",\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"generation\":3},\"old_native_image_sha256\":\"701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"native_published\",\"started_at\":122,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"target_image_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"target_policy_sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"target_policy\":{\"bytes\":2760,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"54ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e3484\"},\"transition_id\":\"00000000000000000000000000000003\"}",
+          "marker_sha256": "6eaa61f9aab717738c85bdd9b8e28a961cead386eb76652b224f7c347eb3b935"
+        }
+      ],
+      "policy_binding_preimage_hex": "736563732d77616c6c65742d7472616e736974696f6e2d7461726765742d706f6c6963792d763100000770726f66696c6500000023736563732e77616c6c65742d6e61746976652d7461726765742d706f6c6963792e763100156e61746976655f62756e646c655f70726f66696c650000001c736563732e736572766963652d6f776e65722d62756e646c652e763200147461726765745f706f6c6963795f7368613235360000002054ad73d4ac3221b802307143769a601128c6569abe9526dd69e7b543e63e348400137461726765745f706f6c6963795f6279746573000000080000000000000ac800156f6c645f6e61746976655f67656e65726174696f6e00000008000000000000000300186f6c645f6e61746976655f62756e646c655f73686132353600000020701f5cf80474615e13eaa4c6145b29dda6a433e19003d02927f209f71e435b94001b6f6c645f77616c6c65745f7265666572656e63655f73686132353600000020e7be77a6cea17056f18d5bc0252a3b5f39922ee2cd03919549aec5669b7e8d0300086d75746174696f6e00000009636f6e666967757265001577616c6c65745f726571756573745f73686132353600000020915cddc5af420855c43a0e0f38950c4e02267fda0f29801a8fe51450f45bddac000d7472616e736974696f6e5f69640000001000000000000000000000000000000003",
+      "policy_binding_sha256": "9a0f12b505687fb3bfa6eff99f68e527998d4366d2538478fb571121018805c9",
+      "recover_before_outcome_requires_retained_policy_bytes": true,
+      "authority_claim": "public mathematical full-policy/lifecycle DTO only; no actual source/custody/issuer success or qualification"
+    },
+    {
+      "name": "4-revoke",
+      "target_policy": {
+        "schema": "secs.wallet-native-target-policy.v1",
+        "native_bundle_profile": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        }
+      },
+      "target_policy_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"native_bundle_profile\":\"secs.service-owner-bundle.v2\",\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.wallet-native-target-policy.v1\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180}",
+      "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+      "target_policy_bytes": 1465,
+      "old_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [
+          {
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "subject_id": "service:fixture-only",
+            "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null
+          }
+        ],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [
+          {
+            "caller_id": "service:fixture-only",
+            "opcode": 66,
+            "operation": "runtime.run.create.v1",
+            "resource": {
+              "kind": "exact",
+              "value": "runs/run-1"
+            },
+            "effect": "allow",
+            "not_before": 0,
+            "not_after": 175,
+            "status": "active",
+            "authority_source": "receiver_local"
+          }
+        ],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [
+            {
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 0,
+              "revoked": false,
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "rules": [
+            {
+              "active": true,
+              "effect": "allow",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 175,
+              "not_before": 0,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            },
+            {
+              "active": true,
+              "effect": "deny",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_after": 180,
+              "not_before": 165,
+              "operation": "runtime.run.create.v1",
+              "resource": "runs/run-1",
+              "resource_match": "exact",
+              "subject_id": "service:fixture-only"
+            }
+          ],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 4,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 4,
+          "key_generation": 2,
+          "state": "active",
+          "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+          "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": null,
+          "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+          "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+        }
+      },
+      "old_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":4,\"holders\":[{\"algorithm\":\"ed25519\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"revoked_at\":null,\"status\":\"active\",\"subject_id\":\"service:fixture-only\"}],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[{\"authority_source\":\"receiver_local\",\"caller_id\":\"service:fixture-only\",\"effect\":\"allow\",\"not_after\":175,\"not_before\":0,\"opcode\":66,\"operation\":\"runtime.run.create.v1\",\"resource\":{\"kind\":\"exact\",\"value\":\"runs/run-1\"},\"status\":\"active\"}],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[{\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"revoked\":false,\"subject_id\":\"service:fixture-only\"}],\"rules\":[{\"active\":true,\"effect\":\"allow\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":175,\"not_before\":0,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"},{\"active\":true,\"effect\":\"deny\",\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":165,\"operation\":\"runtime.run.create.v1\",\"resource\":\"runs/run-1\",\"resource_match\":\"exact\",\"subject_id\":\"service:fixture-only\"}],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "old_native_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+      "target_native_bundle": {
+        "schema": "secs.service-owner-bundle.v2",
+        "valid_not_before": 0,
+        "valid_until": 180,
+        "application": "runtime",
+        "issuer_node_id": "node:fixture",
+        "selected_issuer_key_id": "issuer:key",
+        "issuers": [
+          {
+            "node_id": "node:fixture",
+            "key_id": "issuer:key",
+            "public_key_hex": "fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565",
+            "algorithm": "ed25519",
+            "status": "active",
+            "not_before": 0,
+            "not_after": 180,
+            "revoked_at": null,
+            "replaced_by": null,
+            "production_authority": true
+          }
+        ],
+        "holders": [],
+        "descriptors": [
+          {
+            "opcode": 66,
+            "name": "runtime.run.create.v1",
+            "payload_schema": "application/json",
+            "output_profile": null,
+            "target_kind": "receiver_production_handler",
+            "required_credentials": [],
+            "required_capabilities": [],
+            "accepted_evidence": [],
+            "required_authority_mode": null,
+            "replay_scope": "session_opcode_nonce",
+            "max_ttl_seconds": 60,
+            "handler_id": "fixture/runtime.run.create.v1",
+            "dev_binding": false,
+            "range": "operator_defined",
+            "disclosure_policy": {
+              "policy_id": "fixture",
+              "policy_version": 1,
+              "permissions": []
+            }
+          }
+        ],
+        "permissions": [],
+        "receiver_policy": {
+          "application": "runtime",
+          "audience": "runtime://receiver-local",
+          "descriptors": [
+            {
+              "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+              "handler_id": "fixture/runtime.run.create.v1",
+              "max_ttl_seconds": 60,
+              "opcode": 66,
+              "operation": "runtime.run.create.v1"
+            }
+          ],
+          "max_ttl_seconds": 60,
+          "not_after": 185,
+          "not_before": 0,
+          "principals": [],
+          "rules": [],
+          "schema": "secs.service-receiver-policy.v1"
+        },
+        "generation": 5,
+        "wallet_current": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 5,
+          "key_generation": 2,
+          "state": "revoked",
+          "current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+          "custody_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": 108,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        }
+      },
+      "target_native_utf8": "{\"application\":\"runtime\",\"descriptors\":[{\"accepted_evidence\":[],\"dev_binding\":false,\"disclosure_policy\":{\"permissions\":[],\"policy_id\":\"fixture\",\"policy_version\":1},\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"name\":\"runtime.run.create.v1\",\"opcode\":66,\"output_profile\":null,\"payload_schema\":\"application/json\",\"range\":\"operator_defined\",\"replay_scope\":\"session_opcode_nonce\",\"required_authority_mode\":null,\"required_capabilities\":[],\"required_credentials\":[],\"target_kind\":\"receiver_production_handler\"}],\"generation\":5,\"holders\":[],\"issuer_node_id\":\"node:fixture\",\"issuers\":[{\"algorithm\":\"ed25519\",\"key_id\":\"issuer:key\",\"node_id\":\"node:fixture\",\"not_after\":180,\"not_before\":0,\"production_authority\":true,\"public_key_hex\":\"fa4834147f6e690c3693eff61336046403cd8ae2a14f31b3c407358569239565\",\"replaced_by\":null,\"revoked_at\":null,\"status\":\"active\"}],\"permissions\":[],\"receiver_policy\":{\"application\":\"runtime\",\"audience\":\"runtime://receiver-local\",\"descriptors\":[{\"fingerprint\":\"401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5\",\"handler_id\":\"fixture/runtime.run.create.v1\",\"max_ttl_seconds\":60,\"opcode\":66,\"operation\":\"runtime.run.create.v1\"}],\"max_ttl_seconds\":60,\"not_after\":185,\"not_before\":0,\"principals\":[],\"rules\":[],\"schema\":\"secs.service-receiver-policy.v1\"},\"schema\":\"secs.service-owner-bundle.v2\",\"selected_issuer_key_id\":\"issuer:key\",\"valid_not_before\":0,\"valid_until\":180,\"wallet_current\":{\"application\":\"runtime\",\"current_sha256\":\"95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f\",\"custody_state_sha256\":\"02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":108,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"revoked\",\"state_revision\":5,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "target_native_sha256": "83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a",
+      "request": {
+        "owner_input_sha256": null,
+        "requested_not_before": null,
+        "requested_not_after": null,
+        "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+      },
+      "outcome_record": {
+        "schema": "secs.wallet-current-outcome.v3",
+        "transition_id": "00000000000000000000000000000004",
+        "old_wallet_reference_sha256": "f0a34a7a26140c24962948e5142c3e2b74fd2696104e44320c96eb6acc621cd9",
+        "old_native_cas": {
+          "generation": 4,
+          "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+        },
+        "mutation": "revoke",
+        "request_sha256": "e964858970ae31946c08aeabb80eedb3a095d8e344d851808c59422ccb3e5b91",
+        "wallet_reference": {
+          "schema": "secs.wallet-current-reference.v2",
+          "store_id": "00112233445566778899aabbccddeeff",
+          "subject_id": "service:fixture-only",
+          "purpose": "secs-service-holder-proof.v1",
+          "application": "runtime",
+          "state_revision": 5,
+          "key_generation": 2,
+          "state": "revoked",
+          "current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+          "custody_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+          "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+          "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+          "not_before": 0,
+          "not_after": 180,
+          "revoked_at": 108,
+          "owner_input_sha256": null,
+          "delegation_policy_sha256": null
+        },
+        "relation": "revoked",
+        "observed_at": 124,
+        "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+      },
+      "outcome_utf8": "{\"mutation\":\"revoke\",\"observed_at\":124,\"old_native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"old_wallet_reference_sha256\":\"f0a34a7a26140c24962948e5142c3e2b74fd2696104e44320c96eb6acc621cd9\",\"relation\":\"revoked\",\"request_sha256\":\"e964858970ae31946c08aeabb80eedb3a095d8e344d851808c59422ccb3e5b91\",\"schema\":\"secs.wallet-current-outcome.v3\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"transition_id\":\"00000000000000000000000000000004\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f\",\"custody_state_sha256\":\"02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":108,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"revoked\",\"state_revision\":5,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}}",
+      "outcome_sha256": "f7764ed128adfea487472ffdc4185572068f8810f09e6f271c96b0c60c346b4c",
+      "marker_stages": [
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000004",
+            "stage": "prepared",
+            "mutation": "revoke",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 4,
+              "key_generation": 2,
+              "state": "active",
+              "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+              "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+            },
+            "old_native_cas": {
+              "generation": 4,
+              "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+            },
+            "old_native_image_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 123,
+            "observed_outcome": null,
+            "target_native": null,
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"revoke\",\"observed_outcome\":null,\"old_native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"old_native_image_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"prepared\",\"started_at\":123,\"target_native\":null,\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000004\"}",
+          "marker_sha256": "c7c912aff8a6da0c05790be8764c7a0597bd39f6f8ec5cb84ff4a1d1d7d6775e"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000004",
+            "stage": "outcome_recorded",
+            "mutation": "revoke",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 4,
+              "key_generation": 2,
+              "state": "active",
+              "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+              "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+            },
+            "old_native_cas": {
+              "generation": 4,
+              "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+            },
+            "old_native_image_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 123,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 5,
+                "key_generation": 2,
+                "state": "revoked",
+                "current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+                "custody_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": 108,
+                "owner_input_sha256": null,
+                "delegation_policy_sha256": null
+              },
+              "relation": "revoked",
+              "outcome_sha256": "f7764ed128adfea487472ffdc4185572068f8810f09e6f271c96b0c60c346b4c",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 5,
+                "bundle_sha256": "83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a"
+              },
+              "target_image_sha256": "83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"revoke\",\"observed_outcome\":{\"outcome_sha256\":\"f7764ed128adfea487472ffdc4185572068f8810f09e6f271c96b0c60c346b4c\",\"relation\":\"revoked\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f\",\"custody_state_sha256\":\"02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":108,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"revoked\",\"state_revision\":5,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"old_native_image_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"outcome_recorded\",\"started_at\":123,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a\",\"generation\":5},\"target_image_sha256\":\"83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000004\"}",
+          "marker_sha256": "f211475c223b559309136229e2f186d57ff1e5a4e7c084e5da86c0512f7f0e2e"
+        },
+        {
+          "marker": {
+            "schema": "secs.wallet-current-transition.v3",
+            "transition_id": "00000000000000000000000000000004",
+            "stage": "native_published",
+            "mutation": "revoke",
+            "old_wallet_reference": {
+              "schema": "secs.wallet-current-reference.v2",
+              "store_id": "00112233445566778899aabbccddeeff",
+              "subject_id": "service:fixture-only",
+              "purpose": "secs-service-holder-proof.v1",
+              "application": "runtime",
+              "state_revision": 4,
+              "key_generation": 2,
+              "state": "active",
+              "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+              "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+              "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+              "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+              "not_before": 0,
+              "not_after": 180,
+              "revoked_at": null,
+              "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+              "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+            },
+            "old_native_cas": {
+              "generation": 4,
+              "bundle_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561"
+            },
+            "old_native_image_sha256": "6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561",
+            "request": {
+              "owner_input_sha256": null,
+              "requested_not_before": null,
+              "requested_not_after": null,
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "started_at": 123,
+            "observed_outcome": {
+              "wallet_reference": {
+                "schema": "secs.wallet-current-reference.v2",
+                "store_id": "00112233445566778899aabbccddeeff",
+                "subject_id": "service:fixture-only",
+                "purpose": "secs-service-holder-proof.v1",
+                "application": "runtime",
+                "state_revision": 5,
+                "key_generation": 2,
+                "state": "revoked",
+                "current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+                "custody_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+                "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+                "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+                "not_before": 0,
+                "not_after": 180,
+                "revoked_at": 108,
+                "owner_input_sha256": null,
+                "delegation_policy_sha256": null
+              },
+              "relation": "revoked",
+              "outcome_sha256": "f7764ed128adfea487472ffdc4185572068f8810f09e6f271c96b0c60c346b4c",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_native": {
+              "native_cas": {
+                "generation": 5,
+                "bundle_sha256": "83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a"
+              },
+              "target_image_sha256": "83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a",
+              "target_policy_sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb"
+            },
+            "target_policy": {
+              "profile": "secs.wallet-native-target-policy.v1",
+              "sha256": "cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb",
+              "bytes": 1465
+            }
+          },
+          "marker_utf8": "{\"mutation\":\"revoke\",\"observed_outcome\":{\"outcome_sha256\":\"f7764ed128adfea487472ffdc4185572068f8810f09e6f271c96b0c60c346b4c\",\"relation\":\"revoked\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\",\"wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f\",\"custody_state_sha256\":\"02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":108,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"revoked\",\"state_revision\":5,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}},\"old_native_cas\":{\"bundle_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"generation\":4},\"old_native_image_sha256\":\"6e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561\",\"old_wallet_reference\":{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"},\"request\":{\"owner_input_sha256\":null,\"requested_not_after\":null,\"requested_not_before\":null,\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"schema\":\"secs.wallet-current-transition.v3\",\"stage\":\"native_published\",\"started_at\":123,\"target_native\":{\"native_cas\":{\"bundle_sha256\":\"83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a\",\"generation\":5},\"target_image_sha256\":\"83741930b0068fb7b474194c6bcbc018cf7c1387ef25d8fc6f633a574aa3b48a\",\"target_policy_sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"target_policy\":{\"bytes\":1465,\"profile\":\"secs.wallet-native-target-policy.v1\",\"sha256\":\"cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb\"},\"transition_id\":\"00000000000000000000000000000004\"}",
+          "marker_sha256": "2755e3f64f5d715b6f5d0642f4e3b533eb57e3439e6dd6a57a33272b473f09c3"
+        }
+      ],
+      "policy_binding_preimage_hex": "736563732d77616c6c65742d7472616e736974696f6e2d7461726765742d706f6c6963792d763100000770726f66696c6500000023736563732e77616c6c65742d6e61746976652d7461726765742d706f6c6963792e763100156e61746976655f62756e646c655f70726f66696c650000001c736563732e736572766963652d6f776e65722d62756e646c652e763200147461726765745f706f6c6963795f73686132353600000020cdd4a758d0b18b94f7041ad856d3c481d5e3dfef3985c90dca64f68ced491beb00137461726765745f706f6c6963795f62797465730000000800000000000005b900156f6c645f6e61746976655f67656e65726174696f6e00000008000000000000000400186f6c645f6e61746976655f62756e646c655f736861323536000000206e14f39910375dc8af14caa48c23a9ffc7a472fafcd7863384d3e553d6c24561001b6f6c645f77616c6c65745f7265666572656e63655f73686132353600000020f0a34a7a26140c24962948e5142c3e2b74fd2696104e44320c96eb6acc621cd900086d75746174696f6e000000067265766f6b65001577616c6c65745f726571756573745f73686132353600000020e964858970ae31946c08aeabb80eedb3a095d8e344d851808c59422ccb3e5b91000d7472616e736974696f6e5f69640000001000000000000000000000000000000004",
+      "policy_binding_sha256": "024b0bb3151dde78eff2662682a19cac3c8374b7dff4d5b309c4efdd7e7d936b",
+      "recover_before_outcome_requires_retained_policy_bytes": true,
+      "authority_claim": "public mathematical full-policy/lifecycle DTO only; no actual source/custody/issuer success or qualification"
+    }
+  ]
+}

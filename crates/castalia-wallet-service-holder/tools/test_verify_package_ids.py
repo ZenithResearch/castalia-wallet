@@ -87,5 +87,33 @@ class PackageIdentityTests(unittest.TestCase):
     def test_duplicate_package_ID_denies(self):
         self.check_mutation(lambda data: data['packages'].append(copy.deepcopy(data['packages'][0])), 'duplicate package ID')
 
+
+    def test_historical_native_server_manifest_denies(self):
+        def mutate(data):
+            next(p for p in data['packages'] if p['name'] == 'server')['manifest_path'] = str(ROOT / 'crates/castalia-wallet-service-holder/vendor/secS-service-b/server/Cargo.toml')
+        self.check_mutation(mutate, 'wrong canonical manifest')
+
+    def test_bootstrap_native_server_manifest_denies(self):
+        def mutate(data):
+            next(p for p in data['packages'] if p['name'] == 'server')['manifest_path'] = str(ROOT / 'crates/castalia-wallet-service-holder/vendor/secS-service-authority-afeb6e6/server/Cargo.toml')
+        self.check_mutation(mutate, 'wrong canonical manifest')
+
+
+    def test_resume20d_native_server_manifest_denies(self):
+        def mutate(data):
+            next(p for p in data['packages'] if p['name'] == 'server')['manifest_path'] = str(ROOT / 'crates/castalia-wallet-service-holder/vendor/secS-service-authority-20d064d/server/Cargo.toml')
+        self.check_mutation(mutate, 'wrong canonical manifest')
+
+
+    def test_query_eb8_native_server_manifest_denies_after_capacity_selection(self):
+        def mutate(data):
+            next(p for p in data['packages'] if p['name'] == 'server')['manifest_path'] = str(ROOT / 'crates/castalia-wallet-service-holder/vendor/secS-service-authority-eb8d839/server/Cargo.toml')
+        self.check_mutation(mutate, 'wrong canonical manifest')
+
+    def test_capacity_native_server_manifest_denies_after_workspace_selection(self):
+        def mutate(data):
+            next(p for p in data['packages'] if p['name'] == 'server')['manifest_path'] = str(ROOT / 'crates/castalia-wallet-service-holder/vendor/secS-service-authority-a7100a7/server/Cargo.toml')
+        self.check_mutation(mutate, 'wrong canonical manifest')
+
 if __name__ == '__main__':
     unittest.main()

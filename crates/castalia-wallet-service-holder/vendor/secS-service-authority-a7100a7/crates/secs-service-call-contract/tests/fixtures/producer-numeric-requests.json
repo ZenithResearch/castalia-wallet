@@ -1,0 +1,19 @@
+{
+  "schema": "secs.public-producer-numeric-fixtures.v1",
+  "producers": [
+    "process-runtime.domain.Snapshot.of",
+    "service-management.contracts.Command.parse/as_dict/canonical"
+  ],
+  "requests": [
+    {
+      "application": "runtime",
+      "request": "{\"expected_version\":null,\"operation\":\"run.create\",\"payload\":{\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"🌸\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"run_id\":\"run-1\"},\"request_id\":\"numeric-runtime\",\"resource\":\"runs/run-1\",\"schema\":\"runtime.command.v1\"}",
+      "sha256": "fc0b165b07a09a0133dcb75359ac9c76eb25bfa460850aeacc3286dfcf5a9f4a"
+    },
+    {
+      "application": "service",
+      "request": "{\"expected_version\":1,\"operation\":\"case.plan.approve\",\"payload\":{\"carry_forward\":[],\"inputs\":{\"decimal\":1.25,\"exponent\":1e-07,\"integral_float\":1.0,\"large_integer\":1267650600228229401496703205376,\"negative_zero\":-0.0,\"nested\":[1e+100,{\"price\":0.1}],\"unicode\":\"🌸\"},\"pin\":{\"compilation_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"process_id\":\"development-check\",\"process_version\":\"development-v1\"},\"reason\":\"Numeric contract fixture\",\"revision_id\":\"revision-1\"},\"request_id\":\"numeric-service\",\"resource\":{\"id\":\"case-1\",\"kind\":\"Case\"},\"schema\":\"service.command.v1\"}",
+      "sha256": "c69a0053f7ae58d1112a43b338d196669f1f226ad6215d7ad427471eec67644b"
+    }
+  ]
+}

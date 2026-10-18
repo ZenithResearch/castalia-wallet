@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["core", "client", "server", "permissions", "panel", "crates/secs-service-call-contract", "vendor/castalia-wallet-private-files-9cc8140"]
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+bincode = "1"
+ed25519-dalek = "2"
+sha2 = "0.11"
+x25519-dalek = "2"
+chacha20poly1305 = "0.11"
+rs-merkle = "1"
+rand = "0.8"
+uniffi = "0.32"

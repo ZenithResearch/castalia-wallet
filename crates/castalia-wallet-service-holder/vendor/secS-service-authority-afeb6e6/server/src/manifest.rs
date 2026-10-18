@@ -1,0 +1,446 @@
+//! Receiver-local operation descriptors and opcode governance.
+//!
+//! The manifest is receiver-local: opcodes are compact `u8` routing keys, while
+//! `OperationDescriptor` carries the semantic operation contract the receiver
+//! assigns to each key.
+
+use crate::dregg_authority::AuthorityMode;
+use crate::privacy::DisclosurePolicy;
+use crate::verifier::VerificationError;
+use sha2::{Digest, Sha256};
+use std::collections::BTreeMap;
+
+pub const CORE_STANDARDIZED_START: u8 = 0x01;
+pub const CORE_STANDARDIZED_END: u8 = 0x0A;
+pub const CASTALIA_STANDARD_CANDIDATE_START: u8 = 0x0B;
+pub const CASTALIA_STANDARD_CANDIDATE_END: u8 = 0x3F;
+pub const OPERATOR_DEFINED_START: u8 = 0x40;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OpcodeRange {
+    Reserved,
+    CoreStandardized,
+    CastaliaStandardCandidate,
+    OperatorDefined,
+}
+
+impl OpcodeRange {
+    pub fn classify(opcode: u8) -> Self {
+        match opcode {
+            CORE_STANDARDIZED_START..=CORE_STANDARDIZED_END => Self::CoreStandardized,
+            CASTALIA_STANDARD_CANDIDATE_START..=CASTALIA_STANDARD_CANDIDATE_END => {
+                Self::CastaliaStandardCandidate
+            }
+            OPERATOR_DEFINED_START..=u8::MAX => Self::OperatorDefined,
+            _ => Self::Reserved,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OperationName(String);
+
+impl OperationName {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TargetKind {
+    /// Legacy prototype example handlers (`0x01`/`0x02`): prototype-evidence
+    /// only, rejected by `production_verified`.
+    LegacyCoreExample,
+    /// Local-dev / dev-subprocess handlers (`dev/*`, `candidate.dev.*`):
+    /// always `dev_binding: true`, never registered in production runtime.
+    LocalDevProcess,
+    /// Production-shaped receiver handler (#82): a non-dev, non-legacy target
+    /// whose authority still requires verifier signatures, evidence policy,
+    /// descriptor-local checks, replay/expiry/session checks, and #77's
+    /// fail-closed descriptor-only runtime guard where applicable. Target kind
+    /// alone is never sufficient authority — it only stops production-shaped
+    /// descriptors like canonical `0x44 membership.provision` from being
+    /// mislabeled as local-dev process targets.
+    ReceiverProductionHandler,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReplayScope {
+    SessionOpcodeNonce,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OutputProfile {
+    pub schema_id: String,
+    pub max_output_bytes: usize,
+    pub max_execution_response_bytes: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OperationDescriptor {
+    pub opcode: u8,
+    pub name: OperationName,
+    pub payload_schema: Option<String>,
+    pub output_profile: Option<OutputProfile>,
+    pub target_kind: TargetKind,
+    pub required_credentials: Vec<String>,
+    pub required_capabilities: Vec<String>,
+    pub accepted_evidence: Vec<String>,
+    /// Receiver-held minimum authority mode for this route. `None` preserves
+    /// existing routes that do not consume authority-mode-labelled evidence.
+    pub required_authority_mode: Option<AuthorityMode>,
+    pub replay_scope: ReplayScope,
+    pub max_ttl_seconds: u64,
+    pub handler_id: String,
+    pub dev_binding: bool,
+    pub range: OpcodeRange,
+    pub disclosure_policy: DisclosurePolicy,
+}
+
+impl OperationDescriptor {
+    pub fn validate(&self) -> Result<(), VerificationError> {
+        if let Some(profile) = &self.output_profile {
+            if profile.schema_id.is_empty()
+                || profile.max_output_bytes == 0
+                || profile.max_execution_response_bytes == 0
+            {
+                return Err(VerificationError::InternalError);
+            }
+        }
+        Ok(())
+    }
+
+    /// Canonical authorization fingerprint (#81): a deterministic SHA-256
+    /// over every routing/authorization-relevant descriptor field, computed
+    /// from canonical length-prefixed bytes (declared Vec order; no map
+    /// iteration, no Debug formatting). Carried in `VerifiedCallContext` at
+    /// verification time and re-checked against the active manifest before
+    /// any route side effects, so a signed context cannot ride on stale
+    /// descriptor semantics. Contains no payload or evidence material.
+    pub fn authorization_fingerprint(&self) -> String {
+        const VERSION: &str = "secs-descriptor-fingerprint-v1";
+        let mut bytes = Vec::new();
+        let mut field = |name: &str, value: &str| {
+            bytes.extend_from_slice(name.as_bytes());
+            bytes.push(b':');
+            bytes.extend_from_slice(value.len().to_string().as_bytes());
+            bytes.push(b':');
+            bytes.extend_from_slice(value.as_bytes());
+            bytes.push(b'\n');
+        };
+        field("version", VERSION);
+        field("opcode", &format!("{:02x}", self.opcode));
+        field("operation", self.name.as_str());
+        field(
+            "payload_schema",
+            self.payload_schema.as_deref().unwrap_or(""),
+        );
+        field(
+            "output_profile_present",
+            if self.output_profile.is_some() {
+                "true"
+            } else {
+                "false"
+            },
+        );
+        if let Some(profile) = &self.output_profile {
+            field("output_schema_id", &profile.schema_id);
+            field("output_max_bytes", &profile.max_output_bytes.to_string());
+            field(
+                "output_max_execution_response_bytes",
+                &profile.max_execution_response_bytes.to_string(),
+            );
+        }
+        field("target_kind", target_kind_label(self.target_kind));
+        for credential in &self.required_credentials {
+            field("required_credential", credential);
+        }
+        for capability in &self.required_capabilities {
+            field("required_capability", capability);
+        }
+        for evidence in &self.accepted_evidence {
+            field("accepted_evidence", evidence);
+        }
+        field(
+            "required_authority_mode",
+            self.required_authority_mode
+                .map(|mode| mode.as_str())
+                .unwrap_or(""),
+        );
+        field(
+            "replay_scope",
+            replay_scope_fingerprint_label(self.replay_scope),
+        );
+        field("max_ttl_seconds", &self.max_ttl_seconds.to_string());
+        field("handler_id", &self.handler_id);
+        field(
+            "dev_binding",
+            if self.dev_binding { "true" } else { "false" },
+        );
+        field("range", opcode_range_label(self.range));
+        field("disclosure_policy_id", &self.disclosure_policy.policy_id);
+        field(
+            "disclosure_policy_version",
+            &self.disclosure_policy.policy_version.to_string(),
+        );
+        for permission in &self.disclosure_policy.permissions {
+            field(
+                "disclosure_permission",
+                &format!(
+                    "{}:{}:{}",
+                    permission.class.as_str(),
+                    permission.surface.as_str(),
+                    permission.representation.as_str()
+                ),
+            );
+        }
+
+        let digest = Sha256::digest(&bytes);
+        let hex: String = digest.iter().map(|byte| format!("{byte:02x}")).collect();
+        format!("descriptor:sha256:{hex}")
+    }
+}
+
+fn target_kind_label(kind: TargetKind) -> &'static str {
+    match kind {
+        TargetKind::LegacyCoreExample => "legacy_core_example",
+        TargetKind::LocalDevProcess => "local_dev_process",
+        TargetKind::ReceiverProductionHandler => "receiver_production_handler",
+    }
+}
+
+fn replay_scope_fingerprint_label(scope: ReplayScope) -> &'static str {
+    match scope {
+        ReplayScope::SessionOpcodeNonce => "session_opcode_nonce",
+    }
+}
+
+fn opcode_range_label(range: OpcodeRange) -> &'static str {
+    match range {
+        OpcodeRange::Reserved => "reserved",
+        OpcodeRange::CoreStandardized => "core_standardized",
+        OpcodeRange::CastaliaStandardCandidate => "castalia_standard_candidate",
+        OpcodeRange::OperatorDefined => "operator_defined",
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ReceiverManifest {
+    descriptors: BTreeMap<u8, OperationDescriptor>,
+}
+
+impl ReceiverManifest {
+    pub fn new(descriptors: impl IntoIterator<Item = OperationDescriptor>) -> Self {
+        let descriptors = descriptors
+            .into_iter()
+            .map(|descriptor| (descriptor.opcode, descriptor))
+            .collect();
+        Self { descriptors }
+    }
+
+    pub fn default_v0() -> Self {
+        Self::new([
+            legacy_descriptor(0x01, "legacy.generate", "legacy/generate"),
+            legacy_descriptor(0x02, "legacy.chat", "legacy/chat"),
+            dev_candidate_descriptor(0x10, "candidate.dev.bash_echo", None, "dev/bash-echo"),
+            dev_candidate_descriptor(
+                0x20,
+                "candidate.dev.json_validate",
+                Some("application/json"),
+                "dev/json-validate",
+            ),
+            dev_candidate_descriptor(0x30, "candidate.dev.jq_identity", None, "dev/jq-identity"),
+            membership_provision_descriptor(),
+            node_registration_descriptor(),
+        ])
+    }
+
+    /// Return this manifest with `descriptor` installed (replacing any existing
+    /// descriptor at the same opcode). Used to add explicitly-installed
+    /// dev/demo descriptors (e.g. `demo_file_write_descriptor`) to a base
+    /// manifest without mutating `default_v0`.
+    pub fn with_descriptor(mut self, descriptor: OperationDescriptor) -> Self {
+        self.descriptors.insert(descriptor.opcode, descriptor);
+        self
+    }
+
+    pub fn lookup(&self, opcode: u8) -> Result<&OperationDescriptor, VerificationError> {
+        self.descriptors
+            .get(&opcode)
+            .ok_or(VerificationError::UnknownOperation)
+    }
+}
+
+fn legacy_descriptor(opcode: u8, name: &str, handler_id: &str) -> OperationDescriptor {
+    OperationDescriptor {
+        opcode,
+        name: OperationName::new(name),
+        payload_schema: None,
+        output_profile: None,
+        target_kind: TargetKind::LegacyCoreExample,
+        required_credentials: vec!["legacy.prototype".to_string()],
+        required_capabilities: vec!["legacy.execute".to_string()],
+        accepted_evidence: vec!["prototype-proof-envelope".to_string()],
+        required_authority_mode: None,
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: 3600,
+        handler_id: handler_id.to_string(),
+        dev_binding: false,
+        range: OpcodeRange::classify(opcode),
+        disclosure_policy: DisclosurePolicy::default_i02(),
+    }
+}
+
+/// Fixture/dev-bounded demo descriptor accepting Dregg-shaped receipt
+/// evidence (M12.3.5). **Not** part of [`ReceiverManifest::default_v0`]: a
+/// demo or test installs it explicitly, and `dev_binding: true` means
+/// `production_verified` rejects it like every other dev descriptor — the
+/// existing descriptors are never weakened by the Dregg-shaped seam.
+pub fn dregg_demo_descriptor(opcode: u8) -> OperationDescriptor {
+    OperationDescriptor {
+        opcode,
+        name: OperationName::new("candidate.dev.dregg_receipt_demo"),
+        payload_schema: Some("application/json".to_string()),
+        output_profile: None,
+        target_kind: TargetKind::LocalDevProcess,
+        required_credentials: vec!["prototype.local-dev".to_string()],
+        required_capabilities: vec!["dev.execute".to_string()],
+        accepted_evidence: vec!["dregg_receipt".to_string()],
+        required_authority_mode: None,
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: 300,
+        handler_id: "dev/bash-echo".to_string(),
+        dev_binding: true,
+        range: OpcodeRange::classify(opcode),
+        disclosure_policy: DisclosurePolicy::default_i02(),
+    }
+}
+
+/// Canonical handler id for the M13 sandboxed `demo.file.write` demo handler.
+pub const DEMO_FILE_WRITE_HANDLER_ID: &str = "demo/file-write";
+
+/// M13.2 sandboxed `demo.file.write` demo descriptor. **Not** part of
+/// [`ReceiverManifest::default_v0`]: M13.3 installs it explicitly into the demo
+/// manifest, exactly like [`dregg_demo_descriptor`]. It is `dev_binding: true`
+/// so `production_verified` rejects it — this is a permission-enforcement demo
+/// handler, never production filesystem authority.
+pub fn demo_file_write_descriptor(opcode: u8) -> OperationDescriptor {
+    OperationDescriptor {
+        opcode,
+        name: OperationName::new("demo.file.write"),
+        payload_schema: Some("application/json".to_string()),
+        output_profile: None,
+        target_kind: TargetKind::LocalDevProcess,
+        required_credentials: vec!["prototype.local-dev".to_string()],
+        required_capabilities: vec!["demo.file.write".to_string()],
+        accepted_evidence: vec!["prototype-proof-envelope".to_string()],
+        required_authority_mode: None,
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: 300,
+        handler_id: DEMO_FILE_WRITE_HANDLER_ID.to_string(),
+        dev_binding: true,
+        range: OpcodeRange::classify(opcode),
+        disclosure_policy: DisclosurePolicy::default_i02(),
+    }
+}
+
+fn dev_candidate_descriptor(
+    opcode: u8,
+    name: &str,
+    payload_schema: Option<&str>,
+    handler_id: &str,
+) -> OperationDescriptor {
+    OperationDescriptor {
+        opcode,
+        name: OperationName::new(name),
+        payload_schema: payload_schema.map(ToString::to_string),
+        output_profile: None,
+        target_kind: TargetKind::LocalDevProcess,
+        required_credentials: vec!["prototype.local-dev".to_string()],
+        required_capabilities: vec!["dev.execute".to_string()],
+        accepted_evidence: vec!["prototype-proof-envelope".to_string()],
+        required_authority_mode: None,
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: 300,
+        handler_id: handler_id.to_string(),
+        dev_binding: true,
+        range: OpcodeRange::classify(opcode),
+        disclosure_policy: DisclosurePolicy::default_i02(),
+    }
+}
+
+/// Canonical `0x44 membership.provision` descriptor (#80): the single
+/// constructor shared by `ReceiverManifest::default_v0()` and the Track I
+/// test fixtures, so the active manifest and tests cannot drift apart.
+///
+/// #143 boundary: `accepted_evidence` documents the local/helper API evidence
+/// contract only. It is not live TCP evidence-ref/public-input support; #162
+/// or an explicit #144 non-goal owns live ingress propagation into the
+/// evidence-backed verifier path.
+pub fn membership_provision_descriptor() -> OperationDescriptor {
+    const OPCODE: u8 = 0x44;
+    OperationDescriptor {
+        opcode: OPCODE,
+        name: OperationName::new("membership.provision"),
+        payload_schema: Some("application/json".to_string()),
+        output_profile: None,
+        target_kind: TargetKind::ReceiverProductionHandler,
+        required_credentials: vec![
+            "trusted.membership".to_string(),
+            "wallet.presentation".to_string(),
+            "dregg.authority".to_string(),
+        ],
+        required_capabilities: vec![
+            "membership.provision".to_string(),
+            "dregg_authority".to_string(),
+        ],
+        accepted_evidence: vec![
+            "wallet_presentation".to_string(),
+            "membership_credential".to_string(),
+            "dregg_authority".to_string(),
+        ],
+        required_authority_mode: None,
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: 300,
+        handler_id: "membership/provision".to_string(),
+        dev_binding: false,
+        range: OpcodeRange::classify(OPCODE),
+        disclosure_policy: DisclosurePolicy::default_i02(),
+    }
+}
+
+/// Canonical I14 receiver-local node-registration descriptor. Its
+/// `local_fixture` authority mode is an honest fixture policy label, not live
+/// source transport or federation-finality evidence.
+pub fn node_registration_descriptor() -> OperationDescriptor {
+    use crate::node_registration::{
+        NODE_REGISTRATION_DISCLOSURE_POLICY_ID, NODE_REGISTRATION_HANDLER_ID,
+        NODE_REGISTRATION_MAX_AGE_SECONDS, NODE_REGISTRATION_OPCODE, NODE_REGISTRATION_OPERATION,
+        NODE_REGISTRATION_PAYLOAD_SCHEMA,
+    };
+
+    OperationDescriptor {
+        opcode: NODE_REGISTRATION_OPCODE,
+        name: OperationName::new(NODE_REGISTRATION_OPERATION),
+        payload_schema: Some(NODE_REGISTRATION_PAYLOAD_SCHEMA.to_string()),
+        output_profile: None,
+        target_kind: TargetKind::ReceiverProductionHandler,
+        required_credentials: vec!["receiver-held.node-registration".to_string()],
+        required_capabilities: vec![NODE_REGISTRATION_OPERATION.to_string()],
+        accepted_evidence: vec!["dregg_authority".to_string()],
+        required_authority_mode: Some(AuthorityMode::LocalFixture),
+        replay_scope: ReplayScope::SessionOpcodeNonce,
+        max_ttl_seconds: NODE_REGISTRATION_MAX_AGE_SECONDS,
+        handler_id: NODE_REGISTRATION_HANDLER_ID.to_string(),
+        dev_binding: false,
+        range: OpcodeRange::classify(NODE_REGISTRATION_OPCODE),
+        disclosure_policy: DisclosurePolicy::deny_by_default(
+            NODE_REGISTRATION_DISCLOSURE_POLICY_ID,
+            1,
+        ),
+    }
+}

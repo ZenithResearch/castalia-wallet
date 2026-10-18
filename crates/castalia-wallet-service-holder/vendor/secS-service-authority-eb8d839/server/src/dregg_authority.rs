@@ -1,0 +1,907 @@
+use crate::verifier::VerificationError;
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use std::collections::BTreeSet;
+use std::fmt;
+use std::path::{Path, PathBuf};
+use std::str::FromStr;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DreggAuthorityStatus {
+    Active,
+    Revoked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DreggAuthorityRevocationStatus {
+    Active,
+    Revoked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DreggAuthorityFinalityStatus {
+    Final,
+    NotFinal,
+    Equivocated,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DreggAuthorityRevocationVerifierMode {
+    FixtureStatusOnly,
+    ExpectedRootBinding,
+    LiveRevocationVerifierRequired,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AuthorityMode {
+    LocalFixture,
+    SignedSource,
+    SoloVerifiedReceipt,
+    FederationCheckpoint,
+    LightClientVerified,
+    RecursiveProofCarryingState,
+}
+
+impl AuthorityMode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::LocalFixture => "local_fixture",
+            Self::SignedSource => "signed_source",
+            Self::SoloVerifiedReceipt => "solo_verified_receipt",
+            Self::FederationCheckpoint => "federation_checkpoint",
+            Self::LightClientVerified => "light_client_verified",
+            Self::RecursiveProofCarryingState => "recursive_proof_carrying_state",
+        }
+    }
+
+    pub fn satisfies_required_mode(self, required: AuthorityMode) -> Result<(), VerificationError> {
+        if self.is_reserved() || required.is_reserved() {
+            return Err(VerificationError::ReservedAuthorityMode);
+        }
+        if self == required {
+            Ok(())
+        } else {
+            Err(VerificationError::AuthorityModeDowngrade)
+        }
+    }
+
+    pub fn from_verified_summary(fields: &[String]) -> Result<Self, VerificationError> {
+        let mut labels = fields
+            .iter()
+            .filter_map(|field| field.strip_prefix("authority_mode:"));
+        let label = labels
+            .next()
+            .ok_or(VerificationError::UnsupportedAuthorityMode)?;
+        if labels.next().is_some() {
+            return Err(VerificationError::UnsupportedAuthorityMode);
+        }
+        label.parse()
+    }
+
+    fn is_reserved(self) -> bool {
+        matches!(
+            self,
+            AuthorityMode::LightClientVerified | AuthorityMode::RecursiveProofCarryingState
+        )
+    }
+}
+
+impl FromStr for AuthorityMode {
+    type Err = VerificationError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "local_fixture" => Ok(Self::LocalFixture),
+            "signed_source" => Ok(Self::SignedSource),
+            "solo_verified_receipt" => Ok(Self::SoloVerifiedReceipt),
+            "federation_checkpoint" => Ok(Self::FederationCheckpoint),
+            "light_client_verified" => Ok(Self::LightClientVerified),
+            "recursive_proof_carrying_state" => Ok(Self::RecursiveProofCarryingState),
+            _ => Err(VerificationError::UnsupportedAuthorityMode),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AuthorityModePolicyDecision {
+    observed: AuthorityMode,
+    required: AuthorityMode,
+    result: Result<(), VerificationError>,
+}
+
+impl AuthorityModePolicyDecision {
+    pub fn evaluate(observed: AuthorityMode, required: AuthorityMode) -> Self {
+        Self {
+            observed,
+            required,
+            result: observed.satisfies_required_mode(required),
+        }
+    }
+
+    pub fn is_satisfied(&self) -> bool {
+        self.result.is_ok()
+    }
+
+    pub fn reason(&self) -> Option<&'static str> {
+        self.result
+            .as_ref()
+            .err()
+            .map(VerificationError::reason_code)
+    }
+
+    pub fn redacted_summary_fields(&self) -> Vec<String> {
+        let mut fields = vec![
+            format!("authority_mode:{}", self.observed.as_str()),
+            format!("required_authority_mode:{}", self.required.as_str()),
+            format!("authority_mode_satisfied:{}", self.is_satisfied()),
+        ];
+        if let Some(reason) = self.reason() {
+            fields.push(format!("reason:{reason}"));
+        }
+        fields
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TopologyAuthorityObservation {
+    pub node_status: Option<String>,
+    pub downstream_federation_id: Option<String>,
+    pub downstream_committee_label: Option<String>,
+}
+
+impl TopologyAuthorityObservation {
+    pub fn observed_authority_mode(&self) -> AuthorityMode {
+        AuthorityMode::SoloVerifiedReceipt
+    }
+
+    pub fn redacted_summary_fields(&self) -> Vec<String> {
+        let mut fields = vec![
+            "topology_relationship:delegated_under_node".to_string(),
+            format!("authority_mode:{}", self.observed_authority_mode().as_str()),
+        ];
+        if let Some(node_status) = &self.node_status {
+            fields.push(format!("node_status:{node_status}"));
+        }
+        if let Some(downstream_federation_id) = &self.downstream_federation_id {
+            fields.push(redacted_sha256_field(
+                "downstream_federation_id",
+                downstream_federation_id,
+            ));
+        }
+        if let Some(downstream_committee_label) = &self.downstream_committee_label {
+            fields.push(redacted_sha256_field(
+                "downstream_committee_label",
+                downstream_committee_label,
+            ));
+        }
+        fields
+    }
+}
+
+fn redacted_sha256_field(name: &str, value: &str) -> String {
+    let digest = Sha256::digest(value.as_bytes());
+    let hash: String = digest.iter().map(|byte| format!("{byte:02x}")).collect();
+    format!("{name}_sha256:{hash}")
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DreggAuthorityFinalityMode {
+    NotRequired,
+    FixtureStatusOnly,
+    BlsThresholdRequired,
+    RotatedReplayRequired,
+}
+
+fn default_revocation_verifier_mode() -> DreggAuthorityRevocationVerifierMode {
+    DreggAuthorityRevocationVerifierMode::FixtureStatusOnly
+}
+
+fn default_finality_mode() -> DreggAuthorityFinalityMode {
+    DreggAuthorityFinalityMode::NotRequired
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DreggAuthorityStatusPolicy {
+    pub require_status: bool,
+    pub max_status_age_seconds: u64,
+    pub require_revocation_check: bool,
+    pub require_finality: bool,
+    #[serde(default = "default_revocation_verifier_mode")]
+    pub revocation_verifier_mode: DreggAuthorityRevocationVerifierMode,
+    #[serde(default = "default_finality_mode")]
+    pub finality_mode: DreggAuthorityFinalityMode,
+    #[serde(default)]
+    pub expected_revocation_root_ref: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DreggAuthorityEntry {
+    pub issuer_id: String,
+    pub issuer_key_id: String,
+    pub issuer_public_key_hex: String,
+    pub federation_id: String,
+    pub root_ref: String,
+    pub root_fingerprint: String,
+    pub epoch_id: String,
+    pub epoch_not_before: u64,
+    pub epoch_not_after: u64,
+    pub accepted_audiences: Vec<String>,
+    pub accepted_operations: Vec<String>,
+    pub accepted_resources: Vec<String>,
+    pub accepted_suites: Vec<String>,
+    pub status_policy: DreggAuthorityStatusPolicy,
+    pub root_status: DreggAuthorityStatus,
+    pub issuer_status: DreggAuthorityStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DreggAuthorityLookup {
+    pub issuer_id: String,
+    pub issuer_key_id: String,
+    pub root_ref: String,
+    pub root_fingerprint: String,
+    pub epoch_id: String,
+    pub audience: String,
+    pub operation: String,
+    pub resource: String,
+    pub suite: String,
+    pub validation_time: u64,
+    pub status_checked_at: Option<u64>,
+    pub revocation_status: Option<DreggAuthorityRevocationStatus>,
+    pub finality_status: Option<DreggAuthorityFinalityStatus>,
+    pub attested_revocation_root_ref: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DreggAuthoritySnapshot {
+    pub schema_version: String,
+    pub snapshot_id: String,
+    pub source_node_id: String,
+    pub federation_id: String,
+    pub entity_id: String,
+    pub namespace_id: String,
+    pub entity_display_name: String,
+    pub observed_at: u64,
+    pub expires_at: u64,
+    pub authority_mode: String,
+    pub issuers: Vec<DreggAuthoritySnapshotIssuer>,
+    pub resources: Vec<DreggAuthoritySnapshotResource>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DreggAuthoritySnapshotIssuer {
+    pub issuer_id: String,
+    pub issuer_key_id: String,
+    pub trust_root_ref: String,
+    pub authority_root_ref: String,
+    pub accepted_evidence: Vec<String>,
+    pub accepted_audiences: Vec<String>,
+    pub accepted_operations: Vec<String>,
+    pub accepted_resources: Vec<String>,
+    pub status: DreggAuthorityStatus,
+    pub not_before: u64,
+    pub not_after: u64,
+    pub status_ref: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DreggAuthoritySnapshotResource {
+    pub resource_id: String,
+    pub resource_kind: String,
+    pub controller_entity_id: String,
+    pub allowed_operations: Vec<String>,
+    pub required_evidence: Vec<String>,
+    pub status: DreggAuthorityStatus,
+    pub status_ref: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DreggAuthoritySnapshotLookup {
+    pub entity_id: String,
+    pub namespace_id: String,
+    pub issuer_id: String,
+    pub trust_root_ref: String,
+    pub authority_root_ref: String,
+    pub audience: String,
+    pub operation: String,
+    pub resource: String,
+    pub evidence_kind: String,
+    pub validation_time: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DreggAuthoritySnapshotDecision {
+    pub entity_id: String,
+    pub namespace_id: String,
+    pub authority_mode: String,
+    pub matched_resource_scope: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DreggAuthorityRegistryError {
+    Empty,
+    Malformed(String),
+    InvalidEntry(String),
+    DuplicateIssuer(String),
+    DuplicateEpochRoot(String),
+    Unreadable(String),
+}
+
+impl fmt::Display for DreggAuthorityRegistryError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Empty => write!(
+                formatter,
+                "production Dregg authority registry has no issuer/root entries"
+            ),
+            Self::Malformed(error) => {
+                write!(formatter, "malformed Dregg authority registry: {error}")
+            }
+            Self::InvalidEntry(error) => {
+                write!(formatter, "invalid Dregg authority registry entry: {error}")
+            }
+            Self::DuplicateIssuer(issuer) => {
+                write!(formatter, "duplicate Dregg issuer id {issuer:?}")
+            }
+            Self::DuplicateEpochRoot(root) => {
+                write!(formatter, "duplicate Dregg federation/root/epoch {root:?}")
+            }
+            Self::Unreadable(error) => {
+                write!(formatter, "unreadable Dregg authority registry: {error}")
+            }
+        }
+    }
+}
+
+impl std::error::Error for DreggAuthorityRegistryError {}
+
+impl DreggAuthoritySnapshot {
+    pub const SCHEMA_VERSION: &'static str = "secs-dregg-authority-snapshot-v1";
+
+    pub fn from_json_str(json: &str) -> Result<Self, DreggAuthorityRegistryError> {
+        if json.trim().is_empty() {
+            return Err(DreggAuthorityRegistryError::Empty);
+        }
+        let snapshot: Self = serde_json::from_str(json)
+            .map_err(|error| DreggAuthorityRegistryError::Malformed(error.to_string()))?;
+        snapshot.validate()?;
+        Ok(snapshot)
+    }
+
+    pub fn from_json_file(path: impl AsRef<Path>) -> Result<Self, DreggAuthorityRegistryError> {
+        let json = std::fs::read_to_string(path)
+            .map_err(|error| DreggAuthorityRegistryError::Unreadable(error.to_string()))?;
+        Self::from_json_str(&json)
+    }
+
+    pub fn validate_fresh_at(
+        &self,
+        validation_time: u64,
+    ) -> Result<(), DreggAuthorityRegistryError> {
+        if validation_time < self.observed_at || validation_time > self.expires_at {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(
+                "stale Dregg authority snapshot".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub fn lookup_entity_resource_authority(
+        &self,
+        lookup: &DreggAuthoritySnapshotLookup,
+    ) -> Result<DreggAuthoritySnapshotDecision, VerificationError> {
+        if lookup.validation_time > self.expires_at || lookup.validation_time < self.observed_at {
+            return Err(VerificationError::Stale);
+        }
+        if self.entity_id != lookup.entity_id || self.namespace_id != lookup.namespace_id {
+            return Err(VerificationError::WrongBinding);
+        }
+
+        let issuer = self
+            .issuers
+            .iter()
+            .find(|issuer| issuer.issuer_id == lookup.issuer_id)
+            .ok_or(VerificationError::UnknownIssuer)?;
+        if issuer.status != DreggAuthorityStatus::Active {
+            return Err(VerificationError::Revoked);
+        }
+        if issuer.trust_root_ref != lookup.trust_root_ref {
+            return Err(VerificationError::WrongTrustRoot);
+        }
+        if issuer.authority_root_ref != lookup.authority_root_ref {
+            return Err(VerificationError::WrongRoot);
+        }
+        if lookup.validation_time < issuer.not_before || lookup.validation_time > issuer.not_after {
+            return Err(VerificationError::Stale);
+        }
+        if !contains_exact(&issuer.accepted_audiences, &lookup.audience) {
+            return Err(VerificationError::WrongAudience);
+        }
+        if !contains_exact(&issuer.accepted_operations, &lookup.operation) {
+            return Err(VerificationError::WrongOperation);
+        }
+        if !contains_exact(&issuer.accepted_evidence, &lookup.evidence_kind) {
+            return Err(VerificationError::InsufficientEvidence);
+        }
+        let Some(matched_scope) = issuer
+            .accepted_resources
+            .iter()
+            .find(|scope| resource_scope_matches(scope, &lookup.resource))
+        else {
+            return Err(VerificationError::WrongResource);
+        };
+
+        let resource = self
+            .resources
+            .iter()
+            .find(|resource| resource.resource_id == lookup.resource)
+            .ok_or(VerificationError::WrongResource)?;
+        if resource.status != DreggAuthorityStatus::Active {
+            return Err(VerificationError::Revoked);
+        }
+        if resource.controller_entity_id != lookup.entity_id {
+            return Err(VerificationError::WrongBinding);
+        }
+        if !contains_exact(&resource.allowed_operations, &lookup.operation) {
+            return Err(VerificationError::WrongOperation);
+        }
+        if !contains_exact(&resource.required_evidence, &lookup.evidence_kind) {
+            return Err(VerificationError::InsufficientEvidence);
+        }
+
+        Ok(DreggAuthoritySnapshotDecision {
+            entity_id: self.entity_id.clone(),
+            namespace_id: self.namespace_id.clone(),
+            authority_mode: self.authority_mode.clone(),
+            matched_resource_scope: matched_scope.clone(),
+        })
+    }
+
+    fn validate(&self) -> Result<(), DreggAuthorityRegistryError> {
+        if self.schema_version != Self::SCHEMA_VERSION {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(
+                "unsupported Dregg authority snapshot schema_version".to_string(),
+            ));
+        }
+        for (field, value) in [
+            ("snapshot_id", &self.snapshot_id),
+            ("source_node_id", &self.source_node_id),
+            ("federation_id", &self.federation_id),
+            ("entity_id", &self.entity_id),
+            ("namespace_id", &self.namespace_id),
+            ("authority_mode", &self.authority_mode),
+        ] {
+            if value.trim().is_empty() {
+                return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                    "{field} is required"
+                )));
+            }
+        }
+        if self.observed_at >= self.expires_at {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(
+                "observed_at must be less than expires_at".to_string(),
+            ));
+        }
+        if self.authority_mode != "fixture_snapshot" {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(
+                "unsupported Dregg authority snapshot authority_mode".to_string(),
+            ));
+        }
+        if self.issuers.is_empty() || self.resources.is_empty() {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(
+                "authority snapshot requires at least one issuer and one resource".to_string(),
+            ));
+        }
+        let mut issuer_ids = BTreeSet::new();
+        let mut issuer_key_ids = BTreeSet::new();
+        for issuer in &self.issuers {
+            if !issuer_ids.insert(issuer.issuer_id.clone()) {
+                return Err(DreggAuthorityRegistryError::DuplicateIssuer(
+                    issuer.issuer_id.clone(),
+                ));
+            }
+            if !issuer_key_ids.insert(issuer.issuer_key_id.clone()) {
+                return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                    "duplicate Dregg issuer key id {:?}",
+                    issuer.issuer_key_id
+                )));
+            }
+            for (field, value) in [
+                ("issuer_id", &issuer.issuer_id),
+                ("issuer_key_id", &issuer.issuer_key_id),
+                ("trust_root_ref", &issuer.trust_root_ref),
+                ("authority_root_ref", &issuer.authority_root_ref),
+                ("status_ref", &issuer.status_ref),
+            ] {
+                if value.trim().is_empty() {
+                    return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                        "{field} is required"
+                    )));
+                }
+            }
+            if issuer.not_before >= issuer.not_after {
+                return Err(DreggAuthorityRegistryError::InvalidEntry(
+                    "issuer not_before must be less than not_after".to_string(),
+                ));
+            }
+            for (field, values) in [
+                ("accepted_evidence", &issuer.accepted_evidence),
+                ("accepted_audiences", &issuer.accepted_audiences),
+                ("accepted_operations", &issuer.accepted_operations),
+                ("accepted_resources", &issuer.accepted_resources),
+            ] {
+                if values.is_empty() || values.iter().any(|value| value.trim().is_empty()) {
+                    return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                        "{field} must contain at least one non-empty value"
+                    )));
+                }
+            }
+        }
+        let mut resource_ids = BTreeSet::new();
+        for resource in &self.resources {
+            if !resource_ids.insert(resource.resource_id.clone()) {
+                return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                    "duplicate Dregg resource id {:?}",
+                    resource.resource_id
+                )));
+            }
+            if resource.controller_entity_id.trim().is_empty()
+                || resource.allowed_operations.is_empty()
+                || resource.required_evidence.is_empty()
+            {
+                return Err(DreggAuthorityRegistryError::InvalidEntry(
+                    "resources require controller_entity_id, allowed_operations, and required_evidence".to_string(),
+                ));
+            }
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FileDreggAuthoritySnapshotSource {
+    path: PathBuf,
+}
+
+impl FileDreggAuthoritySnapshotSource {
+    pub fn new(path: impl Into<PathBuf>) -> Self {
+        Self { path: path.into() }
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn load_at(
+        &self,
+        validation_time: u64,
+    ) -> Result<DreggAuthoritySnapshot, DreggAuthorityRegistryError> {
+        let snapshot = DreggAuthoritySnapshot::from_json_file(&self.path)?;
+        snapshot.validate_fresh_at(validation_time)?;
+        Ok(snapshot)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CachedDreggAuthoritySnapshotSource {
+    source: FileDreggAuthoritySnapshotSource,
+    cached_snapshot: Option<DreggAuthoritySnapshot>,
+}
+
+impl CachedDreggAuthoritySnapshotSource {
+    pub fn new(source: FileDreggAuthoritySnapshotSource) -> Self {
+        Self {
+            source,
+            cached_snapshot: None,
+        }
+    }
+
+    pub fn load_at(
+        &mut self,
+        validation_time: u64,
+    ) -> Result<DreggAuthoritySnapshot, DreggAuthorityRegistryError> {
+        let snapshot = self.source.load_at(validation_time)?;
+        self.cached_snapshot = Some(snapshot.clone());
+        Ok(snapshot)
+    }
+
+    pub fn cached_snapshot(&self) -> Option<&DreggAuthoritySnapshot> {
+        self.cached_snapshot.as_ref()
+    }
+}
+
+fn contains_exact(values: &[String], value: &str) -> bool {
+    values.iter().any(|candidate| candidate == value)
+}
+
+fn resource_scope_matches(scope: &str, resource: &str) -> bool {
+    if let Some(prefix) = scope.strip_suffix('*') {
+        resource.starts_with(prefix)
+    } else {
+        scope == resource
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DreggAuthorityRegistry {
+    entries: Vec<DreggAuthorityEntry>,
+}
+
+impl DreggAuthorityRegistry {
+    pub fn from_json_str(json: &str) -> Result<Self, DreggAuthorityRegistryError> {
+        if json.trim().is_empty() {
+            return Err(DreggAuthorityRegistryError::Empty);
+        }
+        let entries: Vec<DreggAuthorityEntry> = serde_json::from_str(json)
+            .map_err(|error| DreggAuthorityRegistryError::Malformed(error.to_string()))?;
+        Self::new(entries)
+    }
+
+    pub fn from_json_file(path: impl AsRef<Path>) -> Result<Self, DreggAuthorityRegistryError> {
+        let json = std::fs::read_to_string(path)
+            .map_err(|error| DreggAuthorityRegistryError::Unreadable(error.to_string()))?;
+        Self::from_json_str(&json)
+    }
+
+    pub fn new(
+        entries: impl IntoIterator<Item = DreggAuthorityEntry>,
+    ) -> Result<Self, DreggAuthorityRegistryError> {
+        let entries: Vec<_> = entries.into_iter().collect();
+        if entries.is_empty() {
+            return Err(DreggAuthorityRegistryError::Empty);
+        }
+        let mut issuer_ids = BTreeSet::new();
+        let mut epoch_roots = BTreeSet::new();
+        for entry in &entries {
+            validate_entry(entry)?;
+            if !issuer_ids.insert(entry.issuer_id.clone()) {
+                return Err(DreggAuthorityRegistryError::DuplicateIssuer(
+                    entry.issuer_id.clone(),
+                ));
+            }
+            let epoch_root_key = format!(
+                "{}|{}|{}",
+                entry.federation_id, entry.root_ref, entry.epoch_id
+            );
+            if !epoch_roots.insert(epoch_root_key.clone()) {
+                return Err(DreggAuthorityRegistryError::DuplicateEpochRoot(
+                    epoch_root_key,
+                ));
+            }
+        }
+        Ok(Self { entries })
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
+    pub fn requires_live_verifier_dependency(&self) -> bool {
+        self.requires_live_revocation_verifier_dependency()
+            || self.requires_live_finality_verifier_dependency()
+    }
+
+    pub fn requires_live_revocation_verifier_dependency(&self) -> bool {
+        self.entries.iter().any(|entry| {
+            matches!(
+                entry.status_policy.revocation_verifier_mode,
+                DreggAuthorityRevocationVerifierMode::LiveRevocationVerifierRequired
+            )
+        })
+    }
+
+    pub fn requires_live_finality_verifier_dependency(&self) -> bool {
+        self.entries.iter().any(|entry| {
+            matches!(
+                entry.status_policy.finality_mode,
+                DreggAuthorityFinalityMode::BlsThresholdRequired
+                    | DreggAuthorityFinalityMode::RotatedReplayRequired
+            )
+        })
+    }
+
+    pub fn requires_live_rotated_replay_verifier_dependency(&self) -> bool {
+        self.entries.iter().any(|entry| {
+            matches!(
+                entry.status_policy.finality_mode,
+                DreggAuthorityFinalityMode::RotatedReplayRequired
+            )
+        })
+    }
+
+    pub fn lookup_active_policy(
+        &self,
+        lookup: &DreggAuthorityLookup,
+    ) -> Result<&DreggAuthorityEntry, VerificationError> {
+        let entry = self
+            .entries
+            .iter()
+            .find(|entry| entry.issuer_id == lookup.issuer_id)
+            .ok_or(VerificationError::UnknownIssuer)?;
+        if entry.issuer_key_id != lookup.issuer_key_id {
+            return Err(VerificationError::WrongIssuerKey);
+        }
+        if entry.root_ref != lookup.root_ref || entry.root_fingerprint != lookup.root_fingerprint {
+            return Err(VerificationError::WrongRoot);
+        }
+        if entry.epoch_id != lookup.epoch_id
+            || lookup.validation_time < entry.epoch_not_before
+            || lookup.validation_time > entry.epoch_not_after
+        {
+            return Err(VerificationError::WrongEpoch);
+        }
+        if entry.root_status != DreggAuthorityStatus::Active
+            || entry.issuer_status != DreggAuthorityStatus::Active
+        {
+            return Err(VerificationError::Revoked);
+        }
+        if entry.status_policy.require_status {
+            let checked_at = lookup
+                .status_checked_at
+                .ok_or(VerificationError::MissingStatus)?;
+            if checked_at > lookup.validation_time {
+                return Err(VerificationError::Stale);
+            }
+            if lookup.validation_time - checked_at > entry.status_policy.max_status_age_seconds {
+                return Err(VerificationError::Stale);
+            }
+        }
+        if entry.status_policy.require_revocation_check {
+            match lookup
+                .revocation_status
+                .ok_or(VerificationError::MissingStatus)?
+            {
+                DreggAuthorityRevocationStatus::Active => {}
+                DreggAuthorityRevocationStatus::Revoked => return Err(VerificationError::Revoked),
+            }
+        }
+        match entry.status_policy.revocation_verifier_mode {
+            DreggAuthorityRevocationVerifierMode::FixtureStatusOnly => {}
+            DreggAuthorityRevocationVerifierMode::ExpectedRootBinding => {
+                let expected = entry
+                    .status_policy
+                    .expected_revocation_root_ref
+                    .as_ref()
+                    .ok_or(VerificationError::MissingRevocationRoot)?;
+                let attested = lookup
+                    .attested_revocation_root_ref
+                    .as_ref()
+                    .ok_or(VerificationError::MissingRevocationRoot)?;
+                if attested != expected {
+                    return Err(VerificationError::WrongRevocationRoot);
+                }
+            }
+            DreggAuthorityRevocationVerifierMode::LiveRevocationVerifierRequired => {}
+        }
+        match entry.status_policy.finality_mode {
+            DreggAuthorityFinalityMode::NotRequired => {}
+            DreggAuthorityFinalityMode::FixtureStatusOnly => {
+                if entry.status_policy.require_finality {
+                    match lookup.finality_status.ok_or(VerificationError::NotFinal)? {
+                        DreggAuthorityFinalityStatus::Final => {}
+                        DreggAuthorityFinalityStatus::NotFinal => {
+                            return Err(VerificationError::NotFinal);
+                        }
+                        DreggAuthorityFinalityStatus::Equivocated => {
+                            return Err(VerificationError::Equivocated);
+                        }
+                    }
+                }
+            }
+            DreggAuthorityFinalityMode::BlsThresholdRequired => {}
+            DreggAuthorityFinalityMode::RotatedReplayRequired => {}
+        }
+        if !entry
+            .accepted_audiences
+            .iter()
+            .any(|accepted| accepted == &lookup.audience)
+        {
+            return Err(VerificationError::WrongAudience);
+        }
+        if !entry
+            .accepted_operations
+            .iter()
+            .any(|accepted| accepted == &lookup.operation)
+        {
+            return Err(VerificationError::WrongOperation);
+        }
+        if !entry
+            .accepted_resources
+            .iter()
+            .any(|accepted| accepted == &lookup.resource)
+        {
+            return Err(VerificationError::WrongResource);
+        }
+        if !entry
+            .accepted_suites
+            .iter()
+            .any(|accepted| accepted == &lookup.suite)
+        {
+            return Err(VerificationError::UnsupportedSuite);
+        }
+        Ok(entry)
+    }
+}
+
+fn validate_entry(entry: &DreggAuthorityEntry) -> Result<(), DreggAuthorityRegistryError> {
+    if entry.issuer_id.trim().is_empty() {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "issuer_id is required".to_string(),
+        ));
+    }
+    if entry.issuer_key_id.trim().is_empty() {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "issuer_key_id is required".to_string(),
+        ));
+    }
+    if entry.issuer_public_key_hex.len() != 64
+        || !entry
+            .issuer_public_key_hex
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "issuer_public_key_hex must be 32-byte lowercase hex".to_string(),
+        ));
+    }
+    for (field, value) in [
+        ("federation_id", &entry.federation_id),
+        ("root_ref", &entry.root_ref),
+        ("root_fingerprint", &entry.root_fingerprint),
+        ("epoch_id", &entry.epoch_id),
+    ] {
+        if value.trim().is_empty() {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                "{field} is required"
+            )));
+        }
+    }
+    if entry.epoch_not_before >= entry.epoch_not_after {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "epoch_not_before must be less than epoch_not_after".to_string(),
+        ));
+    }
+    if entry.status_policy.require_status && entry.status_policy.max_status_age_seconds == 0 {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "max_status_age_seconds is required when status is required".to_string(),
+        ));
+    }
+    if entry.status_policy.revocation_verifier_mode
+        == DreggAuthorityRevocationVerifierMode::ExpectedRootBinding
+        && entry.status_policy.expected_revocation_root_ref.is_none()
+    {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "expected_revocation_root_ref is required for expected_root_binding".to_string(),
+        ));
+    }
+    if !entry.status_policy.require_finality
+        && matches!(
+            entry.status_policy.finality_mode,
+            DreggAuthorityFinalityMode::BlsThresholdRequired
+                | DreggAuthorityFinalityMode::RotatedReplayRequired
+        )
+    {
+        return Err(DreggAuthorityRegistryError::InvalidEntry(
+            "require_finality is required for live finality verifier modes".to_string(),
+        ));
+    }
+    for (field, values) in [
+        ("accepted_audiences", &entry.accepted_audiences),
+        ("accepted_operations", &entry.accepted_operations),
+        ("accepted_resources", &entry.accepted_resources),
+        ("accepted_suites", &entry.accepted_suites),
+    ] {
+        if values.is_empty() || values.iter().any(|value| value.trim().is_empty()) {
+            return Err(DreggAuthorityRegistryError::InvalidEntry(format!(
+                "{field} must contain at least one non-empty value"
+            )));
+        }
+    }
+    Ok(())
+}

@@ -1,0 +1,44 @@
+# Native service intent and policy v1
+
+Status: implemented local scope-preparation library on the process-service-authority branch. This is an additive prerequisite for Gate 1, not a supported installed issuer or production authority.
+
+`secs-service-call-contract` owns immutable parsed intents and local receiver-policy decisions. It has no signing/key-generation/custody/network/filesystem/replay-store API. Existing Packet v0, caller-proof v1, context schema 4, human Wallet consent and Devgraph signing contracts are unchanged.
+
+## Public requests and retained bytes
+
+Trusted component startup chooses `Application::Runtime` or `Application::Service`; the request cannot choose policy, audience, subject, key, opcode, handler or namespace. `ServiceIntent::parse` accepts only the matching closed public command/query schemas copied byte-for-byte under `schemas/`, with independent source digests. It rejects duplicate JSON members at every level, trailing JSON, invalid UTF-8/Unicode, non-finite decimal/exponent values, excess size/depth and malformed public shapes. Opaque input/output/artifact JSON retains the finite decimal/exponent and arbitrary-precision integer values permitted by the public contracts. Runtime opaque escaped NUL is retained. The existing Service command reader is stricter: lifecycle payload strings reject NUL and use Python nonblank/whitespace semantics; plan approve/revise reasons must be nonblank, and their entire payload (including opaque inputs and object keys) rejects NUL recursively and nesting beyond 32. The existing request-local carry-forward targets must also be unique and absent from explicit inputs; approve requires no selections through its frozen schema. These static reader checks are mirrored without domain-state, compile, stored-output or lease validation. Typed metadata keeps its declared integer/range constraints; policy TTL and clock fields remain bounded. Number lexemes are validated without conversion through a floating-point reserializer. Runtime bodies are bounded at 2 MiB; Service retains its 65,536-byte public body limit.
+
+The bounded schema evaluator supports exactly the keywords/patterns used by these frozen public bundles; it is not an externally configurable general JSON Schema implementation. Unknown schema features reject. The complete validated caller request bytes are retained exactly, including whitespace, member order, Unicode/control escapes and numeric lexemes. Digests are SHA-256 of those exact input bytes. This library does not normalize request bytes or silently round numeric values; two differently encoded requests remain distinct snapshots. Native application receivers still require their own exact typed SDK/canonical request encoding and reject incompatible bytes. Shared canonical-byte enforcement belongs to a reviewed producer/consumer profile, not a substitute Rust serialization. The retained-byte digest is not the native whole-packet hash, Service's schema-prefixed digest, a signature or a completion receipt. Handoff resource derivation alone hashes the fixed two-identifier `{source,event_id}` projection, whose public encoding is unchanged.
+
+Runtime full names/opcodes and resources are derived from the public contract, including the source/event-derived handoff hash. A Runtime command's declared resource must equal that projection. Service uses full `service.<operation>.v1` names and `requests/<id>` or `cases/<id>` from its validated resource. All copied public Runtime consumer request fixtures and all three published Service queries are exercised, alongside exact Python producer byte vectors with decimals, exponents, large opaque integers, negative zero and integral floats.
+
+## Owner-supplied receiver policy
+
+`ReceiverPolicy::parse` consumes a closed `secs.service-receiver-policy.v1` object. Its source is trusted native startup configuration, never caller JSON. It has exactly:
+
+- `schema`, `application`, `audience`, `not_before`, `not_after`, `max_ttl_seconds`;
+- `principals`: bounded unique holder-key IDs with stable `subject_id`, `key_id`, validity bounds and revocation;
+- `descriptors`: explicit full operation, operator-local opcode, fingerprint, handler ID and maximum TTL;
+- `rules`: exact subject/key/operation/resource, exact or slash-terminated prefix matching, allow/deny, validity window and active marker.
+
+This initial profile admits only the currently defined `runtime://receiver-local` and `service-management` audiences. A different audience needs a separately reviewed versioned profile; no request flag substitutes it. Runtime opcode meaning cannot be replaced by a policy: the closed producer table is checked. Service allocations must be explicit operator-range values with unique operation/opcode bindings; an empty descriptor list remains unavailable. Synthetic fixture allocation is not a live manifest installation. This crate intentionally excludes Frank result profiles. The reviewed Frank verifier and durable replay source/package slice does not supply a native result attestation producer or qualified target chain; those require a separately reviewed producer contract and installed qualification.
+
+`prepare(intent, subject_id, key_id, now, ttl)` performs scope/time checks only. The subject/key selectors and clock must come from independently authenticated native caller/owner state. This library does not authenticate them, resolve custody, attest model/provider evidence or qualify a service. A later issuer must derive them from the current receiver-held caller registry, verify all descriptor evidence requirements, and recheck current policy/time immediately before signing.
+
+No matching current allow denies. A matching active deny wins over every allow. Rules have no wildcard operations or paths. Resource prefixes require an explicit trailing slash and the profile's resource namespace. Effective exclusive expiry is capped by requested TTL (1–60 seconds), policy/descriptor TTL, policy/principal/current-allow end and the next matching deny start. Expired/revoked/unregistered principals deny. A missing descriptor denies.
+
+## Immutable preparation boundary
+
+`ServiceIntent` and `PreparedServiceIntent` have private fields, no deserializer or public constructor, immutable getters and payload-redacted Debug output. The prepared snapshot retains exact validated caller request bytes/digest, subject/key selectors, fixed receiver audience, full operation/resource, native descriptor/opcode/handler pins, issued/expiry time and policy digest. It is a reproducible local decision snapshot, not an authenticated call or permission token. A consumer must not create a signed context or a ready/qualified state merely because it received one.
+
+No replay identity is consumed here. Runtime/Service admission keeps replay and canonical mutation atomic. Exact retries still need freshly authenticated native authority. A future signer must use the unchanged whole native Packet hash, not substitute this JSON request hash.
+
+## Next required audience-bound service proof
+
+Existing `secs-caller-proof-v1` signs session, nonce, opcode, TTL and payload; it does **not** sign audience. This change preserves it unchanged. Before multi-receiver unattended service signing, define and independently review a new versioned service holder-proof transcript containing at least receiver audience, the prepared full operation/resource/payload binding, holder reference and the native session/nonce/TTL. Preserve Packet v0 and schema-4 context compatibility; do not reinterpret historical v1 bytes. An alternative requires explicit qualification of single-audience holder registration/issuer policy, not an assumption that v1 is already bound.
+
+The following remain missing: Wallet-owned native service provisioning and stable-subject custody/rotation; bounded holder signing; secS prepared-context issuer with authenticated caller/current policy/evidence; the Frank native result attestation producer (the reviewed verifier and durable replay slice is implemented as source/package evidence; its target/installed authority chain remains unqualified); target identities/descriptors/permissions; exact installed macOS guest qualification; artifact-bound readiness admission. Existing human generic Wallet approval must remain fresh and interactive. Gate 8 Devgraph workflow qualification remains separate.
+
+## Verification
+
+Run `cargo +1.96.0 test --locked --offline -p secs-service-call-contract` and the repository-required workspace test/build checks. Static fixtures contain public request examples, exact public Python producer numeric request bytes, synthetic labels/fingerprints and historical clock values only; no keys/signatures, installed policy, real credentials or production roots. The compile-fail doctest prevents struct-literal prepared-intent construction. Schema/provenance hashes and producer consumer request fixtures are deterministic and remain source claims.

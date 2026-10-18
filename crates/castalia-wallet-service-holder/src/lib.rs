@@ -713,8 +713,9 @@ impl ServiceIdentityHandle {
 #[path = "tests.rs"]
 pub(crate) mod tests;
 
-// Native issuer/context composition remains test-only here. Fixed holder-only
-// signing is confined to actual custody above, not to these synthetic ports.
+// Historical3484 synthetic fixture composition stays test-only and intentionally
+// uses its original module closure. Current Native integration uses the ordinary
+// public ServiceAuthority facade, never copied private modules or test clocks.
 #[cfg(test)]
 use crate as wallet_holder;
 #[cfg(test)]
@@ -739,6 +740,7 @@ mod work_private_files;
 
 /// Native owner-only raw seed custody; this does not qualify proof authority.
 pub mod custody;
+pub mod service_command;
 /// Retained native custody administration; no signing authority is granted.
 pub use custody::ServiceAdministrationSession;
 #[cfg(test)]

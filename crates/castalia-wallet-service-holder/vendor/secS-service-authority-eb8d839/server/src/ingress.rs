@@ -1,0 +1,926 @@
+use crate::config::{validate_production_startup_readiness, GatewayRuntimeConfig};
+use crate::evidence::EvidenceInputs;
+use crate::gateway::{init_telemetry_schema, register_runtime_bindings, ConfigurableRouter};
+use crate::identity::{
+    explicit_test_fixture_identity, load_node_verifier_identity, VerifierIdentityConfig,
+};
+use crate::payload::decrypt_machine_payload_with_session_key;
+use crate::runtime_mode::RuntimeMode;
+use crate::verifier::{VerificationError, Verifier};
+use bincode::Options;
+use libsec_core::ZenithPacket;
+use rand::rngs::OsRng;
+use rand::Rng;
+use sha2::{Digest, Sha256};
+use sqlx::sqlite::SqlitePoolOptions;
+use std::fmt;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use std::time::Duration;
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::Semaphore;
+use tokio::time::timeout;
+use x25519_dalek::{PublicKey, StaticSecret};
+
+static PRE_DECODE_REJECT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+pub const DEFAULT_MAX_WIRE_BYTES: usize = 2 * 1024 * 1024;
+pub const DEFAULT_INGRESS_READ_TIMEOUT: Duration = Duration::from_secs(10);
+
+#[derive(Debug)]
+pub enum IngressReadError {
+    Transport(std::io::Error),
+    ReadTimeout,
+    WireFrameTooLarge {
+        limit: usize,
+    },
+    LogicalFrameTooLarge {
+        field: &'static str,
+        declared_len: u64,
+        limit: usize,
+    },
+    MalformedPacket(Box<bincode::ErrorKind>),
+}
+
+impl fmt::Display for IngressReadError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Transport(error) => write!(formatter, "transport read failed: {error}"),
+            Self::ReadTimeout => write!(formatter, "wire read timed out before EOF"),
+            Self::WireFrameTooLarge { limit } => {
+                write!(
+                    formatter,
+                    "wire frame exceeded configured limit of {limit} bytes"
+                )
+            }
+            Self::LogicalFrameTooLarge {
+                field,
+                declared_len,
+                limit,
+            } => write!(
+                formatter,
+                "packet field {field} declared {declared_len} bytes, exceeding configured logical limit of {limit} bytes"
+            ),
+            Self::MalformedPacket(error) => write!(formatter, "malformed packet: {error}"),
+        }
+    }
+}
+
+impl std::error::Error for IngressReadError {}
+
+pub struct DecodedIngressRequest {
+    pub packet: ZenithPacket,
+    pub evidence_inputs: EvidenceInputs,
+    pub versioned_request: bool,
+    pub client_ephemeral_public_key: Option<[u8; 32]>,
+    pub request_digest: [u8; 32],
+}
+
+pub async fn read_bounded_ingress_request<R>(
+    reader: R,
+    max_wire_bytes: usize,
+    read_timeout: Duration,
+) -> Result<Option<DecodedIngressRequest>, IngressReadError>
+where
+    R: AsyncRead + Unpin,
+{
+    let mut bounded_reader = reader.take((max_wire_bytes as u64).saturating_add(1));
+    let mut wire_bytes = Vec::with_capacity(max_wire_bytes.min(64 * 1024));
+    match timeout(read_timeout, bounded_reader.read_to_end(&mut wire_bytes)).await {
+        Ok(Ok(_)) => {}
+        Ok(Err(error)) => return Err(IngressReadError::Transport(error)),
+        Err(_) => return Err(IngressReadError::ReadTimeout),
+    }
+
+    if wire_bytes.is_empty() {
+        return Ok(None);
+    }
+
+    if wire_bytes.len() > max_wire_bytes {
+        return Err(IngressReadError::WireFrameTooLarge {
+            limit: max_wire_bytes,
+        });
+    }
+    let request_digest = Sha256::digest(&wire_bytes).into();
+
+    if wire_bytes.starts_with(libsec_core::ingress_request::INGRESS_REQUEST_V1_MAGIC)
+        || wire_bytes.starts_with(libsec_core::ingress_request::INGRESS_REQUEST_V2_MAGIC)
+    {
+        match libsec_core::ingress_request::decode_ingress_frame(&wire_bytes, max_wire_bytes) {
+            Ok(libsec_core::ingress_request::IngressFrame::V1(request)) => {
+                return Ok(Some(DecodedIngressRequest {
+                    packet: request.packet,
+                    evidence_inputs: EvidenceInputs::new(
+                        request.evidence_refs,
+                        request.public_inputs,
+                    ),
+                    versioned_request: true,
+                    client_ephemeral_public_key: None,
+                    request_digest,
+                }));
+            }
+            Ok(libsec_core::ingress_request::IngressFrame::V2(request)) => {
+                return Ok(Some(DecodedIngressRequest {
+                    packet: request.packet,
+                    evidence_inputs: EvidenceInputs::new(
+                        request.evidence_refs,
+                        request.public_inputs,
+                    ),
+                    versioned_request: true,
+                    client_ephemeral_public_key: Some(request.client_ephemeral_public_key),
+                    request_digest,
+                }));
+            }
+            Ok(libsec_core::ingress_request::IngressFrame::Legacy(packet)) => {
+                return Ok(Some(DecodedIngressRequest {
+                    packet,
+                    evidence_inputs: EvidenceInputs::default(),
+                    versioned_request: false,
+                    client_ephemeral_public_key: None,
+                    request_digest,
+                }));
+            }
+            Err(libsec_core::ingress_request::IngressRequestError::FrameTooLarge)
+            | Err(libsec_core::ingress_request::IngressRequestError::TooManyEvidenceInputs)
+            | Err(libsec_core::ingress_request::IngressRequestError::EvidenceInputTooLarge) => {
+                return Err(IngressReadError::LogicalFrameTooLarge {
+                    field: "ingress_request",
+                    declared_len: wire_bytes.len() as u64,
+                    limit: max_wire_bytes,
+                });
+            }
+            Err(libsec_core::ingress_request::IngressRequestError::Malformed) => {
+                return Err(IngressReadError::MalformedPacket(Box::new(
+                    bincode::ErrorKind::Custom("malformed ingress request".to_string()),
+                )));
+            }
+        }
+    }
+
+    reject_huge_declared_vec_lengths(&wire_bytes, max_wire_bytes)?;
+
+    bincode::DefaultOptions::new()
+        .with_fixint_encoding()
+        .with_limit(max_wire_bytes as u64)
+        .deserialize::<ZenithPacket>(&wire_bytes)
+        .map(|packet| {
+            Some(DecodedIngressRequest {
+                packet,
+                evidence_inputs: EvidenceInputs::default(),
+                versioned_request: false,
+                client_ephemeral_public_key: None,
+                request_digest,
+            })
+        })
+        .map_err(IngressReadError::MalformedPacket)
+}
+
+pub async fn read_bounded_wire_packet<R>(
+    reader: R,
+    max_wire_bytes: usize,
+    read_timeout: Duration,
+) -> Result<Option<ZenithPacket>, IngressReadError>
+where
+    R: AsyncRead + Unpin,
+{
+    read_bounded_ingress_request(reader, max_wire_bytes, read_timeout)
+        .await
+        .map(|request| request.map(|request| request.packet))
+}
+
+fn reject_huge_declared_vec_lengths(
+    wire_bytes: &[u8],
+    max_wire_bytes: usize,
+) -> Result<(), IngressReadError> {
+    const SESSION_ID_BYTES: usize = 16;
+    const NONCE_BYTES: usize = 12;
+    const OPCODE_BYTES: usize = 1;
+    const U64_BYTES: usize = 8;
+    const PROOF_LEN_OFFSET: usize = SESSION_ID_BYTES + NONCE_BYTES + OPCODE_BYTES;
+
+    let Some(proof_len) = read_le_u64(wire_bytes, PROOF_LEN_OFFSET) else {
+        return Ok(());
+    };
+    reject_declared_len("proof", proof_len, max_wire_bytes)?;
+
+    let proof_len_usize =
+        usize::try_from(proof_len).map_err(|_| IngressReadError::LogicalFrameTooLarge {
+            field: "proof",
+            declared_len: proof_len,
+            limit: max_wire_bytes,
+        })?;
+    let payload_len_offset = PROOF_LEN_OFFSET
+        .checked_add(U64_BYTES)
+        .and_then(|offset| offset.checked_add(proof_len_usize))
+        .and_then(|offset| offset.checked_add(U64_BYTES));
+    let Some(payload_len_offset) = payload_len_offset else {
+        return Err(IngressReadError::LogicalFrameTooLarge {
+            field: "proof",
+            declared_len: proof_len,
+            limit: max_wire_bytes,
+        });
+    };
+
+    if let Some(payload_len) = read_le_u64(wire_bytes, payload_len_offset) {
+        reject_declared_len("encrypted_payload", payload_len, max_wire_bytes)?;
+    }
+
+    Ok(())
+}
+
+fn read_le_u64(bytes: &[u8], offset: usize) -> Option<u64> {
+    let len_bytes: [u8; 8] = bytes.get(offset..offset.checked_add(8)?)?.try_into().ok()?;
+    Some(u64::from_le_bytes(len_bytes))
+}
+
+fn reject_declared_len(
+    field: &'static str,
+    declared_len: u64,
+    max_wire_bytes: usize,
+) -> Result<(), IngressReadError> {
+    if declared_len > max_wire_bytes as u64 {
+        return Err(IngressReadError::LogicalFrameTooLarge {
+            field,
+            declared_len,
+            limit: max_wire_bytes,
+        });
+    }
+    Ok(())
+}
+
+pub async fn handle_gateway_connection(router: Arc<ConfigurableRouter>, socket: TcpStream) {
+    handle_gateway_connection_with_limits(
+        router,
+        socket,
+        DEFAULT_MAX_WIRE_BYTES,
+        DEFAULT_INGRESS_READ_TIMEOUT,
+        RuntimeMode::ProductionVerified,
+    )
+    .await;
+}
+
+/// Write the single decision frame to the caller under a bounded timeout.
+/// A slow or disconnected client must never stall the gateway: errors and
+/// timeouts are logged and dropped, and all ledger state was already
+/// persisted before this point.
+async fn write_decision_response(
+    write_half: &mut tokio::net::tcp::OwnedWriteHalf,
+    response: &libsec_core::response::DecisionResponse,
+    write_timeout: Duration,
+) {
+    let bytes = response.encode();
+    debug_assert!(bytes.len() <= libsec_core::response::MAX_DECISION_RESPONSE_BYTES);
+    match timeout(write_timeout, async {
+        write_half.write_all(&bytes).await?;
+        write_half.shutdown().await
+    })
+    .await
+    {
+        Ok(Ok(())) => {}
+        Ok(Err(error)) => {
+            eprintln!(
+                "secS [Transport]: failed to write decision response - {}",
+                error
+            );
+        }
+        Err(_) => {
+            eprintln!("secS [Transport]: decision response write timed out");
+        }
+    }
+}
+
+async fn write_execution_response(
+    write_half: &mut tokio::net::tcp::OwnedWriteHalf,
+    response: &libsec_core::execution_response::ExecutionResponse,
+    write_timeout: Duration,
+) {
+    let Ok(bytes) =
+        response.encode_frame(libsec_core::execution_response::MAX_EXECUTION_RESPONSE_BYTES)
+    else {
+        return;
+    };
+    let _ = timeout(write_timeout, async {
+        write_half.write_all(&bytes).await?;
+        write_half.shutdown().await
+    })
+    .await;
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ReceiverResponseMode {
+    LegacyDecision,
+    Execution,
+}
+
+fn signed_output_profile_verifier_rejection(
+    identity: &crate::identity::NodeVerifierIdentity,
+    request_digest: [u8; 32],
+    reason: &str,
+    receipt_id: Option<String>,
+) -> Result<libsec_core::execution_response::ExecutionResponse, VerificationError> {
+    identity.sign_execution_response(libsec_core::execution_response::ExecutionResponse {
+        schema_version: libsec_core::execution_response::EXECUTION_RESPONSE_SCHEMA_VERSION,
+        status: libsec_core::execution_response::ExecutionStatus::VerifierRejected,
+        reason_code: Some(reason.to_string()),
+        request_digest,
+        context_id: None,
+        receipt_id,
+        output_schema: None,
+        output: None,
+        authenticator_kind:
+            libsec_core::execution_response::ExecutionAuthenticatorKind::Ed25519Receiver,
+        signer_key_id: identity.signer_key_id().to_string(),
+        signature: [0; 64],
+    })
+}
+
+async fn write_post_decode_verifier_rejection(
+    router: &ConfigurableRouter,
+    write_half: &mut tokio::net::tcp::OwnedWriteHalf,
+    packet: &ZenithPacket,
+    error: VerificationError,
+    request_digest: [u8; 32],
+    response_mode: ReceiverResponseMode,
+    write_timeout: Duration,
+) {
+    let reason = error.reason_code();
+    let receipt_id = router.record_reject(packet, error).await;
+    match response_mode {
+        ReceiverResponseMode::LegacyDecision => {
+            write_decision_response(
+                write_half,
+                &libsec_core::response::DecisionResponse::rejected(reason, None, Some(receipt_id)),
+                write_timeout,
+            )
+            .await;
+        }
+        ReceiverResponseMode::Execution => {
+            if let Ok(response) = signed_output_profile_verifier_rejection(
+                router.identity(),
+                request_digest,
+                reason,
+                Some(receipt_id),
+            ) {
+                write_execution_response(write_half, &response, write_timeout).await;
+            }
+        }
+    }
+}
+
+pub async fn handle_gateway_connection_with_limits(
+    router: Arc<ConfigurableRouter>,
+    socket: TcpStream,
+    max_wire_bytes: usize,
+    read_timeout: Duration,
+    runtime_mode: RuntimeMode,
+) {
+    let (read_half, mut write_half) = socket.into_split();
+    let decoded_request = match read_bounded_ingress_request(
+        read_half,
+        max_wire_bytes,
+        read_timeout,
+    )
+    .await
+    {
+        Ok(Some(request)) => request,
+        Ok(None) => return,
+        Err(IngressReadError::MalformedPacket(error)) => {
+            eprintln!("secS [Transport]: rejected malformed packet - {}", error);
+            let receipt_id = record_pre_decode_reject(&router).await;
+            write_decision_response(
+                &mut write_half,
+                &libsec_core::response::DecisionResponse::rejected(
+                    VerificationError::MalformedPacket.reason_code(),
+                    None,
+                    Some(receipt_id),
+                ),
+                read_timeout,
+            )
+            .await;
+            return;
+        }
+        Err(IngressReadError::WireFrameTooLarge { limit }) => {
+            eprintln!(
+                "secS [Transport]: rejected oversized wire frame above {} bytes before packet decode",
+                limit
+            );
+            let receipt_id = record_pre_decode_reject(&router).await;
+            write_decision_response(
+                &mut write_half,
+                &libsec_core::response::DecisionResponse::rejected(
+                    VerificationError::MalformedPacket.reason_code(),
+                    None,
+                    Some(receipt_id),
+                ),
+                read_timeout,
+            )
+            .await;
+            return;
+        }
+        Err(error) => {
+            eprintln!(
+                "secS [Transport]: failed to read bounded connection - {}",
+                error
+            );
+            let receipt_id = record_pre_decode_reject(&router).await;
+            write_decision_response(
+                &mut write_half,
+                &libsec_core::response::DecisionResponse::rejected(
+                    VerificationError::MalformedPacket.reason_code(),
+                    None,
+                    Some(receipt_id),
+                ),
+                read_timeout,
+            )
+            .await;
+            return;
+        }
+    };
+    let request_digest = decoded_request.request_digest;
+    let evidence_inputs = decoded_request.evidence_inputs;
+    let client_ephemeral_public_key = decoded_request.client_ephemeral_public_key;
+    let packet = decoded_request.packet;
+    let response_mode = if router
+        .manifest()
+        .lookup(packet.opcode)
+        .ok()
+        .is_some_and(|descriptor| descriptor.output_profile.is_some())
+    {
+        ReceiverResponseMode::Execution
+    } else {
+        ReceiverResponseMode::LegacyDecision
+    };
+
+    if let Err(error) = Verifier::verify_prototype_envelope(&packet) {
+        eprintln!(
+            "secS [Auth]: rejected packet with invalid prototype proof envelope - {}",
+            error.reason_code()
+        );
+        write_post_decode_verifier_rejection(
+            &router,
+            &mut write_half,
+            &packet,
+            error,
+            request_digest,
+            response_mode,
+            read_timeout,
+        )
+        .await;
+        return;
+    }
+
+    if runtime_mode == RuntimeMode::ProductionVerified && client_ephemeral_public_key.is_none() {
+        let error = VerificationError::MissingTunnelKey;
+        eprintln!(
+            "secS [Crypto]: rejected production tunnel packet without session handshake - {}",
+            error.reason_code()
+        );
+        write_post_decode_verifier_rejection(
+            &router,
+            &mut write_half,
+            &packet,
+            error,
+            request_digest,
+            response_mode,
+            read_timeout,
+        )
+        .await;
+        return;
+    }
+
+    let session_tunnel_key = match derive_session_tunnel_key(&packet, client_ephemeral_public_key) {
+        Ok(key) => key,
+        Err(error) => {
+            eprintln!(
+                "secS [Crypto]: rejected tunnel handshake - {}",
+                error.reason_code()
+            );
+            write_post_decode_verifier_rejection(
+                &router,
+                &mut write_half,
+                &packet,
+                error,
+                request_digest,
+                response_mode,
+                read_timeout,
+            )
+            .await;
+            return;
+        }
+    };
+
+    let payload = match decrypt_machine_payload_with_session_key(
+        &packet,
+        runtime_mode,
+        session_tunnel_key.as_ref().map(|key| key.key),
+    ) {
+        Ok(payload) => payload,
+        Err(error) => {
+            eprintln!("secS [Crypto]: rejected undecryptable payload - {}", error);
+            write_post_decode_verifier_rejection(
+                &router,
+                &mut write_half,
+                &packet,
+                crate::verifier::VerificationError::BadMac,
+                request_digest,
+                response_mode,
+                read_timeout,
+            )
+            .await;
+            return;
+        }
+    };
+
+    let manifest = router.manifest();
+    let now = current_unix_seconds();
+    let signed_context = if !evidence_inputs.is_empty() {
+        match router.evidence_adapter() {
+            Some(adapter) => match Verifier::verify_manifest_operation_with_live_evidence_and_sign_for_runtime_with_identity_and_caller(
+                &packet,
+                manifest,
+                router.expected_audience(),
+                &evidence_inputs,
+                &payload,
+                adapter,
+                now,
+                router.identity(),
+                runtime_mode,
+                router.caller_keys(),
+            ) {
+                Ok(context) => context,
+                Err(error) => {
+                    eprintln!(
+                        "secS [Manifest]: rejected evidence-backed packet before handler lookup - {}",
+                        error.reason_code()
+                    );
+                    write_post_decode_verifier_rejection(
+                        &router,
+                        &mut write_half,
+                        &packet,
+                        error,
+                        request_digest,
+                        response_mode,
+                        read_timeout,
+                    )
+                    .await;
+                    return;
+                }
+            },
+            None => {
+                let error = VerificationError::InsufficientEvidence;
+                eprintln!(
+                    "secS [Manifest]: rejected evidence-backed packet without configured adapter - {}",
+                    error.reason_code()
+                );
+                write_post_decode_verifier_rejection(
+                    &router,
+                    &mut write_half,
+                    &packet,
+                    error,
+                    request_digest,
+                    response_mode,
+                    read_timeout,
+                )
+                .await;
+                return;
+            }
+        }
+    } else {
+        match Verifier::verify_manifest_operation_and_sign_for_runtime_with_identity_and_caller(
+            &packet,
+            manifest,
+            router.expected_audience(),
+            now,
+            router.identity(),
+            runtime_mode,
+            router.caller_keys(),
+        ) {
+            Ok(context) => context,
+            Err(error) => {
+                eprintln!(
+                    "secS [Manifest]: rejected packet before handler lookup - {}",
+                    error.reason_code()
+                );
+                write_post_decode_verifier_rejection(
+                    &router,
+                    &mut write_half,
+                    &packet,
+                    error,
+                    request_digest,
+                    response_mode,
+                    read_timeout,
+                )
+                .await;
+                return;
+            }
+        }
+    };
+    let tunnel_key_id = session_tunnel_key.as_ref().map(|key| key.key_id.as_str());
+    let signed_context =
+        match annotate_tunnel_key_id(signed_context, tunnel_key_id, router.identity()) {
+            Ok(context) => context,
+            Err(error) => {
+                write_post_decode_verifier_rejection(
+                    &router,
+                    &mut write_half,
+                    &packet,
+                    error,
+                    request_digest,
+                    response_mode,
+                    read_timeout,
+                )
+                .await;
+                return;
+            }
+        };
+
+    if response_mode == ReceiverResponseMode::Execution {
+        if let Ok(response) = router
+            .route_verified_for_execution(&signed_context, payload, request_digest)
+            .await
+        {
+            write_execution_response(&mut write_half, &response, read_timeout).await;
+        }
+    } else {
+        let response = router.route_verified(&signed_context, payload).await;
+        write_decision_response(&mut write_half, &response, read_timeout).await;
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct SessionTunnelKey {
+    key: [u8; 32],
+    key_id: String,
+}
+
+fn derive_session_tunnel_key(
+    packet: &ZenithPacket,
+    client_ephemeral_public_key: Option<[u8; 32]>,
+) -> Result<Option<SessionTunnelKey>, VerificationError> {
+    let Some(client_public_bytes) = client_ephemeral_public_key else {
+        return Ok(None);
+    };
+    let candidate = derive_session_tunnel_key_from_env_pair(
+        packet,
+        client_public_bytes,
+        "SECS_TUNNEL_X25519_SECRET_HEX",
+        "SECZ_TUNNEL_X25519_SECRET_HEX",
+    )?;
+    Ok(Some(candidate))
+}
+
+fn derive_session_tunnel_key_from_env_pair(
+    packet: &ZenithPacket,
+    client_public_bytes: [u8; 32],
+    primary: &'static str,
+    legacy: &'static str,
+) -> Result<SessionTunnelKey, VerificationError> {
+    let secret_hex = std::env::var(primary)
+        .or_else(|_| std::env::var(legacy))
+        .map_err(|_| VerificationError::MissingTunnelKey)?;
+    let secret_bytes = libsec_core::tunnel::parse_tunnel_key_hex(&secret_hex)
+        .ok_or(VerificationError::MissingTunnelKey)?;
+    let server_secret = StaticSecret::from(secret_bytes);
+    let server_public = PublicKey::from(&server_secret).to_bytes();
+    let client_public = PublicKey::from(client_public_bytes);
+    let shared = server_secret.diffie_hellman(&client_public);
+    if !shared.was_contributory() {
+        return Err(VerificationError::BadMac);
+    }
+    let shared = shared.to_bytes();
+    Ok(SessionTunnelKey {
+        key: libsec_core::tunnel::derive_tunnel_key_hkdf(
+            &shared,
+            &packet.session_id,
+            &client_public_bytes,
+            &server_public,
+        ),
+        key_id: libsec_core::tunnel::tunnel_public_key_id(&server_public),
+    })
+}
+
+fn annotate_tunnel_key_id(
+    signed_context: crate::verifier::SignedVerifiedCallContext,
+    tunnel_key_id: Option<&str>,
+    identity: &crate::identity::NodeVerifierIdentity,
+) -> Result<crate::verifier::SignedVerifiedCallContext, VerificationError> {
+    let Some(key_id) = tunnel_key_id else {
+        return Ok(signed_context);
+    };
+    let mut context = signed_context.context;
+    context
+        .evidence_summary
+        .push(format!("tunnel_key_id:{key_id}"));
+    identity.sign_context(context)
+}
+
+async fn record_pre_decode_reject(router: &ConfigurableRouter) -> String {
+    let sequence = PRE_DECODE_REJECT_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    let mut nonce = [0u8; 12];
+    nonce[4..].copy_from_slice(&sequence.to_be_bytes());
+    let packet = ZenithPacket {
+        session_id: [0u8; 16],
+        nonce,
+        opcode: 0,
+        proof: Vec::new(),
+        claim_ttl: 0,
+        encrypted_payload: Vec::new(),
+        mac: [0u8; 16],
+    };
+    router
+        .record_reject(&packet, VerificationError::MalformedPacket)
+        .await
+}
+
+fn current_unix_seconds() -> u64 {
+    // Fail-closed: a clock-read failure yields the sentinel, which the
+    // verifier and signed-context checks reject as expired (M12.5).
+    crate::clock::failclosed_unix_seconds()
+}
+
+pub async fn run_prototype_gateway(addr: &str, db_url: &str, label: &str) {
+    let mut config = GatewayRuntimeConfig::from_env()
+        .unwrap_or_else(|error| panic!("secS gateway: invalid runtime config - {error}"));
+    config.bind_addr = addr.to_string();
+    config.db_url = db_url.to_string();
+    run_gateway_with_config(config, label).await;
+}
+
+pub async fn run_gateway_with_config(config: GatewayRuntimeConfig, label: &str) {
+    validate_production_startup_readiness(&config)
+        .unwrap_or_else(|error| panic!("secS gateway: startup readiness check failed - {error}"));
+
+    let pool = SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect(&config.db_url)
+        .await
+        .expect("secS gateway: failed to connect to node_telemetry SQLite DB");
+
+    init_telemetry_schema(&pool)
+        .await
+        .expect("secS gateway: failed to initialize node_telemetry table");
+
+    let identity = match config.runtime_mode {
+        RuntimeMode::ProductionVerified => load_node_verifier_identity(&VerifierIdentityConfig {
+            runtime_mode: config.runtime_mode,
+            verifier_key_path: config.verifier_key_path.clone(),
+            verifier_key_id: config.verifier_key_id.clone(),
+        })
+        .unwrap_or_else(|error| {
+            panic!("secS gateway: failed to load production verifier identity - {error}")
+        }),
+        RuntimeMode::LocalDevPlaintext | RuntimeMode::LocalDevTunnel => {
+            explicit_test_fixture_identity("verifier:local-prototype", OsRng.gen::<[u8; 32]>())
+        }
+    };
+    let mut router = ConfigurableRouter::with_limits_identity_and_audience(
+        pool,
+        config.execution_limits(),
+        identity,
+        config.receiver_audience.clone(),
+    );
+    if let Some(path) = &config.caller_registry_path {
+        let (caller_keys, _fixture_only) = crate::caller::load_caller_registry_from_path(path)
+            .unwrap_or_else(|error| {
+                panic!("secS gateway: failed to load caller key registry - {error}")
+            });
+        router.set_caller_registry(caller_keys);
+    }
+    install_configured_permission_policy(&mut router, &config);
+    install_configured_proof_metadata_policy(&mut router);
+    register_runtime_bindings(&mut router, config.runtime_mode);
+
+    let router = Arc::new(router);
+    let listener = TcpListener::bind(&config.bind_addr)
+        .await
+        .expect("secS gateway: failed to bind TCP listener");
+
+    let local_addr = listener
+        .local_addr()
+        .expect("secS gateway: failed to read bound TCP listener address");
+    println!(
+        "{} listening on {} with runtime_mode={} receiver_audience={} max_wire_bytes={} read_timeout_ms={} max_in_flight_connections={} allowed_evidence_adapters={}",
+        label,
+        local_addr,
+        config.runtime_mode.label(),
+        config.receiver_audience,
+        config.max_wire_bytes,
+        config.ingress_read_timeout.as_millis(),
+        config.max_in_flight_connections,
+        config.allowed_evidence_adapters.join(",")
+    );
+
+    let in_flight = Arc::new(Semaphore::new(config.max_in_flight_connections));
+    loop {
+        match listener.accept().await {
+            Ok((socket, peer)) => {
+                let Ok(permit) = Arc::clone(&in_flight).try_acquire_owned() else {
+                    eprintln!(
+                        "secS [Transport]: refused connection from {} because in-flight cap {} is saturated",
+                        peer, config.max_in_flight_connections
+                    );
+                    drop(socket);
+                    continue;
+                };
+                println!("secS [Transport]: accepted connection from {}", peer);
+                let router = Arc::clone(&router);
+                let max_wire_bytes = config.max_wire_bytes;
+                let ingress_read_timeout = config.ingress_read_timeout;
+                let runtime_mode = config.runtime_mode;
+                tokio::spawn(async move {
+                    let _permit = permit;
+                    handle_gateway_connection_with_limits(
+                        router,
+                        socket,
+                        max_wire_bytes,
+                        ingress_read_timeout,
+                        runtime_mode,
+                    )
+                    .await;
+                });
+            }
+            Err(e) => eprintln!("secS [Transport]: failed to accept connection - {}", e),
+        }
+    }
+}
+pub fn install_configured_permission_policy(
+    router: &mut ConfigurableRouter,
+    config: &GatewayRuntimeConfig,
+) {
+    if let Some(path) = &config.permission_policy_path {
+        let policy =
+            crate::permissions::PermissionPolicy::from_json_file(path).unwrap_or_else(|error| {
+                panic!("secS gateway: failed to load permission policy - {error:?}")
+            });
+        router.set_permission_policy(policy);
+    }
+}
+
+pub fn install_configured_proof_metadata_policy(router: &mut ConfigurableRouter) {
+    if let Some(path) = std::env::var_os("SECS_PROOF_METADATA_CONFIG_PATH") {
+        let config = crate::proof_keys::ProofMetadataRuntimeConfig::from_json_file(path)
+            .unwrap_or_else(|error| {
+                panic!(
+                    "secS gateway: failed to load proof metadata config - {}",
+                    error.reason_code()
+                )
+            });
+        let (registry, policies) = config.into_parts();
+        router.set_proof_metadata_policy(registry, policies);
+    }
+}
+
+#[cfg(test)]
+mod response_mode_tests {
+    use super::*;
+    use libsec_core::execution_response::{
+        ExecutionResponse, ExecutionStatus, MAX_EXECUTION_RESPONSE_BYTES,
+    };
+
+    #[test]
+    fn output_profile_verifier_rejections_are_signed_and_request_bound_across_seams() {
+        let identity = explicit_test_fixture_identity("receiver-key-1", [7; 32]);
+        let request_digest = [4; 32];
+        let seam_errors = [
+            VerificationError::BadPrototypeProofEnvelope,
+            VerificationError::MissingTunnelKey,
+            VerificationError::BadMac,
+            VerificationError::InsufficientEvidence,
+            VerificationError::UnknownOperation,
+            VerificationError::PrivacyPolicyViolation,
+            VerificationError::InternalError,
+        ];
+
+        for error in seam_errors {
+            let response = signed_output_profile_verifier_rejection(
+                &identity,
+                request_digest,
+                error.reason_code(),
+                Some("receipt-1".into()),
+            )
+            .unwrap();
+            assert_eq!(response.status, ExecutionStatus::VerifierRejected);
+            let frame = response.encode_frame(MAX_EXECUTION_RESPONSE_BYTES).unwrap();
+            ExecutionResponse::decode_and_verify(
+                &frame,
+                MAX_EXECUTION_RESPONSE_BYTES,
+                MAX_EXECUTION_RESPONSE_BYTES,
+                "receiver-key-1",
+                identity.public_key(),
+                request_digest,
+                None,
+            )
+            .unwrap();
+            assert!(ExecutionResponse::decode_and_verify(
+                &frame,
+                MAX_EXECUTION_RESPONSE_BYTES,
+                MAX_EXECUTION_RESPONSE_BYTES,
+                "receiver-key-1",
+                identity.public_key(),
+                [5; 32],
+                None,
+            )
+            .is_err());
+        }
+    }
+}

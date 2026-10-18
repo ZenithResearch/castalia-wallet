@@ -1,0 +1,13 @@
+{
+  "schema": "service.command.v1",
+  "request_id": "request-1",
+  "operation": "request.create",
+  "expected_version": null,
+  "resource": {
+    "kind": "ServiceRequest",
+    "id": "request-1"
+  },
+  "payload": {
+    "summary": "Bounded example"
+  }
+}

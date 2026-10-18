@@ -1,0 +1,287 @@
+{
+  "schema": "process.wallet-current-observation.proposed-vectors.v2",
+  "fixture_only": true,
+  "no_new_keys_signatures_or_authority": true,
+  "claims": "All five retained public custody STATE/CURRENT bytes/hash/key states are unchanged. Active delegation examples are mathematical policy hashes, not a claim that the retained source vector owner-input hash has a matching actual configured file. Positive actual source tests remain required.",
+  "lineage_domain": "secs-wallet-current-observation-v2 plus zero byte",
+  "lineage_field_order": [
+    "store_id",
+    "subject_id",
+    "purpose",
+    "application",
+    "state_revision",
+    "key_generation",
+    "state",
+    "current_sha256",
+    "custody_state_sha256",
+    "key_id",
+    "public_key_hex",
+    "public_key_sha256",
+    "not_before",
+    "not_after",
+    "revoked_at",
+    "owner_input_sha256",
+    "delegation_policy_sha256"
+  ],
+  "nullable_encoding": "null=00; present digest=01||raw32; present revoked_at=01||u64BE",
+  "vectors": [
+    {
+      "name": "1-unconfigured",
+      "source_vector_revision": 1,
+      "source_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+      "source_current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+      "reference": {
+        "schema": "secs.wallet-current-reference.v2",
+        "store_id": "00112233445566778899aabbccddeeff",
+        "subject_id": "service:fixture-only",
+        "purpose": "secs-service-holder-proof.v1",
+        "application": "runtime",
+        "state_revision": 1,
+        "key_generation": 1,
+        "state": "unconfigured",
+        "current_sha256": "93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea",
+        "custody_state_sha256": "8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f",
+        "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+        "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+        "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+        "not_before": 0,
+        "not_after": 180,
+        "revoked_at": null,
+        "owner_input_sha256": null,
+        "delegation_policy_sha256": null
+      },
+      "reference_utf8": "{\"application\":\"runtime\",\"current_sha256\":\"93dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea\",\"custody_state_sha256\":\"8752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f\",\"delegation_policy_sha256\":null,\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":1,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}",
+      "reference_sha256": "dd4f842dc7874f6ae97af2573db388c9fade1bdf3c16d060b2304ced90b793ac",
+      "complete_policy_for_hash_only": null,
+      "lineage_preimage_hex": "736563732d77616c6c65742d63757272656e742d6f62736572766174696f6e2d763200000873746f72655f6964000000203030313132323333343435353636373738383939616162626363646465656666000a7375626a6563745f696400000014736572766963653a666978747572652d6f6e6c790007707572706f73650000001c736563732d736572766963652d686f6c6465722d70726f6f662e7631000b6170706c69636174696f6e0000000772756e74696d65000e73746174655f7265766973696f6e000000080000000000000001000e6b65795f67656e65726174696f6e000000080000000000000001000573746174650000000c756e636f6e66696775726564000e63757272656e745f7368613235360000002093dab8f54f60cbfcb38993d81b719ed3aa0e316bee6665df63142c4bedbedbea0014637573746f64795f73746174655f736861323536000000208752001c259b652332628b2b7235b95252082e89227e476cff8afe951e92038f00066b65795f696400000057736572766963652d656432353531393a7368613235363a62363030333036636661373637323366646563333935653533613962336439666462373862316532643761323363333266636263643264633664306334303932000e7075626c69635f6b65795f68657800000020197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d6100117075626c69635f6b65795f73686132353600000020b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092000a6e6f745f6265666f726500000008000000000000000000096e6f745f61667465720000000800000000000000b4000a7265766f6b65645f6174000000010000126f776e65725f696e7075745f7368613235360000000100001864656c65676174696f6e5f706f6c6963795f7368613235360000000100",
+      "lineage_sha256": "c74b1e6c0b386e8f0f8bec5154ae61087dc4a4b760f98f752a1dea756f3cb03a",
+      "execution_disposition": "deny-inactive"
+    },
+    {
+      "name": "2-active",
+      "source_vector_revision": 2,
+      "source_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+      "source_current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+      "reference": {
+        "schema": "secs.wallet-current-reference.v2",
+        "store_id": "00112233445566778899aabbccddeeff",
+        "subject_id": "service:fixture-only",
+        "purpose": "secs-service-holder-proof.v1",
+        "application": "runtime",
+        "state_revision": 2,
+        "key_generation": 1,
+        "state": "active",
+        "current_sha256": "968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d",
+        "custody_state_sha256": "acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89",
+        "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+        "public_key_hex": "197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61",
+        "public_key_sha256": "b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+        "not_before": 0,
+        "not_after": 180,
+        "revoked_at": null,
+        "owner_input_sha256": "0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b",
+        "delegation_policy_sha256": "9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93"
+      },
+      "reference_utf8": "{\"application\":\"runtime\",\"current_sha256\":\"968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d\",\"custody_state_sha256\":\"acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e89\",\"delegation_policy_sha256\":\"9fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93\",\"key_generation\":1,\"key_id\":\"service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"0189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b\",\"public_key_hex\":\"197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d61\",\"public_key_sha256\":\"b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":2,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}",
+      "reference_sha256": "7118a70dc9bc4edc21ae370aaa9c486c4b279300b252319b8ac32e36ea0f1512",
+      "complete_policy_for_hash_only": {
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "descriptors": [
+          {
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60,
+            "opcode": 66,
+            "operation": "runtime.run.create.v1"
+          }
+        ],
+        "max_ttl_seconds": 60,
+        "not_after": 185,
+        "not_before": 0,
+        "principals": [
+          {
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "not_after": 180,
+            "not_before": 0,
+            "revoked": false,
+            "subject_id": "service:fixture-only"
+          }
+        ],
+        "rules": [
+          {
+            "active": true,
+            "effect": "allow",
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "not_after": 175,
+            "not_before": 0,
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "subject_id": "service:fixture-only"
+          },
+          {
+            "active": true,
+            "effect": "deny",
+            "key_id": "service-ed25519:sha256:b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092",
+            "not_after": 180,
+            "not_before": 165,
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "subject_id": "service:fixture-only"
+          }
+        ],
+        "schema": "secs.service-receiver-policy.v1"
+      },
+      "lineage_preimage_hex": "736563732d77616c6c65742d63757272656e742d6f62736572766174696f6e2d763200000873746f72655f6964000000203030313132323333343435353636373738383939616162626363646465656666000a7375626a6563745f696400000014736572766963653a666978747572652d6f6e6c790007707572706f73650000001c736563732d736572766963652d686f6c6465722d70726f6f662e7631000b6170706c69636174696f6e0000000772756e74696d65000e73746174655f7265766973696f6e000000080000000000000002000e6b65795f67656e65726174696f6e0000000800000000000000010005737461746500000006616374697665000e63757272656e745f73686132353600000020968033dacdd722e4e34bdb04bb92cc10499c2a868de5ed08c5487cdffe78218d0014637573746f64795f73746174655f73686132353600000020acac5fc4d8600f39c73c590b2862097598b18631a3848a51306e70b42ba95e8900066b65795f696400000057736572766963652d656432353531393a7368613235363a62363030333036636661373637323366646563333935653533613962336439666462373862316532643761323363333266636263643264633664306334303932000e7075626c69635f6b65795f68657800000020197f6b23e16c8532c6abc838facd5ea789be0c76b2920334039bfa8b3d368d6100117075626c69635f6b65795f73686132353600000020b600306cfa76723fdec395e53a9b3d9fdb78b1e2d7a23c32fcbcd2dc6d0c4092000a6e6f745f6265666f726500000008000000000000000000096e6f745f61667465720000000800000000000000b4000a7265766f6b65645f6174000000010000126f776e65725f696e7075745f73686132353600000021010189a31d32ba2751de267e80aeed86765d601ab3496514ddddc24205901a739b001864656c65676174696f6e5f706f6c6963795f73686132353600000021019fd574c399b526f7c4cd1891011e05dcba116ea12ea671bd2adf51668d545a93",
+      "lineage_sha256": "21b53b43b4d9ee0635eb07e5abf2f386a6b219d34129ec45f9429a76f537778b",
+      "execution_disposition": "requires-actual-owner-file-and-complete-source-verification; mathematical-vector-only"
+    },
+    {
+      "name": "3-unconfigured",
+      "source_vector_revision": 3,
+      "source_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+      "source_current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+      "reference": {
+        "schema": "secs.wallet-current-reference.v2",
+        "store_id": "00112233445566778899aabbccddeeff",
+        "subject_id": "service:fixture-only",
+        "purpose": "secs-service-holder-proof.v1",
+        "application": "runtime",
+        "state_revision": 3,
+        "key_generation": 2,
+        "state": "unconfigured",
+        "current_sha256": "d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa",
+        "custody_state_sha256": "29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824",
+        "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+        "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "not_before": 0,
+        "not_after": 180,
+        "revoked_at": null,
+        "owner_input_sha256": null,
+        "delegation_policy_sha256": null
+      },
+      "reference_utf8": "{\"application\":\"runtime\",\"current_sha256\":\"d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa\",\"custody_state_sha256\":\"29356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c534752824\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"unconfigured\",\"state_revision\":3,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}",
+      "reference_sha256": "e7be77a6cea17056f18d5bc0252a3b5f39922ee2cd03919549aec5669b7e8d03",
+      "complete_policy_for_hash_only": null,
+      "lineage_preimage_hex": "736563732d77616c6c65742d63757272656e742d6f62736572766174696f6e2d763200000873746f72655f6964000000203030313132323333343435353636373738383939616162626363646465656666000a7375626a6563745f696400000014736572766963653a666978747572652d6f6e6c790007707572706f73650000001c736563732d736572766963652d686f6c6465722d70726f6f662e7631000b6170706c69636174696f6e0000000772756e74696d65000e73746174655f7265766973696f6e000000080000000000000003000e6b65795f67656e65726174696f6e000000080000000000000002000573746174650000000c756e636f6e66696775726564000e63757272656e745f73686132353600000020d5c0aea812613b21f1c8d1f0eb9c43356daba91c8171d838af5b0a5db3ef7faa0014637573746f64795f73746174655f7368613235360000002029356e2cc7a5841d6fc36e3f6a633692b965725e05de86eebe9616c53475282400066b65795f696400000057736572766963652d656432353531393a7368613235363a32316665333164666131353461323631363236626638353430343666643232373162376265643462366162653435616135383837376566343766393732316239000e7075626c69635f6b65795f68657800000020d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a00117075626c69635f6b65795f7368613235360000002021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9000a6e6f745f6265666f726500000008000000000000000000096e6f745f61667465720000000800000000000000b4000a7265766f6b65645f6174000000010000126f776e65725f696e7075745f7368613235360000000100001864656c65676174696f6e5f706f6c6963795f7368613235360000000100",
+      "lineage_sha256": "ae53de6cd388e45cc73ee42961d56837fc729b0b8efb7eb2158123ca14306176",
+      "execution_disposition": "deny-inactive"
+    },
+    {
+      "name": "4-active",
+      "source_vector_revision": 4,
+      "source_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+      "source_current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+      "reference": {
+        "schema": "secs.wallet-current-reference.v2",
+        "store_id": "00112233445566778899aabbccddeeff",
+        "subject_id": "service:fixture-only",
+        "purpose": "secs-service-holder-proof.v1",
+        "application": "runtime",
+        "state_revision": 4,
+        "key_generation": 2,
+        "state": "active",
+        "current_sha256": "ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef",
+        "custody_state_sha256": "3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487",
+        "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+        "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "not_before": 0,
+        "not_after": 180,
+        "revoked_at": null,
+        "owner_input_sha256": "e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520",
+        "delegation_policy_sha256": "36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5"
+      },
+      "reference_utf8": "{\"application\":\"runtime\",\"current_sha256\":\"ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef\",\"custody_state_sha256\":\"3ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c487\",\"delegation_policy_sha256\":\"36bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5\",\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":\"e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520\",\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":null,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"active\",\"state_revision\":4,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}",
+      "reference_sha256": "f0a34a7a26140c24962948e5142c3e2b74fd2696104e44320c96eb6acc621cd9",
+      "complete_policy_for_hash_only": {
+        "application": "runtime",
+        "audience": "runtime://receiver-local",
+        "descriptors": [
+          {
+            "fingerprint": "401511ae44df9702b3f4555e29f6d01eaedbe12ed2094f197a27658608ce9fc5",
+            "handler_id": "fixture/runtime.run.create.v1",
+            "max_ttl_seconds": 60,
+            "opcode": 66,
+            "operation": "runtime.run.create.v1"
+          }
+        ],
+        "max_ttl_seconds": 60,
+        "not_after": 185,
+        "not_before": 0,
+        "principals": [
+          {
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "not_after": 180,
+            "not_before": 0,
+            "revoked": false,
+            "subject_id": "service:fixture-only"
+          }
+        ],
+        "rules": [
+          {
+            "active": true,
+            "effect": "allow",
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "not_after": 175,
+            "not_before": 0,
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "subject_id": "service:fixture-only"
+          },
+          {
+            "active": true,
+            "effect": "deny",
+            "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+            "not_after": 180,
+            "not_before": 165,
+            "operation": "runtime.run.create.v1",
+            "resource": "runs/run-1",
+            "resource_match": "exact",
+            "subject_id": "service:fixture-only"
+          }
+        ],
+        "schema": "secs.service-receiver-policy.v1"
+      },
+      "lineage_preimage_hex": "736563732d77616c6c65742d63757272656e742d6f62736572766174696f6e2d763200000873746f72655f6964000000203030313132323333343435353636373738383939616162626363646465656666000a7375626a6563745f696400000014736572766963653a666978747572652d6f6e6c790007707572706f73650000001c736563732d736572766963652d686f6c6465722d70726f6f662e7631000b6170706c69636174696f6e0000000772756e74696d65000e73746174655f7265766973696f6e000000080000000000000004000e6b65795f67656e65726174696f6e0000000800000000000000020005737461746500000006616374697665000e63757272656e745f73686132353600000020ec656f9368276787a3ce5b3c9b87132d2822ad6ad410d911f02ebf521ffbfaef0014637573746f64795f73746174655f736861323536000000203ec7ca1e37b883752cadb5ea292b9e7101f448e86796a346884f3e4f4f90c48700066b65795f696400000057736572766963652d656432353531393a7368613235363a32316665333164666131353461323631363236626638353430343666643232373162376265643462366162653435616135383837376566343766393732316239000e7075626c69635f6b65795f68657800000020d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a00117075626c69635f6b65795f7368613235360000002021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9000a6e6f745f6265666f726500000008000000000000000000096e6f745f61667465720000000800000000000000b4000a7265766f6b65645f6174000000010000126f776e65725f696e7075745f7368613235360000002101e17e805814f14ba4e0c1efdd4de80807acf2c593c7ca60cec2c0f347e4f7f520001864656c65676174696f6e5f706f6c6963795f736861323536000000210136bec91bbf018b8849fc0c3390ea0463dd0d2d992dc5eb294160f802d93eacf5",
+      "lineage_sha256": "32b5d61f09d5faf7814c53ab2e0363b8a78c1b023ea558f712d2a2ca581c503e",
+      "execution_disposition": "requires-actual-owner-file-and-complete-source-verification; mathematical-vector-only"
+    },
+    {
+      "name": "5-revoked",
+      "source_vector_revision": 5,
+      "source_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+      "source_current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+      "reference": {
+        "schema": "secs.wallet-current-reference.v2",
+        "store_id": "00112233445566778899aabbccddeeff",
+        "subject_id": "service:fixture-only",
+        "purpose": "secs-service-holder-proof.v1",
+        "application": "runtime",
+        "state_revision": 5,
+        "key_generation": 2,
+        "state": "revoked",
+        "current_sha256": "95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f",
+        "custody_state_sha256": "02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e",
+        "key_id": "service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+        "public_key_sha256": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+        "not_before": 0,
+        "not_after": 180,
+        "revoked_at": 108,
+        "owner_input_sha256": null,
+        "delegation_policy_sha256": null
+      },
+      "reference_utf8": "{\"application\":\"runtime\",\"current_sha256\":\"95c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f\",\"custody_state_sha256\":\"02b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e\",\"delegation_policy_sha256\":null,\"key_generation\":2,\"key_id\":\"service-ed25519:sha256:21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"not_after\":180,\"not_before\":0,\"owner_input_sha256\":null,\"public_key_hex\":\"d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a\",\"public_key_sha256\":\"21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9\",\"purpose\":\"secs-service-holder-proof.v1\",\"revoked_at\":108,\"schema\":\"secs.wallet-current-reference.v2\",\"state\":\"revoked\",\"state_revision\":5,\"store_id\":\"00112233445566778899aabbccddeeff\",\"subject_id\":\"service:fixture-only\"}",
+      "reference_sha256": "1e72cd0a655ce9fd73568cbf1e101dd96515784fa76622ca9e03db3d26295d27",
+      "complete_policy_for_hash_only": null,
+      "lineage_preimage_hex": "736563732d77616c6c65742d63757272656e742d6f62736572766174696f6e2d763200000873746f72655f6964000000203030313132323333343435353636373738383939616162626363646465656666000a7375626a6563745f696400000014736572766963653a666978747572652d6f6e6c790007707572706f73650000001c736563732d736572766963652d686f6c6465722d70726f6f662e7631000b6170706c69636174696f6e0000000772756e74696d65000e73746174655f7265766973696f6e000000080000000000000005000e6b65795f67656e65726174696f6e00000008000000000000000200057374617465000000077265766f6b6564000e63757272656e745f7368613235360000002095c6f88257d74d084d5b1925116616fcc4b350553ac1c7b2e3d1be3a4327504f0014637573746f64795f73746174655f7368613235360000002002b7822020719e0ced638ce58f39c1be01461401a64b2f02022038dd2073520e00066b65795f696400000057736572766963652d656432353531393a7368613235363a32316665333164666131353461323631363236626638353430343666643232373162376265643462366162653435616135383837376566343766393732316239000e7075626c69635f6b65795f68657800000020d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a00117075626c69635f6b65795f7368613235360000002021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9000a6e6f745f6265666f726500000008000000000000000000096e6f745f61667465720000000800000000000000b4000a7265766f6b65645f61740000000901000000000000006c00126f776e65725f696e7075745f7368613235360000000100001864656c65676174696f6e5f706f6c6963795f7368613235360000000100",
+      "lineage_sha256": "53803b7fa41da5791dc3b160c2a8ec01741f6058380d7ba975fe02f76867a7ec",
+      "execution_disposition": "deny-inactive"
+    }
+  ]
+}

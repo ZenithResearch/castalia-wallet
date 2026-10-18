@@ -1,0 +1,35 @@
+{
+  "schema": "process.shared-files.source-package.v1",
+  "origin": "Castalia Wallet",
+  "commit": "9cc814075704f1ae4a55b0f0ac17ecb2449c578f",
+  "subtree": "crates/castalia-wallet-private-files",
+  "subtree_tree": "114297c58cfaa63a97518e3508e7677eac187e35",
+  "git_archive_sha256": "4a18aff63ed2ae1545abaa3049339d2207073ba0cf8b150f134ab495996af51d",
+  "source_files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "79f292f281577952bf4176d2b2c544b9535b8427e55734d0f0024cf018400cdf",
+      "size": 208
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "56a29e496705bab57cbaafa03df727c11be417f8a34763faae8e5011ee53f968",
+      "size": 11705
+    },
+    {
+      "path": "src/service_store.rs",
+      "sha256": "395adb059ff229e8f4e3f043600f043a6ad0db1ebc84430dac9cbb54c7f1f7b8",
+      "size": 32622
+    },
+    {
+      "path": "src/service_store_tests.rs",
+      "sha256": "b901f40761ee3e1033c80f965ec05bd01d5a7cbb91286f919d107887d4b36d5f",
+      "size": 17878
+    }
+  ],
+  "license_origin": null,
+  "license_sha256": null,
+  "license_status": "No license file at origin root/subtree and no Cargo package license field; preserve origin and absence, internal composition only.",
+  "immutable_source_only": true,
+  "production_qualified": false
+}

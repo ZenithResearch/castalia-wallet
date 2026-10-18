@@ -1,0 +1,30 @@
+{
+  "schema": "secs.service-fixture-provenance.v1",
+  "runtime-consumer-v1.json": {
+    "source": "process-runtime/contracts/consumer-fixtures-v1.json",
+    "sha256": "f4279508854656d942628f8434719796b828ac2ae25f11e0ba751096bdf15506"
+  },
+  "native-policy": "Synthetic labels, descriptor hashes and clock only; no keys/signatures/installed allocation",
+  "producer-numeric-requests.json": {
+    "source": "Exact public process-runtime Snapshot and Service Command/canonical producer bytes; no domain or custody changes",
+    "sha256": "e05afac378e9c696b3a5ade222ae71917576487ab738d1c60474d87f5697e9fa"
+  },
+  "service-static-text-profile.json": {
+    "source": "Exact current Service Command.parse/static planning reader accept/reject fixtures",
+    "sha256": "32b5ee128ab27a9844a9fdc6cb3cc059c0b1af3c86db0daaaa79b7e09bd88a1a",
+    "reader_source_sha256": {
+      "service-management/src/service_management/contracts.py": "855292dd8b27f916dcfc637b5136dd429264f9d18645d538b3fe62ae18c069ec",
+      "service-management/src/service_management/planning.py": "1eea30a01bdf852965b659acd0df3bec39cbd2fc7e09f3fa9d4eef55a06c424a",
+      "service-management/src/service_management/runtime_port.py": "ae49210092459d8c5b3f8b2a3a76bdff7cc16b3bbac7e15e02af852c2de2fc6f"
+    }
+  },
+  "service-planning-static-selections.json": {
+    "source": "Exact current Service Command.parse/static planning reader accept/reject fixtures for request-local targets",
+    "sha256": "799b06ba29c28b6f482f081b42bce1b39c54cd336e595f437a64c829809b7871",
+    "reader_source_sha256": {
+      "service-management/src/service_management/contracts.py": "855292dd8b27f916dcfc637b5136dd429264f9d18645d538b3fe62ae18c069ec",
+      "service-management/src/service_management/planning.py": "1eea30a01bdf852965b659acd0df3bec39cbd2fc7e09f3fa9d4eef55a06c424a",
+      "service-management/src/service_management/runtime_port.py": "ae49210092459d8c5b3f8b2a3a76bdff7cc16b3bbac7e15e02af852c2de2fc6f"
+    }
+  }
+}

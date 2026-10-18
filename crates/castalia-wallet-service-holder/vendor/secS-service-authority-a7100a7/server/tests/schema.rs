@@ -1,0 +1,170 @@
+use server::ontology::{DEFAULT_RECEIVER_AUDIENCE, PROTOTYPE_LOCAL_SUBJECT};
+use server::schema::{
+    DEVGRAPH_AUTHORITY_REPLAY_RESERVATIONS_TABLE, LEDGER_TABLES, REPLAY_RESERVATIONS_TABLE,
+    SCOPED_NULLIFIER_USES_TABLE,
+};
+use sqlx::sqlite::SqlitePoolOptions;
+
+#[tokio::test]
+async fn ledger_schema_ontology_names_all_runtime_tables() {
+    assert_eq!(DEFAULT_RECEIVER_AUDIENCE, "secS://receiver-a");
+    assert_eq!(PROTOTYPE_LOCAL_SUBJECT, "prototype.local-dev.subject");
+    assert_eq!(REPLAY_RESERVATIONS_TABLE.name, "replay_reservations");
+    assert_eq!(
+        DEVGRAPH_AUTHORITY_REPLAY_RESERVATIONS_TABLE.name,
+        "devgraph_authority_replay_reservations"
+    );
+
+    let names: Vec<&str> = LEDGER_TABLES.iter().map(|table| table.name).collect();
+    assert_eq!(
+        names,
+        vec![
+            "events",
+            "receipts",
+            "replay_reservations",
+            "devgraph_authority_replay_reservations",
+            "scoped_nullifier_uses",
+            "audit_publication_status"
+        ]
+    );
+}
+
+#[test]
+fn ledger_schema_ontology_contains_exact_devgraph_replay_boundary() {
+    let replay = DEVGRAPH_AUTHORITY_REPLAY_RESERVATIONS_TABLE;
+    assert!(replay.ddl.contains("UNIQUE(session_id, operation, nonce)"));
+    assert!(replay
+        .ddl
+        .contains("CHECK(replay_scope = 'session:operation:nonce')"));
+    assert!(replay.ddl.contains("request_digest_sha256 TEXT NOT NULL"));
+    assert!(replay
+        .ddl
+        .contains("idempotency_key_digest_sha256 TEXT NOT NULL"));
+    assert!(replay
+        .ddl
+        .contains("receiver_policy_digest_sha256 TEXT NOT NULL"));
+    assert!(replay
+        .ddl
+        .contains("wallet_presentation_digest_sha256 TEXT NOT NULL"));
+    assert!(replay.ddl.contains("secs_verifier_key_id TEXT NOT NULL"));
+    assert!(!replay.ddl.contains("opcode"));
+    assert!(!replay.ddl.contains("route"));
+}
+
+#[tokio::test]
+async fn ledger_schema_ontology_contains_unique_replay_boundary() {
+    let replay = REPLAY_RESERVATIONS_TABLE;
+
+    assert!(
+        replay
+            .ddl
+            .contains("UNIQUE(session_id, opcode, nonce, replay_scope)"),
+        "replay DDL must preserve the Track C replay uniqueness boundary"
+    );
+    assert!(
+        !replay
+            .ddl
+            .contains("CREATE TABLE IF NOT EXISTS node_telemetry"),
+        "telemetry schema should remain separate from the replay/receipt ledger ontology"
+    );
+}
+
+#[tokio::test]
+async fn ledger_schema_ontology_contains_scoped_nullifier_use_boundary() {
+    let scoped_uses = SCOPED_NULLIFIER_USES_TABLE;
+
+    assert_eq!(scoped_uses.name, "scoped_nullifier_uses");
+    assert!(
+        scoped_uses
+            .ddl
+            .contains("UNIQUE(domain_fingerprint, commitment_storage_hash)"),
+        "scoped nullifier use-state must preserve the I04 per-domain commitment uniqueness boundary"
+    );
+    assert!(scoped_uses.ddl.contains("domain_fingerprint TEXT NOT NULL"));
+    assert!(scoped_uses
+        .ddl
+        .contains("commitment_fingerprint TEXT NOT NULL"));
+    assert!(scoped_uses
+        .ddl
+        .contains("commitment_storage_hash TEXT NOT NULL"));
+}
+
+#[tokio::test]
+async fn ledger_schema_ontology_applies_as_a_unit() {
+    let pool = SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect("sqlite::memory:")
+        .await
+        .unwrap();
+
+    for table in LEDGER_TABLES {
+        sqlx::query(table.ddl).execute(&pool).await.unwrap();
+    }
+
+    for table in LEDGER_TABLES {
+        let exists: (i64,) =
+            sqlx::query_as("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?")
+                .bind(table.name)
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(
+            exists.0, 1,
+            "{} should be created by schema ontology",
+            table.name
+        );
+    }
+}
+
+#[tokio::test]
+async fn ledger_schema_ontology_names_audit_publication_status_table() {
+    use server::schema::AUDIT_PUBLICATION_STATUS_TABLE;
+
+    assert_eq!(
+        AUDIT_PUBLICATION_STATUS_TABLE.name,
+        "audit_publication_status"
+    );
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("idempotency_key TEXT NOT NULL UNIQUE"));
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("bundle_version TEXT NOT NULL"));
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("chain_algorithm_version TEXT NOT NULL"));
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("chain_scope TEXT NOT NULL"));
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("root_hash_hex TEXT NOT NULL"));
+    assert!(AUDIT_PUBLICATION_STATUS_TABLE
+        .ddl
+        .contains("target_ref_digest_hex TEXT"));
+
+    let names: Vec<&str> = LEDGER_TABLES.iter().map(|table| table.name).collect();
+    assert_eq!(
+        names,
+        vec![
+            "events",
+            "receipts",
+            "replay_reservations",
+            "devgraph_authority_replay_reservations",
+            "scoped_nullifier_uses",
+            "audit_publication_status"
+        ]
+    );
+}
+
+#[test]
+fn receipts_schema_declares_nullable_redacted_output_projection_columns() {
+    let receipts = LEDGER_TABLES
+        .iter()
+        .find(|table| table.name == "receipts")
+        .unwrap();
+    assert!(receipts.ddl.contains("output_schema_id TEXT"));
+    assert!(receipts.ddl.contains("output_byte_count INTEGER"));
+    assert!(receipts.ddl.contains("output_digest_sha256 BLOB"));
+    assert!(!receipts.ddl.contains("raw_output"));
+}

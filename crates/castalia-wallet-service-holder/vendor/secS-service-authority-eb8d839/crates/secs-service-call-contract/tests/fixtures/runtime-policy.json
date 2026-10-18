@@ -1,0 +1,39 @@
+{
+  "schema": "secs.service-receiver-policy.v1",
+  "application": "runtime",
+  "audience": "runtime://receiver-local",
+  "not_before": 100,
+  "not_after": 1000,
+  "max_ttl_seconds": 60,
+  "principals": [
+    {
+      "subject_id": "fixture-frank",
+      "key_id": "fixture-holder",
+      "not_before": 100,
+      "not_after": 900,
+      "revoked": false
+    }
+  ],
+  "descriptors": [
+    {
+      "operation": "runtime.executor.claim.v1",
+      "opcode": 72,
+      "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "handler_id": "runtime/executor.claim",
+      "max_ttl_seconds": 60
+    }
+  ],
+  "rules": [
+    {
+      "subject_id": "fixture-frank",
+      "key_id": "fixture-holder",
+      "operation": "runtime.executor.claim.v1",
+      "resource": "runs/run-1/steps/step-1",
+      "resource_match": "exact",
+      "effect": "allow",
+      "not_before": 100,
+      "not_after": 800,
+      "active": true
+    }
+  ]
+}

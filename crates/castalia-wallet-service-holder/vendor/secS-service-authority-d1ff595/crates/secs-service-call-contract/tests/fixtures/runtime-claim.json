@@ -1,0 +1,13 @@
+{
+  "schema": "runtime.command.v1",
+  "request_id": "claim-1",
+  "operation": "executor.claim",
+  "expected_version": 1,
+  "resource": "runs/run-1/steps/step-1",
+  "payload": {
+    "run_id": "run-1",
+    "step_id": "step-1",
+    "actor_id": "actor-1",
+    "lease_ms": 120000
+  }
+}

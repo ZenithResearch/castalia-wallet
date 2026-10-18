@@ -1,0 +1,305 @@
+# secS-magik repository schema
+
+This document records the current file-system schema plus the next target seams for secS-magik. It exists to keep the README, docs, and code aligned with the corrected boundaries as verifier work lands.
+
+## Boundary rule
+
+The repository should be organized around this split:
+
+```text
+core/
+  verifier-free packet and crypto primitives
+
+client/
+  outgoing packet construction and CLI sending
+
+server/
+  secS verifier/RPC substrate, receiver manifests, signed contexts, receipts, evidence adapters, and bounded execution
+
+crates/secs-service-call-contract/
+  pure immutable service intent and scope preparation; no signer/custody/transport
+
+vendor/castalia-wallet-private-files-9cc8140/
+  exact internal Wallet filesystem source; shared Cargo composition under review
+  no authenticated current-source observation, publication or issuer qualification
+
+permissions/
+  shared receiver-local permission records and evaluator
+
+panel/
+  no-network wasm-bindgen permission wrapper and static browser UI
+
+docs/
+  current-state orientation, current references, source-of-truth status/specs, plans, non-authoritative ideas, Pages config, and public messaging drafts
+```
+
+Do not organize the repo as though secZ is the server-side verifier. secZ is a client-side / outgoing-call vocabulary surface in the corrected architecture. The existing `server/src/bin/secz.rs` file is now a thin compatibility wrapper. Canonical reusable gateway behavior lives in library modules and the canonical prototype binary is `server/src/bin/secs-gateway.rs`.
+
+## Target tree
+
+```text
+secS-magik/
+├── README.md
+├── docs/implementation-status.md     # status ledger: implemented/partial/planned/future/out-of-scope
+├── AGENTS.md
+├── CHANGELOG.md
+├── Cargo.toml
+├── Cargo.lock
+├── core/
+│   ├── Cargo.toml
+│   └── src/
+│       ├── lib.rs                  # ZenithPacket v0, standard opcode constants, core exports
+│       ├── service_holder_proof.rs # closed untrusted challenge/holder codec, no signer
+│       ├── packet_builder.rs        # verifier-free packet construction helper
+│       ├── tunnel.rs                # tunnel crypto helpers
+│       ├── zk.rs                    # signature/proof helper primitives; not the full server verifier
+│       └── ffi.rs                   # UniFFI bindings behind feature flag
+├── client/
+│   ├── Cargo.toml
+│   └── src/
+│       └── main.rs                  # current CLI / secC-like outgoing sender
+├── server/
+│   ├── Cargo.toml
+│   └── src/
+│       ├── lib.rs                   # server module exports and shared server entry points
+│       ├── config.rs                # typed runtime config/readiness inputs
+│       ├── identity.rs              # verifier identity, key IDs, local public-key registry seam
+│       ├── devgraph_authority.rs     # fixed devgraph.issue.create.v1 authority producer; no route/handler
+│       ├── devgraph_issue_create_cli.rs # fixed owner-private file adapter; no generic authority selectors
+│       ├── devgraph_issue_create_wallet_cli.rs # fixed one-shot Wallet adapter; no generic browser RPC
+│       ├── devgraph_work_request.rs   # closed named Work/Arena request parser and canonicalizer
+│       ├── devgraph_work_authority.rs # fixed named Work/Arena projection authority producer; no mutation
+│       ├── devgraph_work_cli.rs       # fixed owner-private Work/Arena projection adapter
+│       ├── devgraph_work_admin.rs     # owner-local Work authority lifecycle, status, and snapshots
+│       ├── credential_presentation.rs # generic closed credential/presentation verification
+│       ├── devgraph_work_v2.rs        # opt-in Work/Arena credential binding and isolated v2 replay
+│       ├── devgraph_work_v2_cli.rs    # owner-private preflight/authorize adapter; no live activation
+│       ├── service_holder_proof.rs  # additive origin/binding verification, no issuer/custody/replay
+│       ├── service_wallet_contract.rs # private unqualified metadata/retained-record codec
+│       ├── service_wallet_source.rs # reviewed Native metadata leases, independent pins/OS time; no seed/signing
+│       ├── service_owner_publication.rs # Native retained transitions/recovery; independently reviewed Native retaining-error correction; Wallet coupling pending
+│       ├── service_authority_snapshot.rs # preserved private v1 reader, additive v2 and complete policy validation
+│       ├── service_evidence.rs      # private empty-obligation data; not qualified evidence
+│       ├── service_challenge_store.rs # private journal mechanism; no issuer or qualified authority
+│       ├── verifier.rs              # typed verifier errors, prototype envelope check, signed context helpers
+│       ├── ingress.rs               # bounded prototype TCP ingress and verifier/payload handoff
+│       ├── gateway.rs               # configurable router, legacy telemetry, local bounded handler routing
+│       ├── payload.rs               # tunnel key parsing and runtime-mode payload decryption
+│       ├── manifest.rs              # receiver-local OperationDescriptor and opcode governance
+│       ├── evidence.rs              # EvidenceAdapter trait, local_static, wallet_presentation crypto seam, static trusted issuer/root registry policy
+│       ├── receipt.rs               # signed receipt/event types and reason/authenticator metadata
+│       ├── ledger.rs                # local SQLite event/receipt/replay persistence and inspection
+│       ├── schema.rs                # centralized runtime SQLite schema ontology
+│       ├── ontology.rs              # shared prototype receiver/audience/reason constants
+│       ├── runtime_mode.rs          # local_dev_plaintext / local_dev_tunnel / production_verified
+│       ├── session.rs               # local in-memory session utility
+│       └── bin/
+│           ├── secs-gateway.rs      # canonical prototype gateway wrapper
+│           ├── secs-permctl.rs      # receiver-local permission policy CLI
+│           ├── secs-devgraph-issue-create-v1.rs # thin fixed DG-E1 adapter wrapper
+│           ├── secs-devgraph-issue-create-v1-wallet.rs # thin fixed DG-E2 Wallet wrapper
+│           ├── secs-devgraph-work-v1.rs # thin fixed named Work/Arena projection wrapper
+│           └── secz.rs              # historical compatibility and audit wrapper
+├── vendor/
+│   ├── castalia-wallet-private-files-9cc8140/ # exact four-file Wallet source snapshot
+│   └── castalia-wallet-private-files-9cc8140.source.json # origin/inventory, no invented license
+├── permissions/
+│   ├── Cargo.toml
+│   └── src/lib.rs                   # shared receiver-local permission model
+├── panel/
+│   ├── Cargo.toml
+│   ├── src/lib.rs                   # wasm-bindgen permission wrapper
+│   └── www/                         # static no-network browser UI
+├── .github/workflows/
+│   ├── ci.yml                       # Rust, audit, and wasm checks
+│   └── pages.yml                    # README/docs/rustdoc/WASM Pages build and deploy
+├── scripts/build-pages.sh           # safe generated-site source assembly
+└── docs/
+    ├── README.md                    # docs index
+    ├── current-state.md             # concise orientation derived from the status ledger
+    ├── devgraph-named-work-v1.md    # named Work/Arena v1 producer and setup boundary
+    ├── implementation-status.md     # current status ledger
+    ├── repository-schema.md         # this file
+    ├── client-surfaces.md           # client-side/outgoing-call boundary
+    ├── reference/
+    │   ├── README.md
+    │   ├── devgraph-issue-create-v1-producer.md
+    │   ├── devgraph-issue-create-v1-cli.md
+    │   ├── devgraph-issue-create-v1-wallet-cli.md
+    │   ├── runtime.md
+    │   └── wasm-and-pages.md
+    ├── pages/
+    │   └── _config.yml              # generated-site Jekyll config
+    ├── specs/
+    │   ├── README.md
+    │   └── 2026-06-01-secs-magik-objectives-spec.md
+    ├── plans/
+    │   ├── README.md
+    │   ├── 2026-06-01-implementation-progress-checklist.md
+    │   ├── 2026-06-01-secs-magik-implementation-issue-slices.md
+    │   └── 2026-06-02-ready-for-prod-checklist.md
+    ├── ideas/
+    │   ├── README.md                # non-authoritative idea registry and status vocabulary
+    │   └── optional-inference-weave-middleware.md
+    └── announcement-thread.md       # public-language draft with prototype caveats
+```
+
+Current Track E test/fixture surfaces that are intentionally outside the runtime module tree:
+
+```text
+server/tests/production_federated.rs       # signed membership/provisioning credential and policy matrix tests
+server/tests/trust.rs                      # TrustedIssuerEntry / registry loader fail-closed tests
+server/tests/support/trust_fixtures.rs     # no-real-secret issuer/root/credential fixture helpers
+server/tests/support/wallet_fixtures.rs    # shared D/E/I wallet subject/audience/origin/resource fixtures
+```
+
+These fixtures model static receiver-held trust only. They are not live Castalia/Dregg discovery, Midnight/Cardano authority, deployment proof, public auditability, or full wallet-core parity. Track I local `membership.provision` E2E proof is now covered on `main` by PR #76 using these fixture seams.
+
+## Module ownership
+
+| Module/file | Owns | Must not own |
+|---|---|---|
+| `core/src/lib.rs` | `ZenithPacket` v0, core opcode constants, exports. | Product policy, receiver-local manifest semantics, verifier state. |
+| `core/src/packet_builder.rs` | Verifier-free `ZenithPacket` construction helper. | Capabilities, credential checks, evidence verification, authority decisions. |
+| `core/src/zk.rs` | Low-level signing/proof helper primitives. | The full secS verifier pipeline or public claims that proof bytes are enough. |
+| `client/src/main.rs` | CLI packet sending; current secC-like outgoing path. | Server-side verification, receiver-local operation authority. |
+| `permissions/src/lib.rs` | Shared receiver-local permission records, JSON model, and fail-closed evaluator. | Gateway transport, browser state, or external authority. |
+| `panel/src/lib.rs` | No-network wasm-bindgen permission-model wrapper. | Remote gateway administration, file access, product wallet UX, or federation authority. |
+| `server/src/verifier.rs` | Typed verifier errors, prototype envelope check, signed context helpers. | Product policy, app login, settlement, arbitrary handler execution. |
+| `server/src/devgraph_authority.rs` | Fixed `devgraph.issue.create.v1` request/Wallet/policy verification and portable signed authority projection production. | Generic operations, routes, opcodes, handlers, Devgraph Work mutation/receipt ownership, Wallet custody, `.castaway` authority, or hybrid/PQ v1 claims. |
+| `server/src/devgraph_issue_create_cli.rs` | Fixed DG-E1 owner-private input/config loading, exact DG-P invocation, replay SQLite opening, bounded summaries, and atomic signed-projection output. | Caller-selected receiver controls, generic operations/routes/handlers/transports, service-key generation, Wallet custody, Devgraph mutation, or E2E success claims. |
+| `server/src/devgraph_issue_create_wallet_cli.rs` | Fixed DG-E2 `127.0.0.1:9045` one-shot Wallet page/CSRF state machine and direct exact-provider call before typed DG-E1 producer invocation. | Configurable listener/browser, generic RPC, cookies/storage, Wallet custody, `.castaway` reads, temporary presentation files, Devgraph calls/mutations/receipts, deployment, or hybrid/PQ claims. |
+| `server/src/devgraph_work_request.rs` | Closed `devgraph.work-request.v1` and `devgraph.arena-request.v1` parser/canonicalizer with safe-integer, duplicate-key, operation, resource, and digest-domain boundaries. | Wallet custody, policy decisions, Devgraph graph reads/writes, HTTP receiver behavior, or generic operation schemas. |
+| `server/src/devgraph_work_authority.rs` | Fixed named Work/Arena v1 Wallet presentation verification, deny-wins receiver-policy evaluation, resource inventory, replay binding, and portable signed projection production. | Packet routes, opcodes, handlers, Devgraph Work mutation/receipt ownership, receiver activation, or deployment proof. |
+| `server/src/devgraph_work_cli.rs` | Fixed owner-private request/idempotency/projection file adapter for `secs-devgraph-work-v1`. | Caller-selected authority roots, generic transports, service-key generation, Wallet custody, or Devgraph mutation. |
+| `server/src/devgraph_work_admin.rs` | Owner-local named Work authority provisioning, renewal/rotation, status, and snapshot verification under the canonical secS authority directory. | Actor-key custody, Devgraph receiver activation, policy authorship, graph mutation, or secret publication. |
+| `server/src/ingress.rs` | Prototype TCP ingress and verifier/payload handoff. | Receiver-local manifest semantics or handler implementation details. |
+| `server/src/gateway.rs` | Configurable router, legacy telemetry, receiver-local bounded handler routing, and handler lifecycle receipt/event emission. | Packet decode or payload decryption policy; durable distributed broker semantics; arbitrary shell authority. |
+| `server/src/payload.rs` | Tunnel key parsing and runtime-mode payload decryption. | Opcode routing, manifest semantics, or receipt persistence. |
+| `server/src/manifest.rs` | Receiver-local operation descriptors, handler IDs, evidence requirements, and opcode governance. | Client-only packet construction; global product policy; final global opcode ratification. |
+| `server/src/evidence.rs` | `EvidenceAdapter` trait, `local_static` local-dev-test adapter, cryptographic `wallet_presentation` proof-of-possession over the temporary secS challenge contract, static receiver-held `TrustedIssuerEntry` registry policy, and signed `membership_credential` / `provisioning_credential` verification. | Mandatory external runtime dependencies, full Castalia Wallet wallet-core parity claims, live Castalia/Dregg registry discovery, Midnight/Cardano authority, public auditability, deployment proof, or treating wallet/local/caller-supplied roots as sufficient issuer/root authority. |
+| `server/src/receipt.rs` | In-memory signed receipt and event types: typed reject/verify/execute/forward receipts, decisions, authenticator kinds, stable event names, and Ed25519 receipt helpers. | Payload content logging and durable persistence by default. |
+| `server/src/ledger.rs` | Local SQLite event/receipt/replay storage, including the dedicated exact-operation Devgraph authority replay reservation, and redacted operator inspection using runtime SQL. | Compile-time SQLx macros unless offline cache is maintained; payload content persistence by default; public-chain anchoring; Devgraph Work idempotency or mutation. |
+| `server/src/runtime_mode.rs` | Explicit local/dev/production mode selection. | Silent plaintext fallback. |
+| `server/src/config.rs` | Typed gateway runtime config and readiness inputs. | Hidden production defaults or fixture-only smoke config masquerading as deployed production. |
+| `server/src/identity.rs` | Verifier identity loading, signer key IDs, receipt/context signing, local public-key registry checks, and the private fixed-domain DG-P Ed25519 signer/verifier seam. | Generic arbitrary-byte signing, live federation discovery, or issuer/root authority beyond the separate static Track E trusted-issuer fixture policy. |
+| `server/src/schema.rs` | Central runtime SQLite schema definitions and lightweight local ledger migrations, including the dedicated `(session_id, operation, nonce)` DG-P replay table. | Public-chain anchoring, remote retention, or Devgraph Work storage. |
+| `server/src/ontology.rs` | Shared prototype receiver/audience/reason constants. | Product authority or live trust registry semantics. |
+| `server/src/bin/secs-gateway.rs` | Canonical prototype gateway command. | Reusable gateway logic. |
+| `server/src/bin/secz.rs` | Compatibility wrapper for the historical command name. | Final verifier semantics or generic interface claims. |
+| `server/src/bin/secs-devgraph-issue-create-v1.rs` | Thin wrapper for the fixed three-file DG-E1 adapter. | Reusable producer logic, generic CLI selection, or Devgraph Work mutation. |
+| `server/src/bin/secs-devgraph-issue-create-v1-wallet.rs` | Thin wrapper for the fixed three-file DG-E2 Wallet adapter. | Reusable ceremony/producer logic, configurable browser/listener controls, or Devgraph Work mutation. |
+| `server/src/bin/secs-devgraph-work-v1.rs` | Thin wrapper for the fixed three-file named Work/Arena adapter plus explicit `admin` subcommands. | Reusable authority logic, caller-selected roots, or Devgraph Work mutation. |
+
+## Opcode range schema
+
+| Range | Governance | Where declared first | Rule |
+|---:|---|---|---|
+| `0x01`–`0x0A` | secS/core standardized | `core/src/lib.rs` constants plus `server/src/manifest.rs` descriptors | Very small cross-runtime baseline; current `0x01` and `0x02` are legacy examples. |
+| `0x0B`–`0x3F` | Castalia-standard candidate | `server/src/manifest.rs` descriptors first, later promoted if ratified | Portable Castalia operation names/evidence expectations. Current `0x10`/`0x20`/`0x30` are candidates/dev bindings only. |
+| `0x40`–`0xFF` | Operator-defined | Receiver manifest | Local/operator-specific handlers. |
+
+## Docs schema
+
+| Path | Purpose | Update rule |
+|---|---|---|
+| `README.md` | Canonical repository front door and operating map. | Keep current, evidence-derived, searchable, boundary-safe, and status-explicit; link deep evidence to the ledger/reference docs. |
+| `docs/current-state.md` | Concise repository orientation derived from the status ledger. | Update when the top-level request path, posture, active decisions, or authoritative-doc locations change; never override the ledger. |
+| `docs/implementation-status.md` | Implementation status ledger. | Update whenever docs/code status changes; prevents future/planned work from being described as implemented. |
+| `docs/repository-schema.md` | File-system/schema target for implementation agents. | Update before moving modules or adding new doc classes. |
+| `docs/specs/` | Current architecture/specification docs. | Current source-of-truth specs only. |
+| `docs/plans/` | Implementation plans/issue slices. | Reviewable plans; do not mix with historical audits. |
+| `docs/ideas/` | Non-authoritative exploratory proposals. | Every note must state status, issue, conflicts, promotion gates, and non-claims; promote accepted work into specs/plans rather than silently treating an idea as architecture. |
+| `docs/reference/` | Present runtime/operations and WASM/Pages behavior. | Update with current code; never override implementation-status evidence. |
+| `docs/pages/` | Static-site build configuration. | Must not contain secrets, generated outputs, runtime data, or a second canonical homepage. |
+| `docs/announcement-thread.md` | External narrative draft. | Must not claim production-secure/ZK behavior before verifier proof exists. |
+| `AGENTS.md` | Agent rules. | Keep aligned with current boundaries; stale rules are dangerous. |
+| `CHANGELOG.md` | Commit reasoning. | Required when committing changes. |
+
+## Migration notes from current repo
+
+Current files that need boundary care:
+
+- `server/src/bin/secz.rs` is now a thin compatibility wrapper. Prototype proof/TTL checks live in `server/src/verifier.rs`, payload handling in `server/src/payload.rs`, connection handling in `server/src/ingress.rs`, and telemetry/routing in `server/src/gateway.rs`.
+- `README.md` previously described Dregg as the direct implementation path and Wallet as living inside secS-magik implementations. Current boundary: Dregg/Midnight/Cardano are optional evidence/anchor rails; WalletAuth and browser app sessions are separate from internal secS RPC.
+- `docs/announcement-thread.md` previously used strong ZK/security language. It should remain a vision/draft with prototype caveats until signed contexts, receipts, evidence adapters, and verifier checks exist.
+- Historical review files, if reintroduced under `docs/reviews/`, should remain audit evidence. Do not edit old findings into current guidance except by adding a short supersession note that points readers to `docs/implementation-status.md`.
+
+## Verification checklist for docs realignment
+
+```bash
+git diff --check -- CHANGELOG.md README.md AGENTS.md docs/
+cargo test --workspace
+```
+
+Docs content checks:
+
+- [ ] README says local Hermes/secC/secZ are client-side/outgoing surfaces.
+- [ ] README says secS-magik/secS is the verifier/RPC substrate.
+- [ ] README does not call secZ the generic Castalia interface or verifier.
+- [ ] README preserves `ZenithPacket` v0 and decimal opcode CLI rule.
+- [ ] AGENTS.md names the corrected module boundaries.
+- [ ] Announcement thread is caveated as a draft/target, not a current production claim.
+- [ ] Specs/plans/status ledger are linked from README.
+- [ ] Docs distinguish solid implemented, partial/prototype, planned next, future/optional, and out-of-scope surfaces.
+- [ ] No secrets, real keys, tokens, DB files, or private operator paths are introduced.
+
+
+## Public audit bundle contract (#181)
+
+`secs-public-audit-bundle-v1` is the first redacted public-audit export contract. It projects complete signed local receipt chains into JSON containing receipt ids, context ids, signature hex, signer public-key material, redacted evidence summaries, and deterministic chain/root metadata. The verifier contract is local public-bundle verification, not external anchoring or immutable public publication.
+
+
+### Receipt-chain audit export model (#182)
+
+#182 strengthens `secs-public-audit-bundle-v1` with the versioned `secs-public-audit-chain-v1` root algorithm. Every exported receipt entry carries a `chain_index` and `previous_entry_hash_hex`, and the bundle chain metadata records a deterministic context-scoped range export (`chain_scope: context:<id>`). Context-scoped range export rejects missing endpoints and local bundle verification rejects reordered or broken hash-link chains. This is still local public-bundle verification, not external anchoring or immutable public publication.
+
+
+### Audit publisher abstraction (#183) — audit publisher abstraction (#183)
+
+#183 adds a local audit publisher abstraction and persisted `audit_publication_status` table for public audit bundles. Publication status is keyed by an `idempotency_key` over bundle version, chain algorithm version, chain scope, root hash, receipt count, and target kind. Target references are stored as `target_ref_digest_hex`, never raw target refs. The included local/no-op publisher proves status, retry, idempotency, and failure semantics without external anchoring claims. Publication verifies the local public audit bundle before recording success or failure, and publication failures do not rewrite receipt rows or bundle contents.
+
+
+### Public audit verifier CLI (#184) — public audit verifier CLI (#184)
+
+#184 adds the redaction-safe public audit verifier CLI. Use:
+
+```bash
+cargo run -p server --bin secz -- audit verify <bundle.json>
+# installed binary form:
+secz audit verify <bundle.json>
+```
+
+A valid local public audit bundle prints a single summary line such as:
+
+```text
+valid=true bundle_version=secs-public-audit-bundle-v1 chain_algorithm_version=secs-public-audit-chain-v1 chain_scope=context:example root_hash_hex=<hex> receipt_count=2
+```
+
+The verifier does not require SQLite database access or private signing material. It loads the JSON `PublicAuditBundle`, verifies bundle version, signer public keys, signatures, entry hashes, receipt chain links, endpoints, root hash, and redaction boundaries, then exits 0 only when all checks pass. Invalid bundles exit nonzero and print stable error names such as `UnsupportedBundleVersion`, `ReceiptChainLinkMismatch`, `ChainRootMismatch`, `ReceiptEntryHashMismatch`, `UnknownSignerKey`, or `RedactionViolation` without printing raw payloads, private evidence, raw target refs, or local SQLite rows.
+
+This is not external anchoring, public immutability, settlement finality, or production publication proof.
+
+
+### External audit anchor adapter (#185) — external audit anchor adapter (#185)
+
+#185 locks the first external publication target as `github-gist`. The anchor record schema is `secs-public-audit-github-gist-anchor-v1` and contains only public/redacted metadata: target kind, public target ref, bundle version, chain algorithm version, chain scope, root hash, receipt count, publication timestamp, and verifier command.
+
+Run local verification before publishing or accepting an anchor:
+
+```bash
+secz audit verify <bundle.json>
+secz audit anchor verify <bundle.json> <anchor.json>
+```
+
+`secz audit anchor verify <bundle.json> <anchor.json>` first verifies the local public audit bundle, then compares the external anchor record against the bundle version, chain algorithm version, chain scope, root hash, and receipt count. The GitHub Gist adapter records publication status through `Ledger::publish_public_audit_bundle(...)` using target kind `github-gist` and persists only `target_ref_digest_hex` in local status rows.
+
+The GitHub Gist target is a public publication witness, not blockchain immutability, Cardano/Midnight settlement finality, censorship-proof storage, or production deployment proof. The adapter and runbook must not publish raw payloads, private evidence, local SQLite rows, or private signing material.
+
+## Private native service issuance source
+
+`server/src/service_context_issuer.rs` owns selected owner-private issuer-key leases and typed challenge/context signing; it exposes no public generic signer. `server/src/service_authority.rs` owns the private request-only Pending composition and its concrete retained-owner guard. `server/src/service_pending_issuer_tests.rs` covers ordinary Pending issuance and denials for both applications. These are private source mechanisms; completion, retry/recovery, production startup and installed admission remain open.
+
+## Fixed accountable result authority (17 October 2026)
+
+Private `server/src/frank_result_authority.rs`, `frank_result_contract.rs` and `frank_result_store.rs` implement the fixed owner-pinned local-review result boundary. The explicit normal binary is `server/src/bin/secs-frank-result.rs`; ordinary integration controls live in `server/tests/frank_result_authority.rs`. The authority adds no generic signer or Application variant. `docs/plans/frank-fixed-result-authority.md` records the capture contract, storage limits, component validation and remaining actual binary/Frank/receiver/installed integration. Existing registry, vendor, helper and wire boundaries are unchanged.

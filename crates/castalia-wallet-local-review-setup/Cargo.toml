@@ -1,0 +1,24 @@
+[package]
+name = "castalia-wallet-local-review-setup"
+version = "0.1.0"
+edition = "2021"
+publish = false
+[workspace]
+resolver = "2"
+[features]
+hostile-json-features = ["serde_json/preserve_order", "serde_json/arbitrary_precision", "server/hostile-json-features"]
+[dependencies]
+castalia-wallet-service-holder = { path = "../castalia-wallet-service-holder" }
+castalia-wallet-private-files = { path = "../castalia-wallet-service-holder/vendor/secS-service-authority-d1ff595/vendor/castalia-wallet-private-files-9cc8140" }
+server = { path = "../castalia-wallet-service-holder/vendor/secS-service-authority-d1ff595/server" }
+libsec-core = { path = "../castalia-wallet-service-holder/vendor/secS-service-authority-d1ff595/core" }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.150"
+sha2 = "=0.11.0"
+libc = "=0.2.186"
+[dev-dependencies]
+tempfile = "=3.27.0"
+tokio = { version = "=1.52.3", features = ["rt-multi-thread", "macros", "time"] }
+[[bin]]
+name = "castalia-wallet-local-review-setup"
+path = "src/main.rs"

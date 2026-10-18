@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 PACKAGE = Path('crates/castalia-wallet-service-holder')
-NATIVE = PACKAGE / 'vendor/secS-service-b'
+NATIVE = PACKAGE / 'vendor/secS-service-authority-d1ff595'
 FS = NATIVE / 'vendor/castalia-wallet-private-files-9cc8140'
 
 def run_metadata(root, features=None):

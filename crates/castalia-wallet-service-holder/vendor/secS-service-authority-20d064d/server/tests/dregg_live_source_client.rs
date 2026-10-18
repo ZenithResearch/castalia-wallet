@@ -1,0 +1,1345 @@
+use ed25519_dalek::{Signer, SigningKey, VerifyingKey};
+use server::dregg_authority::{DreggAuthoritySnapshot, DreggAuthorityStatus};
+use server::dregg_live_source::{
+    build_live_source_http_request, cache_entry_is_fresh_for_request, execute_live_source_lookup,
+    load_live_source_auth_token, should_replace_cache_entry, validate_live_source_response,
+    DreggLiveSourceAuthMaterial, DreggLiveSourceCacheEntry, DreggLiveSourceClientError,
+    DreggLiveSourceDuplicatePolicy, DreggLiveSourceFileCache, DreggLiveSourceLookupPolicy,
+    DreggLiveSourceRequest, DreggLiveSourceResponse, DreggLiveSourceStatus,
+    DreggLiveSourceTransport, DreggLiveSourceTransportError, DreggLiveSourceTrustedKey,
+    DREGG_LIVE_SOURCE_CONTRACT_VERSION,
+};
+use std::collections::VecDeque;
+use std::path::Path;
+use std::time::Duration;
+
+const NOW: u64 = 1_770_000_300;
+
+fn request() -> DreggLiveSourceRequest {
+    DreggLiveSourceRequest {
+        contract_version: DREGG_LIVE_SOURCE_CONTRACT_VERSION.to_string(),
+        receiver_audience: "secS://operator-receiver".to_string(),
+        entity_ref: "castalia:entity:example".to_string(),
+        resource_ref: "application/json".to_string(),
+        operation: "membership.provision".to_string(),
+        opcode: 16,
+        subject: "did:example:alice".to_string(),
+        issuer_key_id: Some("issuer-key:1".to_string()),
+        authority_root_ref: Some("dregg-root:2026q2".to_string()),
+        validation_time: NOW,
+        request_nonce: "nonce-1".to_string(),
+    }
+}
+
+fn response() -> DreggLiveSourceResponse {
+    DreggLiveSourceResponse {
+        contract_version: DREGG_LIVE_SOURCE_CONTRACT_VERSION.to_string(),
+        source_id: "dregg-source:operator".to_string(),
+        source_key_id: "dregg-source-key:1".to_string(),
+        source_status: DreggLiveSourceStatus::Active,
+        entity_ref: "castalia:entity:example".to_string(),
+        resource_ref: "application/json".to_string(),
+        issuer_key_id: "issuer-key:1".to_string(),
+        issuer_status: DreggLiveSourceStatus::Active,
+        authority_root_ref: "dregg-root:2026q2".to_string(),
+        root_fingerprint: "root:sha256:fixture".to_string(),
+        root_status: DreggLiveSourceStatus::Active,
+        namespace_status: DreggLiveSourceStatus::Active,
+        resource_status: DreggLiveSourceStatus::Active,
+        status_observed_at: NOW - 30,
+        valid_from: NOW - 60,
+        valid_until: NOW + 60,
+        snapshot_generation: "generation:42".to_string(),
+        duplicate_policy: DreggLiveSourceDuplicatePolicy::Unique,
+        redacted_summary: "source=dregg-source:operator root=root:sha256:fixture".to_string(),
+        response_signature: Vec::new(),
+    }
+}
+
+fn source_signing_key() -> SigningKey {
+    SigningKey::from_bytes(&[7_u8; 32])
+}
+
+fn source_trusted_key() -> DreggLiveSourceTrustedKey {
+    DreggLiveSourceTrustedKey::active(
+        "dregg-source:operator",
+        "dregg-source-key:1",
+        VerifyingKey::from(&source_signing_key()),
+    )
+}
+
+fn signed_response() -> DreggLiveSourceResponse {
+    sign_response_for_request(&request(), response())
+}
+
+fn sign_response_for_request(
+    request: &DreggLiveSourceRequest,
+    mut response: DreggLiveSourceResponse,
+) -> DreggLiveSourceResponse {
+    let signature_payload = response.signature_payload(request);
+    response.response_signature = source_signing_key()
+        .sign(&signature_payload)
+        .to_bytes()
+        .to_vec();
+    response
+}
+
+struct FixtureTransport {
+    outcomes: VecDeque<Result<DreggLiveSourceResponse, DreggLiveSourceTransportError>>,
+    calls: usize,
+    observed_auth_summary: Option<String>,
+    observed_timeout: Option<Duration>,
+}
+
+impl FixtureTransport {
+    fn new(outcomes: Vec<Result<DreggLiveSourceResponse, DreggLiveSourceTransportError>>) -> Self {
+        Self {
+            outcomes: outcomes.into(),
+            calls: 0,
+            observed_auth_summary: None,
+            observed_timeout: None,
+        }
+    }
+}
+
+impl DreggLiveSourceTransport for FixtureTransport {
+    fn fetch_authority(
+        &mut self,
+        _request: &DreggLiveSourceRequest,
+        auth: &DreggLiveSourceAuthMaterial,
+        timeout: Duration,
+    ) -> Result<DreggLiveSourceResponse, DreggLiveSourceTransportError> {
+        self.calls += 1;
+        self.observed_auth_summary = Some(auth.redacted_summary());
+        self.observed_timeout = Some(timeout);
+        self.outcomes
+            .pop_front()
+            .expect("fixture transport outcome should be queued")
+    }
+}
+
+fn token_path(name: &str) -> std::path::PathBuf {
+    std::env::temp_dir().join(format!("secs-magik-{name}-{}-{}", std::process::id(), NOW))
+}
+
+fn cache_path(name: &str) -> std::path::PathBuf {
+    std::env::temp_dir().join(format!(
+        "secs-magik-live-source-cache-{name}-{}-{}.json",
+        std::process::id(),
+        NOW
+    ))
+}
+
+fn write_owner_private_token(path: &Path, token: &str) {
+    std::fs::write(path, token).unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
+}
+
+fn auth_material(name: &str) -> DreggLiveSourceAuthMaterial {
+    let path = token_path(name);
+    write_owner_private_token(&path, "live-secret-token\n");
+    let auth = load_live_source_auth_token(Path::new(&path)).unwrap();
+    let _ = std::fs::remove_file(&path);
+    auth
+}
+
+#[test]
+fn live_source_http_request_builder_serializes_signed_no_network_contract() {
+    let auth = auth_material("http-request-builder");
+
+    let http_request = build_live_source_http_request(
+        "https://dregg.example.test/api/v1/authority?ignored=true#fragment",
+        &request(),
+        &auth,
+    )
+    .expect("valid HTTPS base URL should build a deterministic no-network HTTP request");
+
+    assert_eq!(http_request.method, "POST");
+    assert_eq!(
+        http_request.url,
+        "https://dregg.example.test/api/v1/authority/lookup"
+    );
+    assert_eq!(
+        http_request.headers,
+        vec![
+            (
+                "authorization".to_string(),
+                "Bearer live-secret-token".to_string()
+            ),
+            ("content-type".to_string(), "application/json".to_string()),
+            (
+                "x-secs-contract".to_string(),
+                DREGG_LIVE_SOURCE_CONTRACT_VERSION.to_string()
+            ),
+        ]
+    );
+    assert!(http_request
+        .body_json
+        .contains("\"request_nonce\":\"nonce-1\""));
+    assert!(http_request
+        .body_json
+        .contains("\"receiver_audience\":\"secS://operator-receiver\""));
+    assert!(!http_request.body_json.contains("live-secret-token"));
+    assert!(!format!("{http_request:?}").contains("live-secret-token"));
+}
+
+#[test]
+fn live_source_http_request_builder_rejects_non_https_or_secret_bearing_urls() {
+    let auth = auth_material("http-request-builder-rejects");
+
+    for source_url in [
+        "http://dregg.example.test/api",
+        "https://user:secret@dregg.example.test/api",
+        "https://dregg.example.test/api?token=secret",
+        "https://dregg.example.test/api?api_key=secret",
+        "https://dregg.example.test/api?client_secret=secret",
+        "https://dregg.example.test/api?refresh_token=secret",
+        "https://dregg.example.test/api?x-api-key=secret",
+        "https://dregg.example.test/api?api%5Fkey=secret",
+        "https://dregg.example.test/api?password=secret",
+        "https://dregg.example.test/api?signature=secret",
+        " https://dregg.example.test/api",
+        "https://dregg.example.test/api\r\nX-Injected: yes",
+    ] {
+        assert_eq!(
+            build_live_source_http_request(source_url, &request(), &auth),
+            Err(DreggLiveSourceClientError::InsecureSourceUrl),
+            "source URL should fail closed: {source_url:?}"
+        );
+    }
+}
+
+#[test]
+fn live_source_auth_material_rejects_header_control_characters() {
+    let newline = token_path("newline-auth-material");
+    write_owner_private_token(&newline, "live-secret-token\nX-Injected: yes\n");
+    assert_eq!(
+        load_live_source_auth_token(Path::new(&newline)),
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+    let _ = std::fs::remove_file(&newline);
+
+    let carriage_return = token_path("carriage-return-auth-material");
+    write_owner_private_token(&carriage_return, "live-secret-token\rX-Injected: yes\n");
+    assert_eq!(
+        load_live_source_auth_token(Path::new(&carriage_return)),
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+    let _ = std::fs::remove_file(&carriage_return);
+}
+
+#[test]
+fn live_source_response_must_match_request_binding_and_freshness() {
+    let decision = validate_live_source_response(
+        &request(),
+        &signed_response(),
+        300,
+        Some(&source_trusted_key()),
+    )
+    .expect("active matching response should validate");
+
+    assert_eq!(decision.source_id, "dregg-source:operator");
+    assert_eq!(decision.cache_generation, "generation:42");
+    assert_eq!(
+        decision.redacted_summary,
+        "source=dregg-source:operator root=root:sha256:fixture"
+    );
+}
+
+#[test]
+fn live_source_response_signature_binds_nonce_contract_audience_operation_resource_and_subject() {
+    let trusted_key = source_trusted_key();
+    let signed = signed_response();
+
+    validate_live_source_response(&request(), &signed, 300, Some(&trusted_key))
+        .expect("matching trusted source signature should verify");
+    assert_eq!(
+        validate_live_source_response(&request(), &signed, 300, None),
+        Err(DreggLiveSourceClientError::MissingSourceTrust)
+    );
+
+    let mut bad_signature = signed.clone();
+    bad_signature.response_signature[0] ^= 0x01;
+    assert_eq!(
+        validate_live_source_response(&request(), &bad_signature, 300, Some(&trusted_key)),
+        Err(DreggLiveSourceClientError::UnauthorizedSource)
+    );
+
+    let mut tampered_nonce = request();
+    tampered_nonce.request_nonce = "nonce-2".to_string();
+    assert_eq!(
+        validate_live_source_response(&tampered_nonce, &signed, 300, Some(&trusted_key)),
+        Err(DreggLiveSourceClientError::UnauthorizedSource)
+    );
+
+    let mut tampered_subject = request();
+    tampered_subject.subject = "did:example:bob".to_string();
+    assert_eq!(
+        validate_live_source_response(&tampered_subject, &signed, 300, Some(&trusted_key)),
+        Err(DreggLiveSourceClientError::UnauthorizedSource)
+    );
+
+    let wrong_key = DreggLiveSourceTrustedKey::active(
+        "dregg-source:operator",
+        "dregg-source-key:other",
+        VerifyingKey::from(&SigningKey::from_bytes(&[8_u8; 32])),
+    );
+    assert_eq!(
+        validate_live_source_response(&request(), &signed, 300, Some(&wrong_key)),
+        Err(DreggLiveSourceClientError::UnauthorizedSource)
+    );
+}
+
+#[test]
+fn live_source_response_rejects_wrong_contract_wrong_binding_and_status() {
+    let mut wrong_contract = response();
+    wrong_contract.contract_version = "secs-dregg-live-source-client-v0".to_string();
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &wrong_contract,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::UnsupportedContractVersion)
+    );
+
+    let mut wrong_resource = response();
+    wrong_resource.resource_ref = "text/plain".to_string();
+    let wrong_resource = sign_response_for_request(&request(), wrong_resource);
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &wrong_resource,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::WrongBinding)
+    );
+
+    let mut degraded_source = response();
+    degraded_source.source_status = DreggLiveSourceStatus::Degraded;
+    let degraded_source = sign_response_for_request(&request(), degraded_source);
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &degraded_source,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::SourceUnavailable)
+    );
+
+    let mut duplicate_conflict = response();
+    duplicate_conflict.duplicate_policy = DreggLiveSourceDuplicatePolicy::Conflict;
+    let duplicate_conflict = sign_response_for_request(&request(), duplicate_conflict);
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &duplicate_conflict,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::DuplicateAuthorityConflict)
+    );
+}
+
+#[test]
+fn live_source_response_rejects_stale_future_or_invalid_windows() {
+    let mut stale = response();
+    stale.status_observed_at = NOW - 301;
+    let stale = sign_response_for_request(&request(), stale);
+    assert_eq!(
+        validate_live_source_response(&request(), &stale, 300, Some(&source_trusted_key())),
+        Err(DreggLiveSourceClientError::StaleStatus)
+    );
+
+    let mut future = response();
+    future.status_observed_at = NOW + 1;
+    let future = sign_response_for_request(&request(), future);
+    assert_eq!(
+        validate_live_source_response(&request(), &future, 300, Some(&source_trusted_key())),
+        Err(DreggLiveSourceClientError::FutureStatus)
+    );
+
+    let mut expired = response();
+    expired.valid_until = NOW - 1;
+    let expired = sign_response_for_request(&request(), expired);
+    assert_eq!(
+        validate_live_source_response(&request(), &expired, 300, Some(&source_trusted_key())),
+        Err(DreggLiveSourceClientError::StaleStatus)
+    );
+}
+
+#[test]
+fn live_source_response_rejects_malformed_or_unredacted_operator_summary() {
+    let mut missing_source_id = response();
+    missing_source_id.source_id = "".to_string();
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &missing_source_id,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::MalformedResponse)
+    );
+
+    let mut invalid_window = response();
+    invalid_window.valid_from = NOW + 10;
+    invalid_window.valid_until = NOW + 10;
+    assert_eq!(
+        validate_live_source_response(
+            &request(),
+            &invalid_window,
+            300,
+            Some(&source_trusted_key())
+        ),
+        Err(DreggLiveSourceClientError::MalformedResponse)
+    );
+
+    let mut unredacted = response();
+    unredacted.redacted_summary = "Authorization: Bearer live-source-secret".to_string();
+    assert_eq!(
+        validate_live_source_response(&request(), &unredacted, 300, Some(&source_trusted_key())),
+        Err(DreggLiveSourceClientError::UnredactedSummary)
+    );
+}
+
+#[test]
+fn cache_reuse_requires_same_binding_and_fresh_ttl() {
+    let req = request();
+    let entry = DreggLiveSourceCacheEntry {
+        request: req.clone(),
+        response: response(),
+        cached_at: NOW - 20,
+    };
+    assert!(cache_entry_is_fresh_for_request(&entry, &req, NOW, 30));
+
+    let mut different_subject = req.clone();
+    different_subject.subject = "did:example:bob".to_string();
+    assert!(!cache_entry_is_fresh_for_request(
+        &entry,
+        &different_subject,
+        NOW,
+        30
+    ));
+    assert!(!cache_entry_is_fresh_for_request(&entry, &req, NOW, 19));
+}
+
+#[test]
+fn cache_replacement_prefers_newer_observed_status_or_generation() {
+    let old_entry = DreggLiveSourceCacheEntry {
+        request: request(),
+        response: signed_response(),
+        cached_at: NOW - 20,
+    };
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-2".to_string();
+    let mut newer = response();
+    newer.status_observed_at = NOW - 10;
+    let newer = sign_response_for_request(&candidate_request, newer);
+    assert!(should_replace_cache_entry(
+        &old_entry,
+        &candidate_request,
+        &newer,
+        &trusted_key
+    ));
+
+    let mut unsigned_newer = response();
+    unsigned_newer.status_observed_at = NOW - 5;
+    assert!(!should_replace_cache_entry(
+        &old_entry,
+        &candidate_request,
+        &unsigned_newer,
+        &trusted_key
+    ));
+
+    let mut different_subject_request = candidate_request.clone();
+    different_subject_request.subject = "did:example:bob".to_string();
+    let different_subject_response =
+        sign_response_for_request(&different_subject_request, response());
+    assert!(!should_replace_cache_entry(
+        &old_entry,
+        &different_subject_request,
+        &different_subject_response,
+        &trusted_key
+    ));
+
+    let mut older = response();
+    older.status_observed_at = NOW - 40;
+    older.snapshot_generation = "generation:99".to_string();
+    let older = sign_response_for_request(&candidate_request, older);
+    assert!(!should_replace_cache_entry(
+        &old_entry,
+        &candidate_request,
+        &older,
+        &trusted_key
+    ));
+
+    let mut wrong_binding = response();
+    wrong_binding.status_observed_at = NOW - 10;
+    wrong_binding.resource_ref = "text/plain".to_string();
+    let wrong_binding = sign_response_for_request(&candidate_request, wrong_binding);
+    assert!(!should_replace_cache_entry(
+        &old_entry,
+        &candidate_request,
+        &wrong_binding,
+        &trusted_key
+    ));
+
+    let mut duplicate_conflict = response();
+    duplicate_conflict.status_observed_at = NOW - 10;
+    duplicate_conflict.duplicate_policy = DreggLiveSourceDuplicatePolicy::Conflict;
+    let duplicate_conflict = sign_response_for_request(&candidate_request, duplicate_conflict);
+    assert!(!should_replace_cache_entry(
+        &old_entry,
+        &candidate_request,
+        &duplicate_conflict,
+        &trusted_key
+    ));
+}
+
+#[test]
+fn file_cache_persists_signed_candidate_and_reuses_only_fresh_matching_cache() {
+    let path = cache_path("fresh-reuse");
+    let _ = std::fs::remove_file(&path);
+    let cache = DreggLiveSourceFileCache::new(&path);
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-cache-candidate".to_string();
+    let candidate_response = sign_response_for_request(&candidate_request, response());
+
+    let stored = cache
+        .store_replacement_if_newer(&candidate_request, &candidate_response, NOW, &trusted_key)
+        .expect("valid signed cache candidate should persist");
+    assert!(stored, "initial valid candidate should populate the cache");
+
+    let decision = cache
+        .load_fresh_decision(&request(), NOW + 10, 30, 300, &trusted_key)
+        .expect("fresh matching persistent cache should authorize via validated decision")
+        .expect("fresh matching persistent cache entry should be present");
+    assert_eq!(decision.source_id, "dregg-source:operator");
+    assert_eq!(decision.cache_generation, "generation:42");
+
+    let mut different_subject = request();
+    different_subject.subject = "did:example:bob".to_string();
+    assert!(cache
+        .load_fresh_decision(&different_subject, NOW + 10, 30, 300, &trusted_key)
+        .expect("non-matching cache keys should not authorize or error")
+        .is_none());
+
+    let mut older_request = request();
+    older_request.request_nonce = "nonce-cache-older".to_string();
+    let mut older_response = response();
+    older_response.status_observed_at = NOW - 120;
+    older_response.snapshot_generation = "generation:1".to_string();
+    let older_response = sign_response_for_request(&older_request, older_response);
+    let replaced = cache
+        .store_replacement_if_newer(&older_request, &older_response, NOW + 20, &trusted_key)
+        .expect("older signed candidate should be evaluated without corrupting cache");
+    assert!(
+        !replaced,
+        "older candidate must not replace newer cache authority"
+    );
+
+    let decision_after_older_candidate = cache
+        .load_fresh_decision(&request(), NOW + 20, 30, 300, &trusted_key)
+        .expect("cache should remain readable after rejected replacement")
+        .expect("newer original cache entry should remain present");
+    assert_eq!(
+        decision_after_older_candidate.cache_generation,
+        "generation:42"
+    );
+
+    let _ = std::fs::remove_file(&path);
+}
+
+#[test]
+fn file_cache_fails_closed_on_stale_entries_and_redacts_diagnostics() {
+    let path = cache_path("stale-redacted-diagnostics");
+    let _ = std::fs::remove_file(&path);
+    let cache = DreggLiveSourceFileCache::new(&path);
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-cache-stale".to_string();
+    let candidate_response = sign_response_for_request(&candidate_request, response());
+    cache
+        .store_replacement_if_newer(
+            &candidate_request,
+            &candidate_response,
+            NOW - 120,
+            &trusted_key,
+        )
+        .expect("valid stale fixture should persist for fail-closed diagnostics");
+
+    assert_eq!(
+        cache.load_fresh_decision(&request(), NOW, 30, 300, &trusted_key),
+        Err(DreggLiveSourceClientError::StaleStatus)
+    );
+
+    let diagnostics = cache
+        .diagnostics_for_request(&request(), NOW, 30)
+        .expect("cache diagnostics should be readable without secrets");
+    assert!(diagnostics.present);
+    assert!(!diagnostics.fresh);
+    assert_eq!(diagnostics.cache_age_seconds, Some(120));
+    assert_eq!(
+        diagnostics.source_id.as_deref(),
+        Some("dregg-source:operator")
+    );
+    assert_eq!(
+        diagnostics.cache_generation.as_deref(),
+        Some("generation:42")
+    );
+    let debug = format!("{diagnostics:?}");
+    assert!(!debug.to_ascii_lowercase().contains("bearer"));
+    assert!(!debug.to_ascii_lowercase().contains("token"));
+    assert!(!debug.to_ascii_lowercase().contains("response_signature"));
+
+    let _ = std::fs::remove_file(&path);
+}
+
+#[test]
+fn live_source_auth_material_loads_without_exposing_token_contents() {
+    let path = token_path("auth-material");
+    write_owner_private_token(&path, "live-secret-token\n");
+
+    let auth = load_live_source_auth_token(Path::new(&path)).unwrap();
+    let _ = std::fs::remove_file(&path);
+
+    assert_eq!(auth.redacted_summary(), "auth_token:<redacted>");
+    assert!(!auth.redacted_summary().contains("live-secret-token"));
+    assert!(!format!("{auth:?}").contains("live-secret-token"));
+}
+
+#[test]
+fn live_source_auth_material_rejects_missing_or_empty_token_files() {
+    let missing = token_path("missing-auth-material");
+    let _ = std::fs::remove_file(&missing);
+    assert_eq!(
+        load_live_source_auth_token(Path::new(&missing)),
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+
+    let empty = token_path("empty-auth-material");
+    write_owner_private_token(&empty, "  \n");
+    assert_eq!(
+        load_live_source_auth_token(Path::new(&empty)),
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+    let _ = std::fs::remove_file(&empty);
+}
+
+#[test]
+fn live_source_lookup_does_not_call_transport_when_adapter_disabled_auth_missing_or_trust_missing()
+{
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let mut transport = FixtureTransport::new(vec![Ok(signed_response())]);
+    let auth = auth_material("lookup-preflight");
+
+    let disabled_result = execute_live_source_lookup(
+        None,
+        None::<&mut FixtureTransport>,
+        None,
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(
+        disabled_result,
+        Err(DreggLiveSourceClientError::TransportDisabled)
+    );
+    assert_eq!(transport.calls, 0);
+
+    let missing_auth_result = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        None,
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(
+        missing_auth_result,
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+    assert_eq!(transport.calls, 0);
+
+    let missing_trust_result = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(
+        missing_trust_result,
+        Err(DreggLiveSourceClientError::MissingSourceTrust)
+    );
+    assert_eq!(transport.calls, 0);
+}
+
+#[test]
+fn live_source_lookup_retries_transport_timeouts_then_validates_response() {
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("lookup-timeout-success");
+    let mut transport = FixtureTransport::new(vec![
+        Err(DreggLiveSourceTransportError::Timeout),
+        Err(DreggLiveSourceTransportError::Timeout),
+        Ok(signed_response()),
+    ]);
+
+    let (snapshot, entries) = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        Some(&source_trusted_key()),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    )
+    .expect("lookup should retry transport timeouts then validate the successful response");
+
+    assert_eq!(snapshot.source_node_id, "dregg-source:operator");
+    assert_eq!(transport.calls, 3);
+    assert_eq!(transport.observed_timeout, Some(Duration::from_millis(250)));
+    assert_eq!(
+        transport.observed_auth_summary.as_deref(),
+        Some("auth_token:<redacted>")
+    );
+    assert_eq!(entries.len(), 1);
+}
+
+#[test]
+fn live_source_lookup_returns_transport_timeout_after_bounded_retry_exhaustion() {
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("lookup-timeout-exhausted");
+    let mut transport = FixtureTransport::new(vec![
+        Err(DreggLiveSourceTransportError::Timeout),
+        Err(DreggLiveSourceTransportError::Timeout),
+        Err(DreggLiveSourceTransportError::Timeout),
+    ]);
+
+    let result = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        Some(&source_trusted_key()),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+
+    assert_eq!(result, Err(DreggLiveSourceClientError::TransportTimeout));
+    assert_eq!(transport.calls, 3);
+}
+
+#[test]
+fn live_source_lookup_does_not_retry_source_unavailable_transport_failure() {
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("lookup-source-unavailable");
+    let mut transport = FixtureTransport::new(vec![
+        Err(DreggLiveSourceTransportError::SourceUnavailable),
+        Ok(response()),
+    ]);
+
+    let result = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        Some(&source_trusted_key()),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+
+    assert_eq!(result, Err(DreggLiveSourceClientError::SourceUnavailable));
+    assert_eq!(transport.calls, 1);
+}
+
+#[test]
+fn live_source_lookup_does_not_retry_semantic_rejects() {
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("lookup-semantic-reject");
+    let mut malformed = response();
+    malformed.source_id = "".to_string();
+    let mut transport = FixtureTransport::new(vec![Ok(malformed), Ok(response())]);
+
+    let result = execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        Some(&source_trusted_key()),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+
+    assert_eq!(result, Err(DreggLiveSourceClientError::MalformedResponse));
+    assert_eq!(transport.calls, 1);
+}
+
+// ── response-to-authority mapping tests ──
+
+#[test]
+fn map_valid_response_to_snapshot_with_correct_fields() {
+    let req = request();
+    let resp = response();
+    let (snapshot, entries) = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    )
+    .expect("valid response should map to snapshot");
+
+    assert_eq!(
+        snapshot.schema_version,
+        DreggAuthoritySnapshot::SCHEMA_VERSION
+    );
+    assert_eq!(snapshot.snapshot_id, "generation:42");
+    assert_eq!(snapshot.source_node_id, "dregg-source:operator");
+    assert_eq!(snapshot.federation_id, "castalia-demo");
+    assert_eq!(snapshot.entity_id, "castalia:entity:example");
+    assert_eq!(snapshot.namespace_id, "castalia-demo:example");
+    assert_eq!(snapshot.authority_mode, "live_castalia_dregg");
+    assert_eq!(snapshot.observed_at, NOW - 30);
+    assert_eq!(snapshot.expires_at, NOW + 60);
+
+    assert_eq!(snapshot.issuers.len(), 1);
+    let issuer = &snapshot.issuers[0];
+    assert_eq!(issuer.issuer_id, "issuer-key:1");
+    assert_eq!(issuer.issuer_key_id, "issuer-key:1");
+    assert_eq!(issuer.authority_root_ref, "dregg-root:2026q2");
+    assert_eq!(issuer.status, DreggAuthorityStatus::Active);
+    assert_eq!(issuer.not_before, NOW - 60);
+    assert_eq!(issuer.not_after, NOW + 60);
+    assert!(issuer
+        .accepted_audiences
+        .contains(&"secS://operator-receiver".to_string()));
+    assert!(issuer
+        .accepted_operations
+        .contains(&"membership.provision".to_string()));
+
+    assert_eq!(snapshot.resources.len(), 1);
+    let resource = &snapshot.resources[0];
+    assert_eq!(resource.resource_id, "application/json");
+    assert_eq!(resource.controller_entity_id, "castalia:entity:example");
+    assert_eq!(resource.status, DreggAuthorityStatus::Active);
+
+    assert_eq!(entries.len(), 1);
+    let entry = &entries[0];
+    assert_eq!(entry.issuer_id, "issuer-key:1");
+    assert_eq!(entry.issuer_key_id, "issuer-key:1");
+    assert_eq!(entry.root_ref, "dregg-root:2026q2");
+    assert_eq!(entry.root_fingerprint, "root:sha256:fixture");
+    assert_eq!(entry.epoch_id, "generation:42");
+    assert_eq!(entry.root_status, DreggAuthorityStatus::Active);
+    assert_eq!(entry.issuer_status, DreggAuthorityStatus::Active);
+    assert!(entry
+        .accepted_audiences
+        .contains(&"secS://operator-receiver".to_string()));
+    assert!(entry
+        .accepted_operations
+        .contains(&"membership.provision".to_string()));
+}
+
+#[test]
+fn map_rejects_wrong_contract_version() {
+    let req = request();
+    let mut resp = response();
+    resp.contract_version = "wrong-contract".to_string();
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(
+        result,
+        Err(DreggLiveSourceClientError::UnsupportedContractVersion)
+    );
+}
+
+#[test]
+fn map_rejects_inactive_issuer() {
+    let req = request();
+    let mut resp = response();
+    resp.issuer_status = DreggLiveSourceStatus::Inactive;
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(result, Err(DreggLiveSourceClientError::RevokedOrInactive));
+}
+
+#[test]
+fn map_rejects_revoked_issuer() {
+    let req = request();
+    let mut resp = response();
+    resp.issuer_status = DreggLiveSourceStatus::Revoked;
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(result, Err(DreggLiveSourceClientError::RevokedOrInactive));
+}
+
+#[test]
+fn map_rejects_wrong_entity_binding() {
+    let req = request();
+    let mut resp = response();
+    resp.entity_ref = "other:entity".to_string();
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(result, Err(DreggLiveSourceClientError::WrongBinding));
+}
+
+#[test]
+fn map_rejects_wrong_resource_binding() {
+    let req = request();
+    let mut resp = response();
+    resp.resource_ref = "other/resource".to_string();
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(result, Err(DreggLiveSourceClientError::WrongBinding));
+}
+
+#[test]
+fn map_rejects_duplicate_conflict() {
+    let req = request();
+    let mut resp = response();
+    resp.duplicate_policy = DreggLiveSourceDuplicatePolicy::Conflict;
+    let result = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    );
+    assert_eq!(
+        result,
+        Err(DreggLiveSourceClientError::DuplicateAuthorityConflict)
+    );
+}
+
+#[test]
+fn map_flows_redacted_summary_through_without_raw_credentials() {
+    let req = request();
+    let mut resp = response();
+    resp.redacted_summary =
+        "source=dregg-source:operator root=root:sha256:fixture status=active".to_string();
+    let (snapshot, _entries) = server::dregg_live_source::map_response_to_authority_snapshot(
+        &req,
+        &resp,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+    )
+    .expect("valid response should map");
+    assert_eq!(
+        snapshot.issuers[0].status_ref,
+        "source=dregg-source:operator root=root:sha256:fixture status=active"
+    );
+    let lower = snapshot.issuers[0].status_ref.to_ascii_lowercase();
+    assert!(!lower.contains("bearer "));
+    assert!(!lower.contains("access_token"));
+    assert!(!lower.contains("secret"));
+}
+
+// ── cache-integration wiring tests ──
+
+#[test]
+fn cache_wired_lookup_returns_fresh_cached_snapshot_without_calling_transport() {
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-cache-wired-hit".to_string();
+    let candidate_response = sign_response_for_request(&candidate_request, response());
+    let cache = DreggLiveSourceFileCache::new(cache_path("wired-fresh-hit"));
+    let _ = std::fs::remove_file(cache.path());
+    cache
+        .store_replacement_if_newer(
+            &candidate_request,
+            &candidate_response,
+            NOW - 5,
+            &trusted_key,
+        )
+        .expect("valid cache entry should persist");
+
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("wired-fresh-hit");
+    // Transport should never be called
+    let mut transport = FixtureTransport::new(vec![Ok(signed_response())]);
+
+    let (snapshot, entries) = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    )
+    .expect("fresh cache hit should return snapshot without transport");
+
+    assert_eq!(
+        transport.calls, 0,
+        "transport must not be called on fresh cache hit"
+    );
+    assert_eq!(snapshot.source_node_id, "dregg-source:operator");
+    assert_eq!(snapshot.authority_mode, "live_castalia_dregg");
+    assert_eq!(snapshot.snapshot_id, "generation:42");
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].issuer_key_id, "issuer-key:1");
+
+    let _ = std::fs::remove_file(cache.path());
+}
+
+#[test]
+fn cache_wired_lookup_calls_transport_on_stale_cache_validates_maps_and_caches() {
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-cache-wired-stale".to_string();
+    // Cache an old entry that is now stale
+    let mut stale_response = response();
+    stale_response.status_observed_at = NOW - 400;
+    let stale_response = sign_response_for_request(&candidate_request, stale_response);
+    let cache = DreggLiveSourceFileCache::new(cache_path("wired-stale-fetch"));
+    let _ = std::fs::remove_file(cache.path());
+    cache
+        .store_replacement_if_newer(&candidate_request, &stale_response, NOW - 400, &trusted_key)
+        .expect("stale cache entry should persist");
+
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("wired-stale-fetch");
+    let fresh_response = sign_response_for_request(&request(), response());
+    let mut transport = FixtureTransport::new(vec![Ok(fresh_response)]);
+
+    let (snapshot, _entries) = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    )
+    .expect("stale cache should trigger transport call, validate, map, and return fresh snapshot");
+
+    assert_eq!(
+        transport.calls, 1,
+        "transport must be called once on stale cache"
+    );
+    assert_eq!(snapshot.snapshot_id, "generation:42");
+
+    // Verify the fresh response was cached (second call should be cache hit)
+    let mut transport2 = FixtureTransport::new(vec![Ok(signed_response())]);
+    let (_snapshot2, _entries2) = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport2),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW + 5,
+    )
+    .expect("second lookup should hit fresh cache");
+    assert_eq!(
+        transport2.calls, 0,
+        "second lookup must hit cache, not transport"
+    );
+
+    let _ = std::fs::remove_file(cache.path());
+}
+
+#[test]
+fn cache_wired_lookup_transport_failure_with_stale_cache_returns_error_no_fallback() {
+    let trusted_key = source_trusted_key();
+    let mut candidate_request = request();
+    candidate_request.request_nonce = "nonce-cache-wired-stale-fail".to_string();
+    let stale_response = sign_response_for_request(&candidate_request, response());
+    let cache = DreggLiveSourceFileCache::new(cache_path("wired-stale-fail"));
+    let _ = std::fs::remove_file(cache.path());
+    cache
+        .store_replacement_if_newer(&candidate_request, &stale_response, NOW - 500, &trusted_key)
+        .expect("stale cache entry should persist");
+
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 0,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("wired-stale-fail");
+    let mut transport =
+        FixtureTransport::new(vec![Err(DreggLiveSourceTransportError::SourceUnavailable)]);
+
+    let result = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+
+    assert_eq!(
+        result,
+        Err(DreggLiveSourceClientError::SourceUnavailable),
+        "transport failure must not fall back to stale cache authority"
+    );
+    assert_eq!(transport.calls, 1);
+
+    let _ = std::fs::remove_file(cache.path());
+}
+
+#[test]
+fn cache_wired_lookup_disabled_transport_or_missing_auth_returns_error_before_transport() {
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let mut transport = FixtureTransport::new(vec![Ok(signed_response())]);
+
+    let disabled = server::dregg_live_source::execute_live_source_lookup(
+        None,
+        None::<&mut FixtureTransport>,
+        None,
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(disabled, Err(DreggLiveSourceClientError::TransportDisabled));
+    assert_eq!(transport.calls, 0);
+
+    let missing_auth = server::dregg_live_source::execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        None,
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(
+        missing_auth,
+        Err(DreggLiveSourceClientError::MissingAuthMaterial)
+    );
+    assert_eq!(transport.calls, 0);
+
+    let auth = auth_material("wired-preflight");
+    let missing_trust = server::dregg_live_source::execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        None,
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+    assert_eq!(
+        missing_trust,
+        Err(DreggLiveSourceClientError::MissingSourceTrust)
+    );
+    assert_eq!(transport.calls, 0);
+}
+
+#[test]
+fn cache_wired_lookup_semantic_validation_failure_does_not_retry() {
+    let trusted_key = source_trusted_key();
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("wired-semantic-reject");
+    let mut malformed = response();
+    malformed.source_id = "".to_string();
+    let mut transport = FixtureTransport::new(vec![Ok(malformed), Ok(response())]);
+
+    let result = server::dregg_live_source::execute_live_source_lookup(
+        None,
+        Some(&mut transport),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    );
+
+    assert_eq!(result, Err(DreggLiveSourceClientError::MalformedResponse));
+    assert_eq!(
+        transport.calls, 1,
+        "semantic validation failure must not retry"
+    );
+}
+
+#[test]
+fn cache_wired_lookup_no_cache_entry_calls_transport_and_returns_mapped_snapshot() {
+    let trusted_key = source_trusted_key();
+    let cache = DreggLiveSourceFileCache::new(cache_path("wired-no-entry"));
+    let _ = std::fs::remove_file(cache.path());
+
+    let policy = DreggLiveSourceLookupPolicy {
+        timeout: Duration::from_millis(250),
+        retry_max: 2,
+        stale_max_seconds: 300,
+        cache_ttl_seconds: 30,
+    };
+    let auth = auth_material("wired-no-entry");
+    let fresh = sign_response_for_request(&request(), response());
+    let mut transport = FixtureTransport::new(vec![Ok(fresh)]);
+
+    let (snapshot, entries) = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW,
+    )
+    .expect("no cache entry should call transport and return snapshot");
+
+    assert_eq!(transport.calls, 1);
+    assert_eq!(snapshot.snapshot_id, "generation:42");
+    assert_eq!(entries.len(), 1);
+
+    // Verify the response was cached
+    let mut transport2 = FixtureTransport::new(vec![]);
+    let (_snapshot2, _entries2) = server::dregg_live_source::execute_live_source_lookup(
+        Some(&cache),
+        Some(&mut transport2),
+        Some(&auth),
+        Some(&trusted_key),
+        &request(),
+        policy,
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "castalia-demo",
+        "castalia-demo:example",
+        NOW + 5,
+    )
+    .expect("second lookup should hit cache after first call cached it");
+    assert_eq!(
+        transport2.calls, 0,
+        "response must be cached after first successful transport call"
+    );
+
+    let _ = std::fs::remove_file(cache.path());
+}
