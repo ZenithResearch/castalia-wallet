@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- Publish the Castalia Wallet Standard and CWS-001 connected-accounts/recovery draft with a descriptor schema and structural cases — gives native and Web account work a shared, reviewable custody and backup boundary before implementation.
+- Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.
 
 ### Fixed
 - Prefetch the exact locked holder dependencies before running offline identity checks in clean CI — keeps the metadata tests strict without depending on a workstation cache.
