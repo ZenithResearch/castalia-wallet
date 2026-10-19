@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/connected-accounts.v1-draft.schema.json",
+  "title": "CWS-001 connected account descriptors \u2014 structural draft only",
+  "description": "No private authority or credentials. Semantic, cryptographic and size validation is additional; no current wallet parser accepts this draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "authority",
+    "ownerMemberKey",
+    "accounts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "castalia.connected-accounts.v1-draft"
+    },
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "authority": {
+      "const": "descriptor-only"
+    },
+    "ownerMemberKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "accounts": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "oneOf": [
+          {
+            "allOf": [
+              {
+                "$ref": "#/$defs/account"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "nostr"
+                  },
+                  "networkId": {
+                    "const": "nostr"
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "homeserver": false,
+                  "publicKey": {
+                    "properties": {
+                      "suite": {
+                        "const": "BIP340-secp256k1"
+                      },
+                      "value": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "publicKey"
+                ]
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/$defs/account"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "matrix"
+                  },
+                  "networkId": {
+                    "pattern": "^matrix:[^\\s/]+$"
+                  },
+                  "identifier": {
+                    "pattern": "^@[^\\s:]+:[^\\s/]+$"
+                  },
+                  "publicKey": false
+                },
+                "required": [
+                  "homeserver"
+                ]
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/$defs/account"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "evm"
+                  },
+                  "networkId": {
+                    "pattern": "^eip155:(0|[1-9][0-9]*)$"
+                  },
+                  "identifier": {
+                    "pattern": "^0x[0-9a-fA-F]{40}$"
+                  },
+                  "homeserver": false,
+                  "publicKey": {
+                    "properties": {
+                      "suite": {
+                        "const": "secp256k1"
+                      },
+                      "value": {
+                        "pattern": "^0[23][0-9a-f]{64}$"
+                      }
+                    }
+                  }
+                },
+                "required": []
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/$defs/account"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "cardano"
+                  },
+                  "networkId": {
+                    "pattern": "^cardano:[a-z0-9-]+$"
+                  },
+                  "identifier": {
+                    "pattern": "^addr(_test)?1[0-9a-z]+$"
+                  },
+                  "homeserver": false,
+                  "publicKey": {
+                    "properties": {
+                      "suite": {
+                        "const": "Ed25519"
+                      },
+                      "value": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    }
+                  }
+                },
+                "required": []
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/$defs/account"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "solana"
+                  },
+                  "networkId": {
+                    "pattern": "^solana:[a-z0-9-]+$"
+                  },
+                  "identifier": {
+                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                  },
+                  "homeserver": false,
+                  "publicKey": {
+                    "properties": {
+                      "suite": {
+                        "const": "Ed25519"
+                      },
+                      "value": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                      }
+                    }
+                  }
+                },
+                "required": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "publicKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "suite",
+        "encoding",
+        "value"
+      ],
+      "properties": {
+        "suite": {
+          "enum": [
+            "Ed25519",
+            "secp256k1",
+            "BIP340-secp256k1"
+          ]
+        },
+        "encoding": {
+          "const": "lowercase-hex"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 66,
+          "pattern": "^[0-9a-f]+$"
+        }
+      }
+    },
+    "account": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accountId",
+        "kind",
+        "networkId",
+        "identifier"
+      ],
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "kind": {
+          "enum": [
+            "cardano",
+            "evm",
+            "solana",
+            "nostr",
+            "matrix"
+          ]
+        },
+        "networkId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "publicKey": {
+          "$ref": "#/$defs/publicKey"
+        },
+        "homeserver": {
+          "type": "string",
+          "maxLength": 2048,
+          "pattern": "^https://[^/?#@\\s]+/?$"
+        }
+      }
+    }
+  }
+}

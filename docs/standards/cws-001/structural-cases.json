@@ -1,0 +1,372 @@
+{
+  "scope": "Structural JSON Schema cases only; not key ownership, protocol, cryptographic, byte-bound or runtime qualification. Sentinel strings are not credentials. Patches apply to the fixed matrix-and-nostr example; repeatFirstAccount constructs the account-count boundary without duplicating fixture bytes.",
+  "cases": [
+    {
+      "name": "synthetic public descriptors",
+      "valid": true,
+      "patches": []
+    },
+    {
+      "name": "wallet with no connected accounts",
+      "valid": true,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts"
+          ],
+          "value": []
+        }
+      ]
+    },
+    {
+      "name": "unknown discriminator",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "schema"
+          ],
+          "value": "castalia.connected-accounts.v1"
+        }
+      ]
+    },
+    {
+      "name": "unknown version",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "version"
+          ],
+          "value": 2
+        }
+      ]
+    },
+    {
+      "name": "authority cannot be a signing grant",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "authority"
+          ],
+          "value": "sign-and-publish"
+        }
+      ]
+    },
+    {
+      "name": "invalid holder encoding",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "ownerMemberKey"
+          ],
+          "value": "not-a-key"
+        }
+      ]
+    },
+    {
+      "name": "extra recovery authority",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "recoveryCapsule"
+          ],
+          "value": "NONSECRET-NEGATIVE-SENTINEL"
+        }
+      ]
+    },
+    {
+      "name": "unknown account family",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "kind"
+          ],
+          "value": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "private key field rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "privateKey"
+          ],
+          "value": "NONSECRET-NEGATIVE-SENTINEL"
+        }
+      ]
+    },
+    {
+      "name": "access token field rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "accessToken"
+          ],
+          "value": "NONSECRET-NEGATIVE-SENTINEL"
+        }
+      ]
+    },
+    {
+      "name": "local signing handle rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "keyHandle"
+          ],
+          "value": "NONSECRET-NEGATIVE-SENTINEL"
+        }
+      ]
+    },
+    {
+      "name": "nostr must have public key",
+      "valid": false,
+      "patches": [
+        {
+          "op": "delete",
+          "path": [
+            "accounts",
+            0,
+            "publicKey"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "nostr suite cannot be ed25519",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "publicKey",
+            "suite"
+          ],
+          "value": "Ed25519"
+        }
+      ]
+    },
+    {
+      "name": "nostr wrong public key width",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "publicKey",
+            "value"
+          ],
+          "value": "00"
+        }
+      ]
+    },
+    {
+      "name": "nostr cannot carry a homeserver",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "homeserver"
+          ],
+          "value": "https://matrix.example.org"
+        }
+      ]
+    },
+    {
+      "name": "matrix must have homeserver",
+      "valid": false,
+      "patches": [
+        {
+          "op": "delete",
+          "path": [
+            "accounts",
+            1,
+            "homeserver"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "matrix HTTPS only",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "homeserver"
+          ],
+          "value": "http://matrix.example.org"
+        }
+      ]
+    },
+    {
+      "name": "matrix embedded credentials rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "homeserver"
+          ],
+          "value": "https://user:NONSECRET@matrix.example.org"
+        }
+      ]
+    },
+    {
+      "name": "matrix homeserver path rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "homeserver"
+          ],
+          "value": "https://matrix.example.org/login"
+        }
+      ]
+    },
+    {
+      "name": "matrix homeserver query rejected",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "homeserver"
+          ],
+          "value": "https://matrix.example.org?token=NONSECRET"
+        }
+      ]
+    },
+    {
+      "name": "matrix cannot use one public device key as account identity",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "publicKey"
+          ],
+          "value": {
+            "suite": "BIP340-secp256k1",
+            "encoding": "lowercase-hex",
+            "value": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"
+          }
+        }
+      ]
+    },
+    {
+      "name": "malformed matrix identifier",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            1,
+            "identifier"
+          ],
+          "value": "alice@example.org"
+        }
+      ]
+    },
+    {
+      "name": "noncanonical evm network",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            2,
+            "networkId"
+          ],
+          "value": "eip155:01"
+        }
+      ]
+    },
+    {
+      "name": "malformed evm address",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            2,
+            "identifier"
+          ],
+          "value": "0x1234"
+        }
+      ]
+    },
+    {
+      "name": "non-v4 account UUID",
+      "valid": false,
+      "patches": [
+        {
+          "op": "set",
+          "path": [
+            "accounts",
+            0,
+            "accountId"
+          ],
+          "value": "11111111-1111-1111-1111-111111111111"
+        }
+      ]
+    },
+    {
+      "name": "account count limit",
+      "valid": false,
+      "patches": [
+        {
+          "op": "repeatFirstAccount",
+          "count": 129
+        }
+      ]
+    }
+  ]
+}
