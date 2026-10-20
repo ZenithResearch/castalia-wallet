@@ -114,7 +114,7 @@ Publishing a schema does not establish publisher authenticity, install code, app
 6. Preview changes, obtain consent and atomically commit against the expected revision. Do not install only the recognized half of a failed import.
 7. Advertise only installed, understood profile/operation versions. Request/result schemas describe bytes; separately supported adapters and fresh account/operation/origin-bound approval authorize use. Packages contain no downloaded implementation.
 
-Schema packages are bounded to 4 MiB, individual schema files to 64 KiB, reference closure to 64 resources and depth 64. Values must satisfy the artifact bound plus their own schema limits. Validators disable networking and enforce evaluation/time/resource limits. Namespace ownership and package authenticity require independent trust; hashes prove integrity only. Version compatibility is exact in this draft, with no automatic semver-range negotiation.
+Schema packages are bounded to 4 MiB, individual schema files to 64 KiB, reference closure to 64 resources and depth 64. Values must satisfy the artifact bound plus their own schema limits. Validators disable networking and enforce evaluation/time/resource limits. Namespace ownership and package authenticity require independent trust; hashes prove integrity only. Publication versions use the shared SemVer shape, including optional prerelease and build metadata. Version matching compares the complete string, including build metadata, with no automatic semver-range negotiation.
 
 ## 7. Recovery inventory
 
@@ -133,6 +133,8 @@ Publishers can define other types through the same publication/entry wrapper, wi
 ## 9. Validation and adoption
 
 In an isolated Python environment with `jsonschema` 4.x, run `python3 docs/standards/cws-001/validate.py` for account-descriptor cases and `python3 docs/standards/cws-001/validate-files.py` for file/publication checks. These cover meta-schemas, offline references, synthetic package integrity, wrapper/value validation, routing, negative cases and the existing public custody-v1 envelope vector. They do not ship an SDK or test cryptographic recovery.
+
+The `Wallet standard schemas` CI job runs both validators independently of the application build gates.
 
 Stability requires independent cross-language encryption vectors, private-encoding review, coverage invariants, cancellation/storage/downgrade tests, validator resource controls, two-consumer native/Web interoperability and physical-device acceptance. SDK implementation, package resolution in installed wallets and Matrix/Nostr adapters remain unimplemented. Reuse/contribution policy is still an explicit decision under [the baseline notice](../../../NOTICE.public-baseline.md); no new license is granted by this draft.
 

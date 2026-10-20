@@ -29,9 +29,7 @@
       "pattern": "^https://[^\\s@?#]+$"
     },
     "profileVersion": {
-      "type": "string",
-      "maxLength": 80,
-      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?$"
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/semver"
     },
     "publisher": {
       "type": "string",

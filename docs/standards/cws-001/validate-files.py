@@ -123,6 +123,27 @@ def validate_entry(entry, destination):
 
 
 expect("complete synthetic publisher package", lambda: validate_package(publication))
+# Both the manifest and the stored entry pin must accept the same exact version
+# strings, including build metadata, and reject malformed prerelease identifiers.
+for version, accepted in (
+    ("1.0.0", True),
+    ("1.0.0+build.01", True),
+    ("1.0.0-0+build.1", True),
+    ("1.0.0-alpha.1", True),
+    ("01.0.0", False),
+    ("1.0.0-01", False),
+    ("1.0.0-alpha..1", False),
+    ("1.0.0+", False),
+):
+    package = copy.deepcopy(publication)
+    package["profileVersion"] = version
+    expect("manifest version " + version,
+           lambda value=package: validate_package(value), accepted)
+    reference = {"id": publication["profileId"], "version": version,
+                 "sha256": publication_digest}
+    pin_schema = {"$ref": PREFIX + "common.schema.json#/$defs/publicationRef"}
+    expect("entry publication version " + version,
+           lambda value=reference: Draft202012Validator(pin_schema, registry=registry).validate(value), accepted)
 data = read(BASE / "examples/castaway-v2-draft.contents.json")
 expect("typed data payload", lambda: validator("castaway-contents-v2-draft.schema.json").validate(data))
 entry = data["entries"][0]
