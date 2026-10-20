@@ -8,6 +8,8 @@ The active membership and custody contract is [Castalia Member Key and Zenith-Si
 
 `.castalia-recovery` is the narrow encrypted signing-authority backup implemented today. [`.castaway`](docs/castaway-portable-vault.md) is the planned application-neutral encrypted data vault for non-authority ontology-typed primitives, public credentials, and public account descriptors; it never carries recovery material or signing authority, and no current extension build claims conformance to that draft format.
 
+The [Castalia Wallet Standard](docs/standards/README.md) publishes versioned interoperability proposals. Its first public draft, [CWS-001: Wallet files, typed sections and schema publications](docs/standards/cws-001/README.md), defines where data, recovery authority and device sessions belong, plus versioned file shapes and publisher-defined connection schemas for a future SDK; it does not activate adapters or change installed recovery files.
+
 Release posture: this is a tested pre-production identity and membership wallet with preview multi-chain derivation, not a production-ready financial wallet. The canonical allowed claims, prohibited claims, and exact-release promotion gates are in [Production claims](docs/production-claims.md).
 
 ## Current Architecture Direction (2026-05-29)

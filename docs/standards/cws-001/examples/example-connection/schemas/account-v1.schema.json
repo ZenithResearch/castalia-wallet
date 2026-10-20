@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/castalia/example-connection/schemas/account-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "accountId",
+    "serviceOrigin",
+    "userId"
+  ],
+  "properties": {
+    "schema": {
+      "const": "org.example.connection-account.v1"
+    },
+    "accountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "serviceOrigin": {
+      "type": "string",
+      "pattern": "^https://[^/?#@\\s]+/?$"
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    }
+  }
+}

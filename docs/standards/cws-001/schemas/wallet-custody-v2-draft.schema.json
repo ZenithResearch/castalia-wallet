@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/wallet-custody-v2-draft.schema.json",
+  "title": "Proposed expanded recovery envelope; unimplemented",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "keySuite",
+    "publicKey",
+    "createdAt",
+    "kdf",
+    "aead",
+    "ciphertext",
+    "contentsSchema"
+  ],
+  "properties": {
+    "schema": {
+      "const": "castalia.wallet-custody.v2-draft"
+    },
+    "keySuite": {
+      "const": "Ed25519"
+    },
+    "publicKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "kdf": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/kdf"
+    },
+    "aead": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/aead"
+    },
+    "ciphertext": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/ciphertext"
+    },
+    "contentsSchema": {
+      "const": "castalia.wallet-secrets.v2-draft"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/wallet-custody-v1.schema.json",
+  "title": "Implemented custody-v1 envelope \u2014 structural companion to frozen source",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "keySuite",
+    "publicKey",
+    "createdAt",
+    "kdf",
+    "aead",
+    "ciphertext"
+  ],
+  "properties": {
+    "schema": {
+      "const": "castalia.wallet-custody.v1"
+    },
+    "keySuite": {
+      "const": "Ed25519"
+    },
+    "publicKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "kdf": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/kdf"
+    },
+    "aead": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/aead"
+    },
+    "ciphertext": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/ciphertext"
+    }
+  }
+}

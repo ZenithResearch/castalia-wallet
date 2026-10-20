@@ -1,0 +1,41 @@
+{
+  "status": "Structural schema inventory; current contracts and proposed drafts are distinguished. No current exporter is changed.",
+  "files": [
+    {
+      "artifact": ".castalia-recovery",
+      "discriminator": "castalia.wallet-custody.v1",
+      "status": "implemented-frozen",
+      "schema": "schemas/wallet-custody-v1.schema.json",
+      "plaintextSchema": "schemas/wallet-secret-v1.schema.json",
+      "source": "../../../crates/castalia-wallet-core/src/lib.rs"
+    },
+    {
+      "artifact": ".castaway",
+      "discriminator": "castalia.castaway.v1",
+      "status": "implemented-restricted-subset",
+      "schema": "schemas/castaway-envelope-v1.schema.json",
+      "plaintextContract": "castalia.castaway-contents.v1",
+      "source": "../../../contracts/portable-web/src/castaway.ts"
+    },
+    {
+      "artifact": ".castalia-recovery",
+      "discriminator": "castalia.wallet-custody.v2-draft",
+      "status": "proposed-unimplemented",
+      "schema": "schemas/wallet-custody-v2-draft.schema.json",
+      "plaintextSchema": "schemas/wallet-secrets-v2-draft.schema.json"
+    },
+    {
+      "artifact": ".castaway",
+      "discriminator": "castalia.castaway.v2-draft",
+      "status": "proposed-unimplemented",
+      "schema": "schemas/castaway-envelope-v2-draft.schema.json",
+      "plaintextSchema": "schemas/castaway-contents-v2-draft.schema.json"
+    },
+    {
+      "artifact": "schema publication package",
+      "discriminator": "castalia.schema-publication.v1-draft",
+      "status": "proposed-unimplemented",
+      "schema": "schemas/schema-publication-v1-draft.schema.json"
+    }
+  ]
+}
