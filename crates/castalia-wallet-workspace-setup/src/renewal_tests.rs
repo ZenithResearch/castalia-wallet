@@ -46,6 +46,15 @@ impl RenewalFixture {
         write(&self.path, &raw).unwrap();
         self.pin = hash(&raw);
     }
+    fn live_provider(mut self, actor_id: &str, handoff_id: &str) -> Self {
+        let mut value = self.value();
+        value["schema"] = json!("castalia.wallet-workspace-live-provider-authority.v1");
+        value["actor_id"] = json!(actor_id);
+        value["handoff_id"] = json!(handoff_id);
+        value["run_id"] = json!(format!("handoff-{}", &handoff_id[..48]));
+        self.replace(value);
+        self
+    }
     fn attempt(&self) -> PathBuf {
         self.f
             .root
@@ -55,6 +64,123 @@ impl RenewalFixture {
     fn apply(&self) -> Value {
         renew_from_plan(&self.path, &self.pin).unwrap()
     }
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn live_provider_expansion_retains_identity_and_limits_actor_and_run() {
+    let handoff = "a".repeat(64);
+    let run = format!("handoff-{}", &handoff[..48]);
+    let x = RenewalFixture::new().live_provider("actor", &handoff);
+    let store = x.f.store(&x.old);
+    let old_identity = store.public_identity().unwrap();
+    let result = x.apply();
+    assert_eq!(result["scope"], renewal::LIVE_PROVIDER_SCOPE);
+    assert_eq!(result["actor_id"], "actor");
+    assert_eq!(result["run_id"], run);
+    assert_eq!(result["handoff_id"], handoff);
+    assert!(renewal::same_key(
+        &old_identity,
+        &store.public_identity().unwrap()
+    ));
+
+    let config = x.attempt().join("config");
+    let policy: Value = parse(
+        &read(&config.join("runtime-policy.json"), 65536, 0o600).unwrap(),
+        65536,
+    )
+    .unwrap();
+    assert_eq!(policy["permissions"].as_array().unwrap().len(), 23);
+    assert_eq!(policy["descriptors"].as_array().unwrap().len(), 23);
+    let permissions = policy["permissions"].as_array().unwrap();
+    assert!(permissions
+        .iter()
+        .any(|row| row["operation"] == "runtime.actor.register.v1"
+            && row["resource"] == "actors/actor"
+            && row["resource_match"] == "exact"));
+    assert!(permissions
+        .iter()
+        .any(|row| row["operation"] == "runtime.run.create.v1"
+            && row["resource"] == format!("runs/{run}")
+            && row["resource_match"] == "exact"));
+    assert!(permissions
+        .iter()
+        .any(|row| row["operation"] == "runtime.handoff.consume.v1"
+            && row["resource"] == format!("handoffs/{handoff}")
+            && row["resource_match"] == "exact"));
+    assert!(permissions
+        .iter()
+        .any(|row| row["operation"] == "runtime.executor.complete.v1"
+            && row["resource"] == format!("runs/{run}/steps/")
+            && row["resource_match"] == "prefix"));
+
+    let authority = ServiceAuthority::open_pinned_owner_configuration(
+        &config.join("command-authority.json"),
+        hex_digest(&result["configuration_hashes"]["command-authority.json"]),
+    )
+    .await
+    .unwrap();
+    for operation in ["actor.register"] {
+        authority.issue(&request(operation)).await.unwrap();
+    }
+    authority
+        .acquire_query(&request("work.list"))
+        .await
+        .unwrap();
+
+    let mut other: Value = parse(&request("actor.register"), 65536).unwrap();
+    other["request_id"] = json!("request-actor-register-other");
+    other["resource"] = json!("actors/other");
+    other["payload"]["actor_id"] = json!("other");
+    assert!(authority.issue(&canonical(&other)).await.is_err());
+}
+
+#[tokio::test(flavor = "current_thread")]
+async fn live_provider_renewal_replaces_only_the_exact_run() {
+    let handoff_one = "a".repeat(64);
+    let handoff_two = "b".repeat(64);
+    let run_one = format!("handoff-{}", &handoff_one[..48]);
+    let run_two = format!("handoff-{}", &handoff_two[..48]);
+    let first = RenewalFixture::new().live_provider("actor", &handoff_one);
+    let first_result = first.apply();
+    let selected = first.attempt().join("COMPLETE.json");
+    let second = RenewalFixture::from_previous(first.f, first_result, Some(selected))
+        .live_provider("actor", &handoff_two);
+    let second_result = second.apply();
+    assert_eq!(second_result["actor_id"], "actor");
+    assert_eq!(second_result["run_id"], run_two);
+
+    let config = second.attempt().join("config");
+    let authority = ServiceAuthority::open_pinned_owner_configuration(
+        &config.join("command-authority.json"),
+        hex_digest(&second_result["configuration_hashes"]["command-authority.json"]),
+    )
+    .await
+    .unwrap();
+    let mut old_run: Value = parse(&request("run.create"), 65536).unwrap();
+    old_run["request_id"] = json!("request-run-create-old");
+    old_run["resource"] = json!(format!("runs/{run_one}"));
+    old_run["payload"]["run_id"] = json!(run_one);
+    assert!(authority.issue(&canonical(&old_run)).await.is_err());
+
+    let mut new_run: Value = parse(&request("run.create"), 65536).unwrap();
+    new_run["request_id"] = json!("request-run-create-new");
+    new_run["resource"] = json!(format!("runs/{run_two}"));
+    new_run["payload"]["run_id"] = json!(run_two);
+    authority.issue(&canonical(&new_run)).await.unwrap();
+}
+
+#[test]
+fn live_provider_renewal_cannot_replace_the_actor() {
+    let first = RenewalFixture::new().live_provider("actor-one", &"a".repeat(64));
+    let first_result = first.apply();
+    let selected = first.attempt().join("COMPLETE.json");
+    let second = RenewalFixture::from_previous(first.f, first_result, Some(selected))
+        .live_provider("actor-two", &"b".repeat(64));
+    assert_eq!(
+        renew_from_plan(&second.path, &second.pin),
+        Err(RenewalError::Denied)
+    );
+    assert!(!second.attempt().exists());
 }
 struct Stop;
 impl Drop for Stop {

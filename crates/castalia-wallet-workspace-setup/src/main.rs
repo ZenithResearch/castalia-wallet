@@ -1,5 +1,6 @@
 use castalia_wallet_workspace_setup::{
-    create_from_plan, renew_from_plan, resume_renewal_from_plan, RenewalError,
+    create_from_plan, create_provider_service_from_plan, renew_from_plan, resume_renewal_from_plan,
+    RenewalError,
 };
 use std::path::Path;
 fn main() {
@@ -20,6 +21,23 @@ fn main() {
             ),
             Err(_) => {
                 eprintln!("{{\"error\":\"workspace_owner_setup_denied_partial_state_retained\"}}");
+                std::process::exit(2);
+            }
+        }
+        return;
+    }
+    if args[1] == "create-provider-service" {
+        match create_provider_service_from_plan(path, pin) {
+            Ok(receipt) => println!(
+                "{}",
+                serde_json::json!({"schema":"castalia.wallet-provider-service-authority-output.v1",
+                    "status":"configured_not_activated","root":receipt["root"],
+                    "generation":receipt["generation"]})
+            ),
+            Err(_) => {
+                eprintln!(
+                    "{{\"error\":\"provider_service_authority_denied_partial_state_retained\"}}"
+                );
                 std::process::exit(2);
             }
         }

@@ -122,7 +122,7 @@ fn workspace_scope_is_five_fixed_authoring_and_catalog_operations() {
     assert_eq!(r.len(), 5);
     assert_eq!(
         r.iter()
-            .map(|r| (r.name, r.opcode, r.kind, r.resource))
+            .map(|r| (r.name, r.opcode, r.kind, r.resource.as_str()))
             .collect::<Vec<_>>(),
         vec![
             ("process.draft.put", 0x40, "prefix", "processes/"),
@@ -132,6 +132,50 @@ fn workspace_scope_is_five_fixed_authoring_and_catalog_operations() {
             ("events.list", 0x64, "exact", "events")
         ]
     );
+}
+
+#[test]
+fn live_provider_scope_is_one_actor_and_one_run() {
+    let handoff = "a".repeat(64);
+    let run = format!("handoff-{}", &handoff[..48]);
+    let r = live_provider_rules("frank-hermes-pilot", &run, &handoff).unwrap();
+    assert_eq!(r.len(), 23);
+    let rows: Vec<_> = r
+        .iter()
+        .map(|r| (r.name, r.opcode, r.kind, r.resource.as_str()))
+        .collect();
+    assert!(rows.contains(&("actor.register", 0x46, "exact", "actors/frank-hermes-pilot")));
+    assert!(rows.contains(&("work.list", 0x63, "exact", "actors/frank-hermes-pilot/work")));
+    assert!(rows.contains(&("artifact.put", 0x45, "prefix", "artifacts/")));
+    assert!(rows.contains(&("artifact.get", 0x65, "prefix", "artifacts/")));
+    assert!(rows.contains(&("receipt.get", 0x66, "prefix", "receipts/")));
+    let run_resource = format!("runs/{run}");
+    assert!(rows.contains(&("run.create", 0x42, "exact", run_resource.as_str())));
+    assert!(rows.contains(&(
+        "handoff.consume",
+        0x4D,
+        "exact",
+        "handoffs/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    )));
+    for operation in [
+        "executor.claim",
+        "executor.heartbeat",
+        "executor.complete",
+        "executor.fail",
+        "executor.release",
+        "executor.effect.intent",
+        "executor.effect.dispatch",
+        "executor.effect.observe",
+        "attempt.get",
+        "output.get",
+    ] {
+        assert!(rows.iter().any(|row| row.0 == operation
+            && row.2 == "prefix"
+            && row.3 == format!("runs/{run}/steps/")));
+    }
+    assert!(live_provider_rules("another/actor", &run, &handoff).is_err());
+    assert!(live_provider_rules("actor", "another-run", &handoff).is_err());
+    assert!(live_provider_rules("actor", &run, "not-a-digest").is_err());
 }
 #[test]
 fn create_emits_four_pinned_existing_dtos_and_no_business_or_workflow_state() {

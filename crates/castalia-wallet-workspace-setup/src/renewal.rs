@@ -31,6 +31,12 @@ struct RenewalPlan {
     not_after: String,
     wallet_command_sha256: String,
     verifier_sha256: String,
+    #[serde(default)]
+    actor_id: Option<String>,
+    #[serde(default)]
+    run_id: Option<String>,
+    #[serde(default)]
+    handoff_id: Option<String>,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -58,6 +64,52 @@ struct Selected {
     floor: u64,
     generation: u64,
     attempt: PathBuf,
+    old_rules: Vec<Rule>,
+    target_rules: Vec<Rule>,
+    target_scope: &'static str,
+}
+const AUTHORING_SCOPE: &str =
+    "five authoring/catalog operations in one isolated Runtime store; events are store scoped";
+pub(super) const LIVE_PROVIDER_SCOPE: &str =
+    "finite Frank Hermes pilot for one exact handoff, derived Run and Actor; authoring/catalog retained";
+
+fn plan_target(p: &RenewalPlan) -> Result<(Vec<Rule>, &'static str)> {
+    match p.schema.as_str() {
+        "castalia.wallet-workspace-renewal.v1" => {
+            ok(p.actor_id.is_none() && p.run_id.is_none() && p.handoff_id.is_none())?;
+            Ok((rules(), AUTHORING_SCOPE))
+        }
+        "castalia.wallet-workspace-live-provider-authority.v1" => {
+            let actor = p.actor_id.as_deref().ok_or(SetupError)?;
+            let run = p.run_id.as_deref().ok_or(SetupError)?;
+            let handoff = p.handoff_id.as_deref().ok_or(SetupError)?;
+            Ok((
+                live_provider_rules(actor, run, handoff)?,
+                LIVE_PROVIDER_SCOPE,
+            ))
+        }
+        _ => Err(SetupError),
+    }
+}
+
+fn receipt_rules(old: &Value, p: &RenewalPlan) -> Result<Vec<Rule>> {
+    match old["scope"].as_str().ok_or(SetupError)? {
+        AUTHORING_SCOPE => Ok(rules()),
+        LIVE_PROVIDER_SCOPE => {
+            let actor = old["actor_id"].as_str().ok_or(SetupError)?;
+            let run = old["run_id"].as_str().ok_or(SetupError)?;
+            let handoff = old["handoff_id"].as_str().ok_or(SetupError)?;
+            if p.schema == "castalia.wallet-workspace-live-provider-authority.v1" {
+                // The actor identity is stable across the live-provider pilot, while
+                // each bounded execution receives a fresh exact Run authority. The
+                // old Run remains useful only for reconstructing the predecessor
+                // policy and is never carried into the successor rule set.
+                ok(p.actor_id.as_deref() == Some(actor))?;
+            }
+            live_provider_rules(actor, run, handoff)
+        }
+        _ => Err(SetupError),
+    }
 }
 fn closed(v: &Value, fields: &[&str]) -> Result<()> {
     let m = v.as_object().ok_or(SetupError)?;
@@ -122,7 +174,7 @@ fn select(path: &Path, expected: &str) -> Result<Selected> {
     let raw = read(path, 16384, 0o600)?;
     ok(hash(&raw) == expected)?;
     let p: RenewalPlan = parse(&raw, 16384)?;
-    ok(p.schema == "castalia.wallet-workspace-renewal.v1")?;
+    let (target_rules, target_scope) = plan_target(&p)?;
     for name in ["", "config", "data", "native", "authority"] {
         private_dir(&p.workspace_root.join(name))?;
     }
@@ -177,8 +229,14 @@ fn select(path: &Path, expected: &str) -> Result<Selected> {
     if prior {
         fields.push("previous_complete");
     }
+    if old["scope"] == LIVE_PROVIDER_SCOPE {
+        fields.extend(["actor_id", "run_id", "handoff_id"]);
+    }
     closed(&old, &fields)?;
-    ok(old["scope"]=="five authoring/catalog operations in one isolated Runtime store; events are store scoped")?;
+    let old_rules = receipt_rules(&old, &p)?;
+    // Once execution authority exists, a generic authoring renewal cannot
+    // silently remove it. The exact live-provider profile must be selected.
+    ok(old["scope"] != LIVE_PROVIDER_SCOPE || target_scope == LIVE_PROVIDER_SCOPE)?;
     closed(
         &old["command_issuer"],
         &["node_id", "key_id", "public_key_hex"],
@@ -308,6 +366,9 @@ fn select(path: &Path, expected: &str) -> Result<Selected> {
         end,
         floor,
         generation,
+        old_rules,
+        target_rules,
+        target_scope,
     })
 }
 fn old_pin(s: &Selected) -> Result<OwnerStartupPin> {
@@ -324,8 +385,57 @@ fn wallet_source(s: &Selected) -> Result<WalletCurrentSource> {
     )
     .map_err(|_| SetupError)
 }
-/// Every permitted difference is a time field or the exact next Wallet revision.
-/// Scope, descriptors, identities, resources and all deny behavior are fixed.
+struct RuleDocuments {
+    descriptors: Vec<Value>,
+    receiver_descriptors: Vec<Value>,
+    receiver_rules: Vec<Value>,
+    native_permissions: Vec<Value>,
+    runtime_descriptors: Vec<Value>,
+    runtime_permissions: Vec<Value>,
+}
+fn rule_documents(rr: &[Rule], key_id: &str, start: u64, end: u64) -> Result<RuleDocuments> {
+    let mut descriptors = Vec::new();
+    let mut receiver_descriptors = Vec::new();
+    let mut receiver_rules = Vec::new();
+    let mut native_permissions = Vec::new();
+    let mut runtime_descriptors = Vec::new();
+    let mut runtime_permissions = Vec::new();
+    for r in rr {
+        let operation = format!("runtime.{}.v1", r.name);
+        let handler = format!("process-runtime.v1:{}", r.name);
+        let (descriptor, fingerprint) = descriptor(r.opcode, &operation, &handler)?;
+        descriptors.push(descriptor);
+        receiver_descriptors.push(json!({"operation":operation,"opcode":r.opcode,
+            "fingerprint":fingerprint,"handler_id":handler,"max_ttl_seconds":60}));
+        receiver_rules.push(json!({"subject_id":HOLDER,"key_id":key_id,
+            "operation":operation,"resource":r.resource.as_str(),"resource_match":r.kind,
+            "effect":"allow","active":true,"not_before":start,"not_after":end}));
+        native_permissions.push(json!({"caller_id":HOLDER,"opcode":r.opcode,
+            "operation":operation,"resource":if r.kind=="exact"{
+                json!({"kind":"exact","value":r.resource.as_str()})
+            }else{
+                json!({"kind":"prefix","prefix":r.resource.as_str()})
+            },"effect":"allow","not_before":start,"not_after":end,
+            "status":"active","authority_source":"receiver_local"}));
+        runtime_descriptors.push(json!({"operation":operation,"fingerprint":fingerprint,
+            "handler_id":handler}));
+        runtime_permissions.push(json!({"subject_id":HOLDER,"key_id":key_id,
+            "operation":operation,"resource":r.resource.as_str(),"resource_match":r.kind,
+            "effect":"allow","active":true,"not_before_ms":start*1000,"not_after_ms":end*1000}));
+    }
+    Ok(RuleDocuments {
+        descriptors,
+        receiver_descriptors,
+        receiver_rules,
+        native_permissions,
+        runtime_descriptors,
+        runtime_permissions,
+    })
+}
+
+/// Validate the exact predecessor and derive either a same-scope renewal or the
+/// one-handoff/one-Actor/one-derived-Run live-provider expansion. Identity, custody, replay history,
+/// issuer key and every unrelated Runtime resource remain fixed.
 fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)> {
     ok(native["schema"] == "secs.service-owner-bundle.v2"
         && native["generation"] == s.generation - 1
@@ -345,26 +455,13 @@ fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)>
         && hash(&canonical(owner)) == s.holder.owner_input_sha256.clone().ok_or(SetupError)?)?;
     let old_start = s.old["not_before"].as_u64().ok_or(SetupError)?;
     let old_end = s.old["not_after"].as_u64().ok_or(SetupError)?;
-    let rr = rules();
-    let mut ds = Vec::new();
-    let mut rds = Vec::new();
-    let mut dr = Vec::new();
-    let mut np = Vec::new();
-    for r in &rr {
-        let operation = format!("runtime.{}.v1", r.name);
-        let handler = format!("process-runtime.v1:{}", r.name);
-        let (d, h) = descriptor(r.opcode, &operation, &handler)?;
-        ds.push(d);
-        rds.push(json!({"operation":operation,"opcode":r.opcode,"fingerprint":h,"handler_id":handler,"max_ttl_seconds":60}));
-        dr.push(json!({"subject_id":HOLDER,"key_id":s.holder.key_id,"operation":operation,"resource":r.resource,"resource_match":r.kind,"effect":"allow","active":true,"not_before":old_start,"not_after":old_end}));
-        np.push(json!({"caller_id":HOLDER,"opcode":r.opcode,"operation":operation,"resource":if r.kind=="exact"{json!({"kind":"exact","value":r.resource})}else{json!({"kind":"prefix","prefix":r.resource})},"effect":"allow","not_before":old_start,"not_after":old_end,"status":"active","authority_source":"receiver_local"}));
-    }
-    let receiver = json!({"schema":"secs.service-receiver-policy.v1","application":"runtime","audience":ServiceApplication::RuntimeV1.audience(),"not_before":old_start,"not_after":old_end,"max_ttl_seconds":60,"principals":[{"subject_id":HOLDER,"key_id":s.holder.key_id,"not_before":old_start,"not_after":old_end,"revoked":false}],"descriptors":rds,"rules":dr});
-    ok(owner["descriptors"] == json!(ds)
+    let old_documents = rule_documents(&s.old_rules, &s.holder.key_id, old_start, old_end)?;
+    let receiver = json!({"schema":"secs.service-receiver-policy.v1","application":"runtime","audience":ServiceApplication::RuntimeV1.audience(),"not_before":old_start,"not_after":old_end,"max_ttl_seconds":60,"principals":[{"subject_id":HOLDER,"key_id":s.holder.key_id,"not_before":old_start,"not_after":old_end,"revoked":false}],"descriptors":old_documents.receiver_descriptors,"rules":old_documents.receiver_rules});
+    ok(owner["descriptors"] == json!(old_documents.descriptors)
         && native["descriptors"] == owner["descriptors"]
         && owner["delegation_policy"] == receiver
         && native["receiver_policy"] == receiver
-        && native["permissions"] == json!(np)
+        && native["permissions"] == json!(old_documents.native_permissions)
         && native["valid_not_before"] == old_start
         && native["valid_until"] == old_end
         && native["application"] == "runtime"
@@ -388,10 +485,8 @@ fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)>
         .remove("replaced_by");
     ok(native["holders"] == json!([expected_holder]))?;
     let rp = &s.configs["runtime-policy.json"];
-    let rds:Vec<_>=receiver["descriptors"].as_array().ok_or(SetupError)?.iter().map(|d|json!({"operation":d["operation"],"fingerprint":d["fingerprint"],"handler_id":d["handler_id"]})).collect();
-    let runtime_rules:Vec<_>=rr.iter().map(|r|json!({"subject_id":HOLDER,"key_id":s.holder.key_id,"operation":format!("runtime.{}.v1",r.name),"resource":r.resource,"resource_match":r.kind,"effect":"allow","active":true,"not_before_ms":old_start*1000,"not_after_ms":old_end*1000})).collect();
     ok(
-        *rp == json!({"schema":"runtime.receiver-policy.v1","audience":ServiceApplication::RuntimeV1.audience(),"keys":[public_key(COMMAND_KEY,s.old["command_issuer"]["public_key_hex"].as_str().ok_or(SetupError)?,old_start,old_end)],"descriptors":rds,"permissions":runtime_rules,"revoked_subject_keys":[]})
+        *rp == json!({"schema":"runtime.receiver-policy.v1","audience":ServiceApplication::RuntimeV1.audience(),"keys":[public_key(COMMAND_KEY,s.old["command_issuer"]["public_key_hex"].as_str().ok_or(SetupError)?,old_start,old_end)],"descriptors":old_documents.runtime_descriptors,"permissions":old_documents.runtime_permissions,"revoked_subject_keys":[]})
     )?;
     let rc = &s.configs["runtime-receiver.json"];
     closed(
@@ -411,17 +506,14 @@ fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)>
     next["generation"] = json!(s.holder.state_revision.checked_add(1).ok_or(SetupError)?);
     next["issuers"][0]["not_before"] = json!(s.start);
     next["issuers"][0]["not_after"] = json!(s.end);
-    next["delegation_policy"]["not_before"] = json!(s.start);
-    next["delegation_policy"]["not_after"] = json!(s.end);
-    for name in ["principals", "rules"] {
-        for r in next["delegation_policy"][name]
-            .as_array_mut()
-            .ok_or(SetupError)?
-        {
-            r["not_before"] = json!(s.start);
-            r["not_after"] = json!(s.end);
-        }
-    }
+    let next_documents = rule_documents(&s.target_rules, &s.holder.key_id, s.start, s.end)?;
+    next["descriptors"] = json!(next_documents.descriptors);
+    next["delegation_policy"] = json!({"schema":"secs.service-receiver-policy.v1",
+        "application":"runtime","audience":ServiceApplication::RuntimeV1.audience(),
+        "not_before":s.start,"not_after":s.end,"max_ttl_seconds":60,
+        "principals":[{"subject_id":HOLDER,"key_id":s.holder.key_id,
+            "not_before":s.start,"not_after":s.end,"revoked":false}],
+        "descriptors":next_documents.receiver_descriptors,"rules":next_documents.receiver_rules});
     let mut policy = native.clone();
     let m = policy.as_object_mut().ok_or(SetupError)?;
     m.remove("generation");
@@ -432,11 +524,9 @@ fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)>
     policy["valid_until"] = json!(s.end);
     policy["issuers"][0]["not_before"] = json!(s.start);
     policy["issuers"][0]["not_after"] = json!(s.end);
+    policy["descriptors"] = next["descriptors"].clone();
     policy["receiver_policy"] = next["delegation_policy"].clone();
-    for r in policy["permissions"].as_array_mut().ok_or(SetupError)? {
-        r["not_before"] = json!(s.start);
-        r["not_after"] = json!(s.end);
-    }
+    policy["permissions"] = json!(next_documents.native_permissions);
     Ok((policy, next))
 }
 fn selection(s: &Selected, o: &Original) -> Result<OriginalTransitionSelection> {
@@ -601,15 +691,15 @@ fn finish(
     w["store_binding"] = json!({"store_id":binding.store_id,"subject_id":binding.subject_id,"application":"runtime","purpose":binding.purpose,"minimum_revision":binding.minimum_revision});
     w["expected_state"] =
         json!({"state_revision":state.state_revision,"state_sha256":state.state_sha256});
-    let mut rp = s.configs["runtime-policy.json"].clone();
-    ok(rp["keys"].as_array().is_some_and(|v| v.len() == 1)
-        && rp["permissions"].as_array().is_some_and(|v| v.len() == 5))?;
-    rp["keys"][0]["not_before"] = json!(s.start);
-    rp["keys"][0]["not_after"] = json!(s.end);
-    for r in rp["permissions"].as_array_mut().ok_or(SetupError)? {
-        r["not_before_ms"] = json!(s.start * 1000);
-        r["not_after_ms"] = json!(s.end * 1000);
-    }
+    let target_documents = rule_documents(&s.target_rules, &actual.key_id, s.start, s.end)?;
+    let rp = json!({"schema":"runtime.receiver-policy.v1",
+        "audience":ServiceApplication::RuntimeV1.audience(),
+        "keys":[public_key(COMMAND_KEY,
+            s.old["command_issuer"]["public_key_hex"].as_str().ok_or(SetupError)?,
+            s.start,s.end)],
+        "descriptors":target_documents.runtime_descriptors,
+        "permissions":target_documents.runtime_permissions,
+        "revoked_subject_keys":[]});
     let mut receiver = s.configs["runtime-receiver.json"].clone();
     receiver["policy_file"] = json!(dir.join("runtime-policy.json"));
     receiver["native_verifier"]["sha256"] = json!(s.plan.verifier_sha256);
@@ -633,7 +723,12 @@ fn finish(
         .map_err(|_| SetupError)?;
     ok(again.native_sha256() == observed.native_sha256()
         && again.wallet_reference_bytes() == observed.wallet_reference_bytes())?;
-    let receipt = json!({"schema":"castalia.wallet-workspace-renewal-complete.v1","plan_sha256":expected,"root":s.plan.workspace_root,"previous_complete":s.plan.previous_complete,"holder":actual,"native_generation":s.generation,"native_sha256":hex(&observed.native_sha256()),"command_issuer":s.old["command_issuer"],"configuration_hashes":outputs,"not_before":s.start,"not_after":s.end,"identity_not_after":s.holder.not_after,"journal_capacity":"local_review_pilot_512","scope":s.old["scope"],"activation":false,"service_started":false,"runtime_store_initialized":false,"process_created":false,"run_created":false});
+    let mut receipt = json!({"schema":"castalia.wallet-workspace-renewal-complete.v1","plan_sha256":expected,"root":s.plan.workspace_root,"previous_complete":s.plan.previous_complete,"holder":actual,"native_generation":s.generation,"native_sha256":hex(&observed.native_sha256()),"command_issuer":s.old["command_issuer"],"configuration_hashes":outputs,"not_before":s.start,"not_after":s.end,"identity_not_after":s.holder.not_after,"journal_capacity":"local_review_pilot_512","scope":s.target_scope,"activation":false,"service_started":false,"runtime_store_initialized":false,"process_created":false,"run_created":false});
+    if s.target_scope == LIVE_PROVIDER_SCOPE {
+        receipt["actor_id"] = json!(s.plan.actor_id.as_deref().ok_or(SetupError)?);
+        receipt["run_id"] = json!(s.plan.run_id.as_deref().ok_or(SetupError)?);
+        receipt["handoff_id"] = json!(s.plan.handoff_id.as_deref().ok_or(SetupError)?);
+    }
     identical_or_new(&s.attempt.join("COMPLETE.json"), &canonical(&receipt))?;
     terminal
         .observe(admin.public_observation().map_err(|_| SetupError)?)
