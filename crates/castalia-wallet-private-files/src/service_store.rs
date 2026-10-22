@@ -711,10 +711,10 @@ impl<'root> ServiceLease<'root> {
                 Some(self.state_dir(r)?)
             }
         };
-        if let (Some(old), Some(new)) = (&parent, &fresh_parent)
-            && id(old)? != id(new)?
-        {
-            return Err(deny());
+        if let (Some(old), Some(new)) = (&parent, &fresh_parent) {
+            if id(old)? != id(new)? {
+                return Err(deny());
+            }
         }
         let fresh = open_file(fresh_parent.as_ref().unwrap_or(self.root.root()), s, l, a)?;
         let m = fresh.metadata()?;
