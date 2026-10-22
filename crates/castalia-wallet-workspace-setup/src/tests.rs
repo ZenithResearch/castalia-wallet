@@ -137,13 +137,16 @@ fn workspace_scope_is_five_fixed_authoring_and_catalog_operations() {
 #[test]
 fn live_provider_scope_is_one_actor_and_one_run() {
     let r = live_provider_rules("frank-hermes-pilot", "live-provider-canary-20261018-001").unwrap();
-    assert_eq!(r.len(), 19);
+    assert_eq!(r.len(), 22);
     let rows: Vec<_> = r
         .iter()
         .map(|r| (r.name, r.opcode, r.kind, r.resource.as_str()))
         .collect();
     assert!(rows.contains(&("actor.register", 0x46, "exact", "actors/frank-hermes-pilot")));
     assert!(rows.contains(&("work.list", 0x63, "exact", "actors/frank-hermes-pilot/work")));
+    assert!(rows.contains(&("artifact.put", 0x45, "prefix", "artifacts/")));
+    assert!(rows.contains(&("artifact.get", 0x65, "prefix", "artifacts/")));
+    assert!(rows.contains(&("receipt.get", 0x66, "prefix", "receipts/")));
     assert!(rows.contains(&(
         "run.create",
         0x42,

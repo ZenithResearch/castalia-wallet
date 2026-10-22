@@ -85,8 +85,8 @@ async fn live_provider_expansion_retains_identity_and_limits_actor_and_run() {
         65536,
     )
     .unwrap();
-    assert_eq!(policy["permissions"].as_array().unwrap().len(), 19);
-    assert_eq!(policy["descriptors"].as_array().unwrap().len(), 19);
+    assert_eq!(policy["permissions"].as_array().unwrap().len(), 22);
+    assert_eq!(policy["descriptors"].as_array().unwrap().len(), 22);
     let permissions = policy["permissions"].as_array().unwrap();
     assert!(permissions
         .iter()

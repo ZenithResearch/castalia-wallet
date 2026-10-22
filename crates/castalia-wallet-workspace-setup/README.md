@@ -48,13 +48,15 @@ fields plus `actor_id` and `run_id`; both must be valid Runtime identifiers. The
 plan carries no operation list, resource list, key, provider configuration or
 caller-selected policy.
 
-This profile retains the five authoring/catalog rules and adds fourteen fixed
+This profile retains the five authoring/catalog rules and adds seventeen fixed
 rules. `actor.register` and `work.list` name the exact selected Actor.
 `run.create` and `run.get` name the exact selected Run. Claim, heartbeat,
 complete, fail, release, effect intent/dispatch/observe, attempt read and output
-read are restricted to the `runs/<run_id>/steps/` prefix. It grants no other
-Actor, Run, artifact, receipt, handoff, effect-resolution or service authority.
-The resulting receipt records the exact Actor and Run and reports nineteen
+read are restricted to the `runs/<run_id>/steps/` prefix. Artifact put/get and
+receipt get cover the isolated store's content-addressed `artifacts/` and
+`receipts/` namespaces so real inputs, outputs and their existing canonical
+receipts can be committed and read. It grants no other Actor, Run, handoff,
+effect-resolution or service authority. The resulting receipt records the exact Actor and Run and reports twenty-two
 permissions. A later ordinary authoring renewal cannot silently remove this
 profile and the same Actor must be selected again. The new plan may replace the
 one exact Run identifier, so a terminal or uncertain execution is never reused;

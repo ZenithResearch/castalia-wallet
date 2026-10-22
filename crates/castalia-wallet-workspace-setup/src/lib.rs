@@ -380,8 +380,9 @@ fn runtime_id(value: &str) -> bool {
 }
 /// The first live-provider profile preserves the authoring/catalog surface and
 /// adds only one Actor and one Run. Step/Attempt resources remain descendants
-/// of that exact Run; no other actor, run, artifact, handoff or effect resource
-/// is admitted.
+/// of that exact Run. The isolated store's content-addressed artifact and
+/// receipt namespaces are available because real workflow inputs, outputs and
+/// verification receipts cannot be materialized without them.
 fn live_provider_rules(actor_id: &str, run_id: &str) -> Result<Vec<Rule>> {
     ok(runtime_id(actor_id) && runtime_id(run_id))?;
     let mut result = rules();
@@ -393,6 +394,9 @@ fn live_provider_rules(actor_id: &str, run_id: &str) -> Result<Vec<Rule>> {
         ("run.get", 0x62, "exact", run),
         ("actor.register", 0x46, "exact", actor.clone()),
         ("work.list", 0x63, "exact", format!("{actor}/work")),
+        ("artifact.put", 0x45, "prefix", "artifacts/".into()),
+        ("artifact.get", 0x65, "prefix", "artifacts/".into()),
+        ("receipt.get", 0x66, "prefix", "receipts/".into()),
         ("executor.claim", 0x48, "prefix", steps.clone()),
         ("executor.heartbeat", 0x49, "prefix", steps.clone()),
         ("executor.complete", 0x4A, "prefix", steps.clone()),
