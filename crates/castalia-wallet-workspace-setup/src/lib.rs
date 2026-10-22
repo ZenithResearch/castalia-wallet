@@ -351,7 +351,7 @@ struct Rule {
     name: &'static str,
     opcode: u8,
     kind: &'static str,
-    resource: &'static str,
+    resource: String,
 }
 fn rules() -> Vec<Rule> {
     [
@@ -367,9 +367,51 @@ fn rules() -> Vec<Rule> {
         name,
         opcode,
         kind,
-        resource,
+        resource: resource.into(),
     })
     .collect()
+}
+fn runtime_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value.bytes().enumerate().all(|(index, byte)| {
+            byte.is_ascii_alphanumeric() || (index > 0 && matches!(byte, b'.' | b'_' | b':' | b'-'))
+        })
+}
+/// The first live-provider profile preserves the authoring/catalog surface and
+/// adds only one Actor and one Run. Step/Attempt resources remain descendants
+/// of that exact Run; no other actor, run, artifact, handoff or effect resource
+/// is admitted.
+fn live_provider_rules(actor_id: &str, run_id: &str) -> Result<Vec<Rule>> {
+    ok(runtime_id(actor_id) && runtime_id(run_id))?;
+    let mut result = rules();
+    let actor = format!("actors/{actor_id}");
+    let run = format!("runs/{run_id}");
+    let steps = format!("{run}/steps/");
+    for (name, opcode, kind, resource) in [
+        ("run.create", 0x42, "exact", run.clone()),
+        ("run.get", 0x62, "exact", run),
+        ("actor.register", 0x46, "exact", actor.clone()),
+        ("work.list", 0x63, "exact", format!("{actor}/work")),
+        ("executor.claim", 0x48, "prefix", steps.clone()),
+        ("executor.heartbeat", 0x49, "prefix", steps.clone()),
+        ("executor.complete", 0x4A, "prefix", steps.clone()),
+        ("executor.fail", 0x4B, "prefix", steps.clone()),
+        ("executor.release", 0x4C, "prefix", steps.clone()),
+        ("executor.effect.intent", 0x4E, "prefix", steps.clone()),
+        ("executor.effect.dispatch", 0x4F, "prefix", steps.clone()),
+        ("executor.effect.observe", 0x50, "prefix", steps.clone()),
+        ("output.get", 0x67, "prefix", steps.clone()),
+        ("attempt.get", 0x69, "prefix", steps),
+    ] {
+        result.push(Rule {
+            name,
+            opcode,
+            kind,
+            resource,
+        });
+    }
+    Ok(result)
 }
 fn descriptor(opcode: u8, name: &str, handler: &str) -> Result<(Value, String)> {
     let credential: Vec<&str> = vec![];

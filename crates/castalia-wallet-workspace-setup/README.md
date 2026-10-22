@@ -39,3 +39,29 @@ Tests use actual disposable public Wallet/Native APIs and real signatures. The S
 After successful Native finalization and publication of COMPLETE, renewal releases every Wallet/Native administration lease and calls the supported Wallet `cleanup_unreferenced` API with the exact completed holder CAS. This retires duplicate custody revision copies so the next Configure meets Wallet's single-current-revision invariant. It never reads/exports key bytes, rekeys, prunes command/replay history, or deletes public ORIGINAL/INTENT/COMPLETE/configuration evidence. Partial or failed Native/Wallet transitions never enter this cleanup path. Completion is the last public file; success additionally requires this supported custody cleanup and an unchanged holder/time check.
 
 A cleanup not yet performed can be retried by exact-plan resume without a new Wallet revision, Native generation or time window. Any cleanup error retains COMPLETE and returns4. If the actual Wallet API reports uncertainty and poisons custody, the existing poisoned/unobservable hold still applies; automatic checked reconciliation remains separate unresolved work. No claim is made that every uncertain cleanup failure can resume automatically.
+
+## Finite live-provider authority
+
+The same stopped-workspace transition also accepts the closed plan schema
+`castalia.wallet-workspace-live-provider-authority.v1`. It has the seven renewal
+fields plus `actor_id` and `run_id`; both must be valid Runtime identifiers. The
+plan carries no operation list, resource list, key, provider configuration or
+caller-selected policy.
+
+This profile retains the five authoring/catalog rules and adds fourteen fixed
+rules. `actor.register` and `work.list` name the exact selected Actor.
+`run.create` and `run.get` name the exact selected Run. Claim, heartbeat,
+complete, fail, release, effect intent/dispatch/observe, attempt read and output
+read are restricted to the `runs/<run_id>/steps/` prefix. It grants no other
+Actor, Run, artifact, receipt, handoff, effect-resolution or service authority.
+The resulting receipt records the exact Actor and Run and reports nineteen
+permissions. A later ordinary authoring renewal cannot silently remove this
+profile and the same Actor must be selected again. The new plan may replace the
+one exact Run identifier, so a terminal or uncertain execution is never reused;
+the predecessor Run permissions are omitted from the successor policy.
+
+The transition changes no custody identity or command issuer, exports no key,
+and preserves the existing command/replay journal. As with every renewal, the
+controller must stop the workspace, pin the previous receipt and installed
+binaries, review the finite time window, and explicitly select the resulting
+configuration before Runtime or Frank can use it.

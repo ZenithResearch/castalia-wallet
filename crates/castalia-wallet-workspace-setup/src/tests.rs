@@ -122,7 +122,7 @@ fn workspace_scope_is_five_fixed_authoring_and_catalog_operations() {
     assert_eq!(r.len(), 5);
     assert_eq!(
         r.iter()
-            .map(|r| (r.name, r.opcode, r.kind, r.resource))
+            .map(|r| (r.name, r.opcode, r.kind, r.resource.as_str()))
             .collect::<Vec<_>>(),
         vec![
             ("process.draft.put", 0x40, "prefix", "processes/"),
@@ -132,6 +132,42 @@ fn workspace_scope_is_five_fixed_authoring_and_catalog_operations() {
             ("events.list", 0x64, "exact", "events")
         ]
     );
+}
+
+#[test]
+fn live_provider_scope_is_one_actor_and_one_run() {
+    let r = live_provider_rules("frank-hermes-pilot", "live-provider-canary-20261018-001").unwrap();
+    assert_eq!(r.len(), 19);
+    let rows: Vec<_> = r
+        .iter()
+        .map(|r| (r.name, r.opcode, r.kind, r.resource.as_str()))
+        .collect();
+    assert!(rows.contains(&("actor.register", 0x46, "exact", "actors/frank-hermes-pilot")));
+    assert!(rows.contains(&("work.list", 0x63, "exact", "actors/frank-hermes-pilot/work")));
+    assert!(rows.contains(&(
+        "run.create",
+        0x42,
+        "exact",
+        "runs/live-provider-canary-20261018-001"
+    )));
+    for operation in [
+        "executor.claim",
+        "executor.heartbeat",
+        "executor.complete",
+        "executor.fail",
+        "executor.release",
+        "executor.effect.intent",
+        "executor.effect.dispatch",
+        "executor.effect.observe",
+        "attempt.get",
+        "output.get",
+    ] {
+        assert!(rows.iter().any(|row| row.0 == operation
+            && row.2 == "prefix"
+            && row.3 == "runs/live-provider-canary-20261018-001/steps/"));
+    }
+    assert!(live_provider_rules("another/actor", "run").is_err());
+    assert!(live_provider_rules("actor", "another/run").is_err());
 }
 #[test]
 fn create_emits_four_pinned_existing_dtos_and_no_business_or_workflow_state() {
