@@ -383,13 +383,22 @@ fn runtime_id(value: &str) -> bool {
 /// of that exact Run. The isolated store's content-addressed artifact and
 /// receipt namespaces are available because real workflow inputs, outputs and
 /// verification receipts cannot be materialized without them.
-fn live_provider_rules(actor_id: &str, run_id: &str) -> Result<Vec<Rule>> {
-    ok(runtime_id(actor_id) && runtime_id(run_id))?;
+fn live_provider_rules(actor_id: &str, run_id: &str, handoff_id: &str) -> Result<Vec<Rule>> {
+    ok(runtime_id(actor_id)
+        && runtime_id(run_id)
+        && pin(handoff_id)
+        && run_id == format!("handoff-{}", &handoff_id[..48]))?;
     let mut result = rules();
     let actor = format!("actors/{actor_id}");
     let run = format!("runs/{run_id}");
     let steps = format!("{run}/steps/");
     for (name, opcode, kind, resource) in [
+        (
+            "handoff.consume",
+            0x4D,
+            "exact",
+            format!("handoffs/{handoff_id}"),
+        ),
         ("run.create", 0x42, "exact", run.clone()),
         ("run.get", 0x62, "exact", run),
         ("actor.register", 0x46, "exact", actor.clone()),

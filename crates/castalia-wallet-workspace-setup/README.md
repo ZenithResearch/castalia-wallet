@@ -44,20 +44,24 @@ A cleanup not yet performed can be retried by exact-plan resume without a new Wa
 
 The same stopped-workspace transition also accepts the closed plan schema
 `castalia.wallet-workspace-live-provider-authority.v1`. It has the seven renewal
-fields plus `actor_id` and `run_id`; both must be valid Runtime identifiers. The
-plan carries no operation list, resource list, key, provider configuration or
+fields plus `actor_id`, `run_id` and `handoff_id`. The handoff ID must be a
+lowercase SHA-256 digest and the Run must equal `handoff-` plus its first 48 hex
+characters, matching Runtime's canonical Service handoff derivation. The plan
+carries no operation list, resource list, key, provider configuration or
 caller-selected policy.
 
-This profile retains the five authoring/catalog rules and adds seventeen fixed
-rules. `actor.register` and `work.list` name the exact selected Actor.
+This profile retains the five authoring/catalog rules and adds eighteen fixed
+rules. `handoff.consume` names the exact selected Service handoff.
+`actor.register` and `work.list` name the exact selected Actor.
 `run.create` and `run.get` name the exact selected Run. Claim, heartbeat,
 complete, fail, release, effect intent/dispatch/observe, attempt read and output
 read are restricted to the `runs/<run_id>/steps/` prefix. Artifact put/get and
 receipt get cover the isolated store's content-addressed `artifacts/` and
 `receipts/` namespaces so real inputs, outputs and their existing canonical
 receipts can be committed and read. It grants no other Actor, Run, handoff,
-effect-resolution or service authority. The resulting receipt records the exact Actor and Run and reports twenty-two
-permissions. A later ordinary authoring renewal cannot silently remove this
+effect-resolution or service authority. The resulting receipt records the exact
+handoff, derived Run and Actor and reports twenty-three permissions. A later
+ordinary authoring renewal cannot silently remove this
 profile and the same Actor must be selected again. The new plan may replace the
 one exact Run identifier, so a terminal or uncertain execution is never reused;
 the predecessor Run permissions are omitted from the successor policy.

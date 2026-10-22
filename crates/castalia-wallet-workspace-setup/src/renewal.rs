@@ -35,6 +35,8 @@ struct RenewalPlan {
     actor_id: Option<String>,
     #[serde(default)]
     run_id: Option<String>,
+    #[serde(default)]
+    handoff_id: Option<String>,
 }
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -69,18 +71,22 @@ struct Selected {
 const AUTHORING_SCOPE: &str =
     "five authoring/catalog operations in one isolated Runtime store; events are store scoped";
 pub(super) const LIVE_PROVIDER_SCOPE: &str =
-    "finite Frank Hermes pilot for one exact Actor and one exact Run; authoring/catalog retained";
+    "finite Frank Hermes pilot for one exact handoff, derived Run and Actor; authoring/catalog retained";
 
 fn plan_target(p: &RenewalPlan) -> Result<(Vec<Rule>, &'static str)> {
     match p.schema.as_str() {
         "castalia.wallet-workspace-renewal.v1" => {
-            ok(p.actor_id.is_none() && p.run_id.is_none())?;
+            ok(p.actor_id.is_none() && p.run_id.is_none() && p.handoff_id.is_none())?;
             Ok((rules(), AUTHORING_SCOPE))
         }
         "castalia.wallet-workspace-live-provider-authority.v1" => {
             let actor = p.actor_id.as_deref().ok_or(SetupError)?;
             let run = p.run_id.as_deref().ok_or(SetupError)?;
-            Ok((live_provider_rules(actor, run)?, LIVE_PROVIDER_SCOPE))
+            let handoff = p.handoff_id.as_deref().ok_or(SetupError)?;
+            Ok((
+                live_provider_rules(actor, run, handoff)?,
+                LIVE_PROVIDER_SCOPE,
+            ))
         }
         _ => Err(SetupError),
     }
@@ -92,6 +98,7 @@ fn receipt_rules(old: &Value, p: &RenewalPlan) -> Result<Vec<Rule>> {
         LIVE_PROVIDER_SCOPE => {
             let actor = old["actor_id"].as_str().ok_or(SetupError)?;
             let run = old["run_id"].as_str().ok_or(SetupError)?;
+            let handoff = old["handoff_id"].as_str().ok_or(SetupError)?;
             if p.schema == "castalia.wallet-workspace-live-provider-authority.v1" {
                 // The actor identity is stable across the live-provider pilot, while
                 // each bounded execution receives a fresh exact Run authority. The
@@ -99,7 +106,7 @@ fn receipt_rules(old: &Value, p: &RenewalPlan) -> Result<Vec<Rule>> {
                 // policy and is never carried into the successor rule set.
                 ok(p.actor_id.as_deref() == Some(actor))?;
             }
-            live_provider_rules(actor, run)
+            live_provider_rules(actor, run, handoff)
         }
         _ => Err(SetupError),
     }
@@ -223,7 +230,7 @@ fn select(path: &Path, expected: &str) -> Result<Selected> {
         fields.push("previous_complete");
     }
     if old["scope"] == LIVE_PROVIDER_SCOPE {
-        fields.extend(["actor_id", "run_id"]);
+        fields.extend(["actor_id", "run_id", "handoff_id"]);
     }
     closed(&old, &fields)?;
     let old_rules = receipt_rules(&old, &p)?;
@@ -427,7 +434,7 @@ fn rule_documents(rr: &[Rule], key_id: &str, start: u64, end: u64) -> Result<Rul
 }
 
 /// Validate the exact predecessor and derive either a same-scope renewal or the
-/// one-Actor/one-Run live-provider expansion. Identity, custody, replay history,
+/// one-handoff/one-Actor/one-derived-Run live-provider expansion. Identity, custody, replay history,
 /// issuer key and every unrelated Runtime resource remain fixed.
 fn derive(s: &Selected, native: &Value, owner: &Value) -> Result<(Value, Value)> {
     ok(native["schema"] == "secs.service-owner-bundle.v2"
@@ -720,6 +727,7 @@ fn finish(
     if s.target_scope == LIVE_PROVIDER_SCOPE {
         receipt["actor_id"] = json!(s.plan.actor_id.as_deref().ok_or(SetupError)?);
         receipt["run_id"] = json!(s.plan.run_id.as_deref().ok_or(SetupError)?);
+        receipt["handoff_id"] = json!(s.plan.handoff_id.as_deref().ok_or(SetupError)?);
     }
     identical_or_new(&s.attempt.join("COMPLETE.json"), &canonical(&receipt))?;
     terminal
