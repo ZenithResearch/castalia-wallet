@@ -666,5 +666,7 @@ fn create_selected(path: &Path, expected_sha256: &str, input: Input) -> Result<V
 }
 mod renewal;
 pub use renewal::{renew_from_plan, resume_renewal_from_plan, RenewalError};
+mod provider_service;
+pub use provider_service::create_provider_service_from_plan;
 #[cfg(test)]
 mod tests;

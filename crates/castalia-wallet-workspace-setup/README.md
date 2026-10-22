@@ -67,3 +67,28 @@ and preserves the existing command/replay journal. As with every renewal, the
 controller must stop the workspace, pin the previous receipt and installed
 binaries, review the finite time window, and explicitly select the resulting
 configuration before Runtime or Frank can use it.
+
+## Finite provider Service authority
+
+`create-provider-service` consumes a separate closed
+`castalia.wallet-provider-service-authority.v1` plan. The plan selects only the
+private workspace root, a monotonically owner-selected generation from 1 through
+64, a current permission window of at most one hour, and the exact Wallet command
+and native verifier hashes. It accepts no command, operation, resource, key,
+request, Case, process, transport or policy fields.
+
+Each generation creates a distinct owner-private `application=service` identity
+under `authority/provider-service/<generation>`, a native command issuer and
+journal, the pinned Wallet command configuration, and a closed
+`service.receiver-policy.v1`. Its twelve fixed permissions cover the nine
+canonical Service Management lifecycle commands and three read projections over
+only the isolated store's `requests/` and `cases/` namespaces. The provider
+transport credential, requester membership and this command identity remain
+independent.
+
+The operation is create-only. Partial state is retained, a generation is never
+rekeyed or overwritten, and a later reviewed generation supplies a fresh finite
+Service identity after the operator has reconciled any uncertain admission. A
+lost success response is recovered by inspecting the exact generation's
+`COMPLETE.json`; it is never converted into another issue attempt. This identity
+does not alter the stable Frank Runtime identity or its renewal history.
