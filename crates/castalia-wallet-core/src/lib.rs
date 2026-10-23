@@ -1,3 +1,4 @@
+pub mod access_request;
 use aes_gcm::{
     Aes256Gcm, KeyInit,
     aead::{Aead, Payload},
@@ -16,12 +17,14 @@ use unicode_normalization::UnicodeNormalization;
 use wasm_bindgen::prelude::*;
 use zeroize::{Zeroize, Zeroizing};
 
+pub mod browser_read;
 mod credential_presentation;
 pub use credential_presentation::WasmCredentialPresentation;
 mod files_keys;
 pub mod portable;
 pub mod read_access;
 pub mod recovery_session;
+mod resource_owner;
 
 mod chain_accounts;
 mod membership_presentation_v2;

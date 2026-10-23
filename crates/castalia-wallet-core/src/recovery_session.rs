@@ -73,7 +73,59 @@ enum Command {
         scoped: bool,
     },
     DataSummary {},
+    // Opt-in native graph protocol v2. Historical membership-gated methods stay unchanged.
+    GraphAccessIdentityV2 {},
+    PrepareResourceOwnerV1 {
+        challenge: String,
+        binding: crate::resource_owner::Binding,
+        now: u64,
+    },
+    ApproveResourceOwnerV1 {
+        token: String,
+        now: u64,
+    },
+    PrepareOperatorAccessV1 {
+        challenge: String,
+        pin: crate::read_access::IssuerPin,
+        now: u64,
+    },
+    ApproveOperatorAccessV1 {
+        token: String,
+        now: u64,
+    },
+    PrepareGraphAccessRequestV2 {
+        challenge: String,
+        pin: crate::read_access::IssuerPin,
+        now: u64,
+    },
+    ApproveGraphAccessRequestV2 {
+        token: String,
+        now: u64,
+    },
+    ApproveGraphReadCredentialV2 {
+        challenge: String,
+        pin: crate::read_access::IssuerPin,
+        now: u64,
+    },
+    GraphReadCredentialV2 {
+        receiver: String,
+        now: u64,
+    },
+    SignGraphReadCallV2 {
+        receiver: String,
+        call: castalia_wallet_presentation::read_authority::Call,
+        now: u64,
+    },
     ReadAccessIdentity {},
+    PrepareAccessRequest {
+        challenge: String,
+        pin: crate::read_access::IssuerPin,
+        now: u64,
+    },
+    ApproveAccessRequest {
+        token: String,
+        now: u64,
+    },
     ApproveReadCredential {
         challenge: String,
         pin: crate::read_access::IssuerPin,
@@ -189,6 +241,10 @@ pub struct RecoverySession {
     local: LocalState,
     pending: Option<Pending>,
     restore_trust: Trust,
+    access_request: Option<(String, crate::access_request::PreparedAccessRequest)>,
+    graph_access_request: Option<(String, crate::access_request::PreparedAccessRequest)>,
+    operator_access: Option<(String, crate::access_request::PreparedAccessRequest)>,
+    resource_owner: Option<(String, crate::resource_owner::PreparedOwnerClaim)>,
     read_approval: Option<crate::read_access::Challenge>,
     credential_approval: Option<(
         crate::read_access::Challenge,
@@ -206,6 +262,15 @@ impl RecoverySession {
         }
         portable::parse_unique(raw).map_err(|_| "invalid_request")?;
         let command: Command = serde_json::from_str(raw).map_err(|_| "invalid_request")?;
+        if !matches!(
+            &command,
+            Command::State {}
+                | Command::Identity {}
+                | Command::ReadAccessIdentity {}
+                | Command::ApproveAccessRequest { .. }
+        ) {
+            self.access_request = None;
+        }
         // A new preparation attempt invalidates any older preview, including
         // when its validation subsequently fails.
         if matches!(
@@ -224,7 +289,206 @@ impl RecoverySession {
         ) {
             self.pending = None;
         }
+        if !matches!(
+            &command,
+            Command::State {}
+                | Command::GraphAccessIdentityV2 {}
+                | Command::ApproveGraphAccessRequestV2 { .. }
+        ) {
+            self.graph_access_request = None;
+        }
+        if !matches!(
+            &command,
+            Command::State {}
+                | Command::GraphAccessIdentityV2 {}
+                | Command::ApproveOperatorAccessV1 { .. }
+        ) {
+            self.operator_access = None;
+        }
+        // Only state inspection and final consent retain a first-owner review.
+        // Another operation, including a failed new prepare, invalidates it.
+        if !matches!(
+            &command,
+            Command::State {} | Command::ApproveResourceOwnerV1 { .. }
+        ) {
+            self.resource_owner = None;
+        }
         match command {
+            Command::PrepareResourceOwnerV1 {
+                challenge,
+                binding,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let prepared = crate::resource_owner::PreparedOwnerClaim::prepare(
+                    &challenge,
+                    &binding,
+                    &wallet.public_key_hex(),
+                    now,
+                )?;
+                let token = installation_id();
+                let summary = prepared.summary();
+                self.resource_owner = Some((token.clone(), prepared));
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveResourceOwnerV1 { token, now } => {
+                let (expected, prepared) = self
+                    .resource_owner
+                    .take()
+                    .ok_or("owner_approval_unavailable")?;
+                if token != expected {
+                    return Err("owner_context_changed");
+                }
+                prepared.approve(self.graph_wallet_v2()?, now)
+            }
+            Command::PrepareOperatorAccessV1 {
+                challenge,
+                pin,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let prepared =
+                    crate::access_request::PreparedAccessRequest::prepare_native_operator(
+                        &challenge,
+                        &wallet.public_key_hex(),
+                        &self.local.installation_id,
+                        &pin,
+                        now,
+                    )?;
+                let token = installation_id();
+                let mut summary = prepared.summary();
+                summary["kind"] = json!("operator_access");
+                summary["native_protocol"] = json!("castalia.operator-access.v1");
+                self.operator_access = Some((token.clone(), prepared));
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveOperatorAccessV1 { token, now } => {
+                let (expected, prepared) = self
+                    .operator_access
+                    .take()
+                    .ok_or("access_approval_unavailable")?;
+                if token != expected {
+                    return Err("access_context_changed");
+                }
+                prepared.approve(self.graph_wallet_v2()?, now)
+            }
+            Command::GraphAccessIdentityV2 {} => {
+                let wallet = self.graph_wallet_v2()?;
+                Ok(
+                    json!({"protocol":"castalia.graph-access.v2","subject_public_key":wallet.public_key_hex(),"installation_id":self.local.installation_id}),
+                )
+            }
+            Command::PrepareGraphAccessRequestV2 {
+                challenge,
+                pin,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let prepared = crate::access_request::PreparedAccessRequest::prepare_native(
+                    &challenge,
+                    &wallet.public_key_hex(),
+                    &self.local.installation_id,
+                    &pin,
+                    now,
+                )?;
+                let token = installation_id();
+                let mut summary = prepared.summary();
+                summary["native_protocol"] = json!("castalia.graph-access.v2");
+                self.graph_access_request = Some((token.clone(), prepared));
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveGraphAccessRequestV2 { token, now } => {
+                let (expected, prepared) = self
+                    .graph_access_request
+                    .take()
+                    .ok_or("access_approval_unavailable")?;
+                if token != expected {
+                    return Err("access_context_changed");
+                }
+                let mut approved = prepared.approve(self.graph_wallet_v2()?, now)?;
+                approved["proof"] = self
+                    .local
+                    .active_membership
+                    .clone()
+                    .unwrap_or_else(|| json!({}));
+                Ok(approved)
+            }
+            Command::ApproveGraphReadCredentialV2 {
+                challenge,
+                pin,
+                now,
+            } => {
+                self.credential_approval = None;
+                let wallet = self.graph_wallet_v2()?;
+                let parsed = crate::read_access::Challenge::parse(
+                    &challenge,
+                    &wallet.public_key_hex(),
+                    &self.local.installation_id,
+                    &pin.receiver,
+                    now,
+                )?;
+                let policy: castalia_wallet_presentation::read_authority::Policy =
+                    serde_json::from_value(
+                        parsed
+                            .details
+                            .get("authority_policy")
+                            .ok_or("invalid_request")?
+                            .clone(),
+                    )
+                    .map_err(|_| "invalid_request")?;
+                pin.check(&policy)?;
+                if policy.issuer != parsed.issuer
+                    || policy.receiver != parsed.receiver
+                    || parsed.credential_expires_at - parsed.issued_at > policy.max_lifetime_seconds
+                {
+                    return Err("invalid_request");
+                }
+                let signature = wallet
+                    .sign(&parsed.transcript()?)
+                    .map_err(|_| "signing_failed")?;
+                let result = json!({"challenge":parsed,"proof":self.local.active_membership.clone().unwrap_or_else(|| json!({})),"signature":URL_SAFE_NO_PAD.encode(signature)});
+                self.credential_approval = Some((parsed, policy));
+                Ok(result)
+            }
+            Command::GraphReadCredentialV2 { receiver, now } => {
+                self.graph_wallet_v2()?;
+                let access = self
+                    .local
+                    .read_credentials
+                    .get(&receiver)
+                    .ok_or("access_setup_required")?;
+                castalia_wallet_presentation::read_authority::verify_credential(
+                    &access.policy,
+                    &access.credential,
+                    now,
+                )?;
+                serde_json::to_value(access).map_err(|_| "encoding_failed")
+            }
+            Command::SignGraphReadCallV2 {
+                receiver,
+                call,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let access = self
+                    .local
+                    .read_credentials
+                    .get(&receiver)
+                    .ok_or("access_setup_required")?;
+                let mut proof = access.unsigned_call(
+                    &call,
+                    installation_id(),
+                    &wallet.public_key_hex(),
+                    &self.local.installation_id,
+                    now,
+                )?;
+                proof.signature = hex::encode(
+                    wallet
+                        .sign(&proof.transcript()?)
+                        .map_err(|_| "signing_failed")?,
+                );
+                Ok(json!({"credential":access.credential,"call":call,"proof":proof}))
+            }
             Command::State {} => Ok(self.state()),
             Command::Identity {} => {
                 let wallet = self.open_wallet()?;
@@ -483,6 +747,49 @@ impl RecoverySession {
                 local.contents = Some(contents);
                 local.active_membership = Some(proof);
                 self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
+            }
+            Command::PrepareAccessRequest {
+                challenge,
+                pin,
+                now,
+            } => {
+                let wallet = self.open_wallet()?;
+                if (!self.local.backup_verified && !self.local.legacy_confirmed)
+                    || self.local.active_membership.is_none()
+                {
+                    return Err("membership_required");
+                }
+                let prepared = crate::access_request::PreparedAccessRequest::prepare_native(
+                    &challenge,
+                    &wallet.public_key_hex(),
+                    &self.local.installation_id,
+                    &pin,
+                    now,
+                )?;
+                let token = installation_id();
+                let summary = prepared.summary();
+                self.access_request = Some((token.clone(), prepared));
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveAccessRequest { token, now } => {
+                let (expected, prepared) = self
+                    .access_request
+                    .take()
+                    .ok_or("access_approval_unavailable")?;
+                if token != expected {
+                    return Err("access_context_changed");
+                }
+                let wallet = self.open_wallet()?;
+                if self.local.active_membership.is_none() {
+                    return Err("membership_required");
+                }
+                let mut approved = prepared.approve(wallet, now)?;
+                approved["proof"] = self
+                    .local
+                    .active_membership
+                    .clone()
+                    .ok_or("membership_required")?;
+                Ok(approved)
             }
             Command::ReadAccessIdentity {} => {
                 let wallet = self.open_wallet()?;
@@ -818,6 +1125,13 @@ impl RecoverySession {
             }
         }
     }
+    fn graph_wallet_v2(&self) -> Result<&OpenedWallet> {
+        let wallet = self.open_wallet()?;
+        if !self.local.backup_verified && !self.local.legacy_confirmed {
+            return Err("backup_verification_required");
+        }
+        Ok(wallet)
+    }
     fn open_wallet(&self) -> Result<&OpenedWallet> {
         self.wallet.as_ref().ok_or("wallet_locked")
     }
@@ -834,9 +1148,13 @@ impl RecoverySession {
         json!({"configured":self.custody.is_some(),"unlocked":self.wallet.is_some(),"revision":self.revision,
             "public_key":self.wallet.as_ref().map(OpenedWallet::public_key_hex),
             "backup_verified":self.wallet.is_some() && self.local.backup_verified,
-            "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
+            "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
     }
     fn lock(&mut self) {
+        self.resource_owner = None;
+        self.operator_access = None;
+        self.graph_access_request = None;
+        self.access_request = None;
         self.wallet = None;
         self.pending = None;
         self.local = LocalState::default();

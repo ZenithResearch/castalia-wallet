@@ -1,0 +1,337 @@
+{
+  "schema": "castalia.transfer-native-public-source.v1",
+  "source_revision": "bde3835192c4be886fb6bed241a6e221c5fa3ea4",
+  "source_history_imported": false,
+  "scope": "Native Transfer dependency source and synthetic contract tests. Existing public workspace exclusions are retained. No private history or installed Wallet/configuration data.",
+  "source_files": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5"
+    },
+    {
+      "path": "crates/castalia-wallet-core/Cargo.toml",
+      "sha256": "d529bd78f5d86836618b7a093a74a65d290f61c062df7e2f31ccc3a4cb618466"
+    },
+    {
+      "path": "crates/castalia-wallet-core/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2"
+    },
+    {
+      "path": "crates/castalia-wallet-core/examples/recovery_contract_driver.rs",
+      "sha256": "7bcf3f8444e0ef6b0dcfb579cbb4e056ce4fea0dc6ee7f07400403bd9f04c930"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/access_request.rs",
+      "sha256": "618f4a3437416dd2e93799d095517e7585e36054b71797c55fa238169bc91ba4"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/browser_read.rs",
+      "sha256": "be85d1496baaf1779c6712383c827c40503ea4c8c1e71466e33221527661f2f5"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/chain_accounts.rs",
+      "sha256": "58c56cb3a6e4cd7cabb0645deae6bf0a4f441372744a6734843b0fed597facd8"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/credential_presentation.rs",
+      "sha256": "90ceef2d3e31f51fa95e782f6fb6c5853c99b5cb32977e249bf733ffb4e662db"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/files_keys.rs",
+      "sha256": "53f10fb2659ab1165052fcdbd2d08b2f867c7c319cc6229ad87ff462b2c6f9e0"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/lib.rs",
+      "sha256": "43288addd9b61ad589817817de5d1e1ffa04f27d279286a6766aff4caf40d6e1"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/membership_presentation_v2.rs",
+      "sha256": "7bb2c5cb7804d772f2c44f9394d90f54526961f7e000c4190900044f3bfaee5d"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/portable.rs",
+      "sha256": "16658fc82a86277b68828032166dcdf68f513726c2d2f5b9130ab457e6ce6806"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/read_access.rs",
+      "sha256": "ba7468e68076b510f2d45f84e7574b7cb304d2508973e5cdf858fdefd053f818"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/recovery_session.rs",
+      "sha256": "5b00a3d898552ab8b3ba7de61c8beb2bf07de00f6d4eddd31ef18639704ebdaf"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/resource_owner.rs",
+      "sha256": "660d27054acdb5dd7c27cb6ea130cd0063cdb54fa8613d1e853c42f70db07124"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/access_request.rs",
+      "sha256": "436de063e4a4beae5a166c5472d9c00bf7c8625294e2600fc188795cc8e77f63"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/browser_read.rs",
+      "sha256": "150b65d102468679fd456e36c4db7c3bbbff29085ef39875cae63660a757c6f7"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/custody_vector.rs",
+      "sha256": "63115b8b9584c967fdd338c90790708b4679e6c145a5deb5b52f52d76a158c0e"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/fixtures/first-owner-bootstrap.vector.json",
+      "sha256": "79a04518aa9c80648cc189940bf70afeb15eed77c3bb33e200c65650bacd675b"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/membership_presentation_v2.rs",
+      "sha256": "c42c001661c35d1ee115561d045ebc270919517b0938bae1e02dbf77e104a5df"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/native_access_request.rs",
+      "sha256": "9802f87e5ef45f65b528570c2faf275c33a1daff454ddeee7f07c6da41f33ec4"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/owner_claim.rs",
+      "sha256": "cead0b2af44f3ab5c8686aa706ea075369fd340f7b0259f31c534bf78fa61085"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/portable.rs",
+      "sha256": "9b8ac5dc2cbbc540fad50335e3766214b7e2e6e4b901e35ebba8f8ac1ac42e2a"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/read_access.rs",
+      "sha256": "c87a1aaec2f8d7e6906710edada91104d99836c94ab0c99dba3863366050c9d0"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/recovery_session.rs",
+      "sha256": "5da825ba6f5433cf770be23ef4a9e83f790a1e9ad929edbcb5aa83f39e6c0fa7"
+    },
+    {
+      "path": "crates/castalia-wallet-native/Cargo.toml",
+      "sha256": "3e80ef2bca56f1ec9be684b04798ea80ada7ed20aa72b772b94ed1b9f2616344"
+    },
+    {
+      "path": "crates/castalia-wallet-native/include/CastaliaWallet.h",
+      "sha256": "19f1ff9d1e1e1de662970426b30fdc71bbf531b68945f1b11eca0a70234ea732"
+    },
+    {
+      "path": "crates/castalia-wallet-native/include/module.modulemap",
+      "sha256": "c227ca436ea9f0eb558c69077db437459ebc8137fa4996f1f352471c04e518cd"
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/lib.rs",
+      "sha256": "8bde220c824c51062edad8624ed400b48d017599931dca36fc4b419659d1aa6b"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/Cargo.toml",
+      "sha256": "713292c825c20f51ea4eaa6d4f7db7d91e13c518d768ff9ea8fba5c6a3d03105"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/examples/generate_fixture.rs",
+      "sha256": "abb2a7164059882769a7053523811a0bb85199f408bc04b3a158e65018b4e575"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/grant_validity.rs",
+      "sha256": "07b7454deca3a0fbd8eedf561cfedd1e312a184f6331d7921e408177c70c97d7"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/lib.rs",
+      "sha256": "af69411d7c13b63073084ee0973c1bc28055c23b0a5646b15cc936620e6cc0c7"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/read_authority.rs",
+      "sha256": "19d5b5bafe61061726599d8f47b03f6f7c9268a92f22d25c0148e94e9141fe3d"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/common/mod.rs",
+      "sha256": "bbad23295ed4038d1c078e456f26e22a454635157df61b5be1cc38799ca9eff5"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/grant_validity.rs",
+      "sha256": "2f77bdfbfef043e74315a3f687599db1c60d5d9a3eab44ced4da6d354cb26205"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/origin_security.rs",
+      "sha256": "27fedac1429e5bae14b947b42bceedcb313c2afd4d7474652dbdbcb2e4a3f15d"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/presentation.rs",
+      "sha256": "2c8c921406a3ec700d03d746abcff46a78de70dbb5bf615bbca5b467703c4449"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/read_authority.rs",
+      "sha256": "bdd19a77b72c4e8f135f9b6d439faeaa11f4081d9678665dd64f2f784807ada4"
+    }
+  ],
+  "public_fixture_changes": [
+    "Replace deployment-derived resource UUID with a synthetic UUID in owner tests; use the matching already-public Transfer vector with regenerated signature and transcript."
+  ],
+  "public_files": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5"
+    },
+    {
+      "path": "crates/castalia-wallet-core/Cargo.toml",
+      "sha256": "d529bd78f5d86836618b7a093a74a65d290f61c062df7e2f31ccc3a4cb618466"
+    },
+    {
+      "path": "crates/castalia-wallet-core/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2"
+    },
+    {
+      "path": "crates/castalia-wallet-core/examples/recovery_contract_driver.rs",
+      "sha256": "7bcf3f8444e0ef6b0dcfb579cbb4e056ce4fea0dc6ee7f07400403bd9f04c930"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/access_request.rs",
+      "sha256": "618f4a3437416dd2e93799d095517e7585e36054b71797c55fa238169bc91ba4"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/browser_read.rs",
+      "sha256": "be85d1496baaf1779c6712383c827c40503ea4c8c1e71466e33221527661f2f5"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/chain_accounts.rs",
+      "sha256": "58c56cb3a6e4cd7cabb0645deae6bf0a4f441372744a6734843b0fed597facd8"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/credential_presentation.rs",
+      "sha256": "90ceef2d3e31f51fa95e782f6fb6c5853c99b5cb32977e249bf733ffb4e662db"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/files_keys.rs",
+      "sha256": "53f10fb2659ab1165052fcdbd2d08b2f867c7c319cc6229ad87ff462b2c6f9e0"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/lib.rs",
+      "sha256": "43288addd9b61ad589817817de5d1e1ffa04f27d279286a6766aff4caf40d6e1"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/membership_presentation_v2.rs",
+      "sha256": "7bb2c5cb7804d772f2c44f9394d90f54526961f7e000c4190900044f3bfaee5d"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/portable.rs",
+      "sha256": "16658fc82a86277b68828032166dcdf68f513726c2d2f5b9130ab457e6ce6806"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/read_access.rs",
+      "sha256": "ba7468e68076b510f2d45f84e7574b7cb304d2508973e5cdf858fdefd053f818"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/recovery_session.rs",
+      "sha256": "5b00a3d898552ab8b3ba7de61c8beb2bf07de00f6d4eddd31ef18639704ebdaf"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/resource_owner.rs",
+      "sha256": "660d27054acdb5dd7c27cb6ea130cd0063cdb54fa8613d1e853c42f70db07124"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/access_request.rs",
+      "sha256": "436de063e4a4beae5a166c5472d9c00bf7c8625294e2600fc188795cc8e77f63"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/browser_read.rs",
+      "sha256": "150b65d102468679fd456e36c4db7c3bbbff29085ef39875cae63660a757c6f7"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/custody_vector.rs",
+      "sha256": "63115b8b9584c967fdd338c90790708b4679e6c145a5deb5b52f52d76a158c0e"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/fixtures/first-owner-bootstrap.vector.json",
+      "sha256": "323767b55ddb35a8a7359221a234a230f17fd03bd221d6f99e67c5f97439125c"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/membership_presentation_v2.rs",
+      "sha256": "c42c001661c35d1ee115561d045ebc270919517b0938bae1e02dbf77e104a5df"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/native_access_request.rs",
+      "sha256": "9802f87e5ef45f65b528570c2faf275c33a1daff454ddeee7f07c6da41f33ec4"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/owner_claim.rs",
+      "sha256": "4650a85f52173776120c420d5ff585ecf5b5f5555acd9c00f022d16786ec2729"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/portable.rs",
+      "sha256": "9b8ac5dc2cbbc540fad50335e3766214b7e2e6e4b901e35ebba8f8ac1ac42e2a"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/read_access.rs",
+      "sha256": "c87a1aaec2f8d7e6906710edada91104d99836c94ab0c99dba3863366050c9d0"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/recovery_session.rs",
+      "sha256": "5da825ba6f5433cf770be23ef4a9e83f790a1e9ad929edbcb5aa83f39e6c0fa7"
+    },
+    {
+      "path": "crates/castalia-wallet-native/Cargo.toml",
+      "sha256": "3e80ef2bca56f1ec9be684b04798ea80ada7ed20aa72b772b94ed1b9f2616344"
+    },
+    {
+      "path": "crates/castalia-wallet-native/include/CastaliaWallet.h",
+      "sha256": "19f1ff9d1e1e1de662970426b30fdc71bbf531b68945f1b11eca0a70234ea732"
+    },
+    {
+      "path": "crates/castalia-wallet-native/include/module.modulemap",
+      "sha256": "c227ca436ea9f0eb558c69077db437459ebc8137fa4996f1f352471c04e518cd"
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/lib.rs",
+      "sha256": "8bde220c824c51062edad8624ed400b48d017599931dca36fc4b419659d1aa6b"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/Cargo.toml",
+      "sha256": "713292c825c20f51ea4eaa6d4f7db7d91e13c518d768ff9ea8fba5c6a3d03105"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/examples/generate_fixture.rs",
+      "sha256": "abb2a7164059882769a7053523811a0bb85199f408bc04b3a158e65018b4e575"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/grant_validity.rs",
+      "sha256": "07b7454deca3a0fbd8eedf561cfedd1e312a184f6331d7921e408177c70c97d7"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/lib.rs",
+      "sha256": "af69411d7c13b63073084ee0973c1bc28055c23b0a5646b15cc936620e6cc0c7"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/src/read_authority.rs",
+      "sha256": "19d5b5bafe61061726599d8f47b03f6f7c9268a92f22d25c0148e94e9141fe3d"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/common/mod.rs",
+      "sha256": "bbad23295ed4038d1c078e456f26e22a454635157df61b5be1cc38799ca9eff5"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/grant_validity.rs",
+      "sha256": "2f77bdfbfef043e74315a3f687599db1c60d5d9a3eab44ced4da6d354cb26205"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/origin_security.rs",
+      "sha256": "27fedac1429e5bae14b947b42bceedcb313c2afd4d7474652dbdbcb2e4a3f15d"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/presentation.rs",
+      "sha256": "2c8c921406a3ec700d03d746abcff46a78de70dbb5bf615bbca5b467703c4449"
+    },
+    {
+      "path": "crates/castalia-wallet-presentation/tests/read_authority.rs",
+      "sha256": "bdd19a77b72c4e8f135f9b6d439faeaa11f4081d9678665dd64f2f784807ada4"
+    },
+    {
+      "path": "docs/vectors/grant-validity-v1.json",
+      "sha256": "323348935d5b187240d4a9c3cbcc02b7c0a6b56f90fb095e7cef0cadfb2d877f"
+    }
+  ]
+}

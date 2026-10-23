@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Fixed
+
+- Publish native graph/operator and first-owner consent dependencies used by Zenith Transfer — the public application pinned a private-only Wallet commit and could not be built from public sources.
+
+### Fixed
 - Prefetch the exact locked holder dependencies before running offline identity checks in clean CI — keeps the metadata tests strict without depending on a workstation cache.
 
 ### Added

@@ -115,3 +115,17 @@ for the shared Apple-silicon Mac installer and operator UI. Component source liv
 under [ZenithResearch](https://github.com/ZenithResearch). Installation does not
 provision native identities, grant command authority, or enable external effects.
 See `NOTICE.public-baseline.md` for the scope of this clean publication.
+
+## Zenith Transfer native dependency
+
+The public workspace includes the reviewed graph-access v2, native operator consent,
+and first-resource-owner consent implementation required by Zenith Transfer.
+`TRANSFER-NATIVE-SOURCE.json` records source provenance and public file hashes;
+private Git history and installed Wallet state are excluded. The owner test vector
+uses a synthetic resource UUID and the same signed public fixture as Transfer.
+See `docs/first-owner-bootstrap.md` for the consent and compatibility boundary.
+
+```sh
+cargo test --locked -p castalia-wallet-core -p castalia-wallet-native -p castalia-wallet-presentation
+cargo build --locked --release --target aarch64-apple-darwin -p castalia-wallet-native
+```

@@ -284,3 +284,151 @@ fn historical_short_password_and_failed_preparation_preserve_boundaries() {
     assert_eq!(state["backup_eligible"], true);
     assert_eq!(state["backup_verified"], false);
 }
+
+#[test]
+fn graph_access_needs_backup_and_wallet_control_not_community_membership() {
+    let mut s = RecoverySession::new();
+    let preview = create(&mut s);
+    commit(&mut s, &preview);
+    assert!(
+        s.invoke(r#"{"operation":"graph_access_identity_v2"}"#)
+            .is_err()
+    );
+    let backup = call(
+        &mut s,
+        json!({"operation":"export_recovery","password":"backup password 123"}),
+    );
+    let verified = call(
+        &mut s,
+        json!({"operation":"verify_backup","file":backup["file"],"password":"backup password 123"}),
+    );
+    commit(&mut s, &verified);
+    assert_eq!(
+        call(&mut s, json!({"operation":"state"}))["membership_active"],
+        false
+    );
+    assert_eq!(
+        s.invoke(r#"{"operation":"read_access_identity"}"#)
+            .unwrap_err(),
+        "membership_required",
+        "Historical native API retains its membership gate"
+    );
+    let identity = call(&mut s, json!({"operation":"graph_access_identity_v2"}));
+    let receiver = "https://graph.example.test";
+    let pin = json!({"issuer":"fixture","receiver":receiver,"key_id":"fixture","public_key":"22".repeat(32),"audience":"devgraph"});
+    let challenge = json!({"schema":"castalia.access-request-challenge.v1","challenge_id":"aa".repeat(16),"nonce":"A".repeat(43),"issuer":"fixture","receiver":receiver,"subject_public_key":identity["subject_public_key"],"installation_id":identity["installation_id"],"operation":"access.request","issued_at":100,"expires_at":220,"details":{"intent":null}});
+    let prepared = call(
+        &mut s,
+        json!({"operation":"prepare_graph_access_request_v2","challenge":challenge.to_string(),"pin":pin,"now":101}),
+    );
+    let approved = call(
+        &mut s,
+        json!({"operation":"approve_graph_access_request_v2","token":prepared["token"],"now":102}),
+    );
+    assert_eq!(
+        approved["proof"],
+        json!({}),
+        "No synthetic membership proof"
+    );
+    assert_eq!(approved["challenge"], challenge);
+    assert!(s.invoke(&json!({"operation":"approve_graph_access_request_v2","token":prepared["token"],"now":103}).to_string()).is_err(),"Consent is one shot");
+    assert_eq!(
+        s.invoke(
+            &json!({"operation":"graph_read_credential_v2","receiver":receiver,"now":103})
+                .to_string()
+        )
+        .unwrap_err(),
+        "access_setup_required"
+    );
+    assert!(
+        s.invoke(r#"{"operation":"membership_request"}"#).is_err(),
+        "Graph access is not membership"
+    );
+    call(&mut s, json!({"operation":"lock"}));
+    assert_eq!(
+        s.invoke(r#"{"operation":"graph_access_identity_v2"}"#)
+            .unwrap_err(),
+        "wallet_locked"
+    );
+}
+
+#[test]
+fn native_operator_consent_is_explicit_one_shot_and_lifecycle_bound() {
+    let mut s = RecoverySession::new();
+    let p = create(&mut s);
+    commit(&mut s, &p);
+    let backup = call(
+        &mut s,
+        json!({"operation":"export_recovery","password":"backup password 123"}),
+    );
+    let verified = call(
+        &mut s,
+        json!({"operation":"verify_backup","file":backup["file"],"password":"backup password 123"}),
+    );
+    commit(&mut s, &verified);
+    let identity = call(&mut s, json!({"operation":"graph_access_identity_v2"}));
+    let pin = json!({"issuer":"fixture","receiver":"https://graph.example.test","key_id":"fixture","public_key":"22".repeat(32),"audience":"devgraph"});
+    let challenge = |op: &str| json!({"schema":"castalia.access-request-challenge.v1","challenge_id":"aa".repeat(16),"nonce":"A".repeat(43),"issuer":"fixture","receiver":"https://graph.example.test","subject_public_key":identity["subject_public_key"],"installation_id":identity["installation_id"],"operation":op,"issued_at":100,"expires_at":220,"details":{"action":{"schema":"devgraph.access-operator-action.v1","action":"inbox","action_id":"bb".repeat(16)},"policy_revision":1,"policy_digest_sha256":"cc".repeat(32)}});
+    assert_eq!(
+        call(&mut s, json!({"operation":"state"}))["operator_access_protocol"],
+        "castalia.operator-access.v1"
+    );
+    for op in [
+        "access.inbox",
+        "access.review",
+        "access.decide",
+        "access.status",
+    ] {
+        let c = challenge(op);
+        let prepared = call(
+            &mut s,
+            json!({"operation":"prepare_operator_access_v1","challenge":c.to_string(),"pin":pin,"now":101}),
+        );
+        assert_eq!(
+            prepared["summary"]["native_protocol"],
+            "castalia.operator-access.v1"
+        );
+        assert_eq!(prepared["summary"]["details"], c["details"]);
+        let approved = call(
+            &mut s,
+            json!({"operation":"approve_operator_access_v1","token":prepared["token"],"now":102}),
+        );
+        assert_eq!(approved["challenge"], c);
+        assert!(approved["signature"].as_str().is_some());
+        assert!(s.invoke(&json!({"operation":"approve_operator_access_v1","token":prepared["token"],"now":103}).to_string()).is_err());
+        if op != "access.status" {
+            assert!(s.invoke(&json!({"operation":"prepare_graph_access_request_v2","challenge":c.to_string(),"pin":pin,"now":101}).to_string()).is_err(),"Member API stays narrow");
+        }
+    }
+    assert!(s.invoke(&json!({"operation":"prepare_operator_access_v1","challenge":challenge("access.request").to_string(),"pin":pin,"now":101}).to_string()).is_err());
+    let prepare = |s: &mut RecoverySession| {
+        call(
+            s,
+            json!({"operation":"prepare_operator_access_v1","challenge":challenge("access.decide").to_string(),"pin":pin,"now":101}),
+        )
+    };
+    let p = prepare(&mut s);
+    assert!(
+        s.invoke(
+            &json!({"operation":"approve_operator_access_v1","token":p["token"],"now":220})
+                .to_string()
+        )
+        .is_err()
+    );
+    assert!(
+        s.invoke(
+            &json!({"operation":"approve_operator_access_v1","token":p["token"],"now":102})
+                .to_string()
+        )
+        .is_err()
+    );
+    let p = prepare(&mut s);
+    call(&mut s, json!({"operation":"lock"}));
+    assert!(
+        s.invoke(
+            &json!({"operation":"approve_operator_access_v1","token":p["token"],"now":102})
+                .to_string()
+        )
+        .is_err()
+    );
+}
