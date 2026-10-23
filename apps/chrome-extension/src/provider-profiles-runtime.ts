@@ -24,7 +24,7 @@ type Dependencies = {
   legacyCredential(): Promise<unknown>
 }
 const STORAGE_KEY = 'castalia-provider-profiles-v1'
-export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2']
+export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2', 'read_access_v1', 'access_request_v1', 'graph_access_v2']
 function base64url(s: string) {
   return s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
@@ -442,6 +442,16 @@ export function installProviderProfilesRuntime(chrome: any, deps: Dependencies) 
   return {
     store,
     ready,
+    async memberships(origin:string) {await ready;return store.list(origin)},
+    async readMembership(origin:string,holder:string,profileId?:string) {
+      await ready
+      if (!profileId) {
+        const profiles=await store.list(origin)
+        if(profiles.length!==1)throw new Error('membership_selection_required')
+        profileId=profiles[0].profileId
+      }
+      return store.credential(profileId,origin,holder,await deps.legacyCredential())
+    },
     async pins() {
       await ready
       return store.presentationPins()

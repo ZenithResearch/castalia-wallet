@@ -1,3 +1,4 @@
+import { localBuildEnvironment } from './local-build-environment.mjs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -5,7 +6,7 @@ import { spawnSync } from 'node:child_process'
 
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const buildEnv = process.env.BUILDKITE === 'true' ? await (await import('./canonical-build.mjs')).canonicalBuildEnvironment(root) : process.env
+const buildEnv = process.env.BUILDKITE === 'true' ? await (await import('./canonical-build.mjs')).canonicalBuildEnvironment(root) : localBuildEnvironment(root)
 // wasm-pack resolves metadata before cargo build and can otherwise repair a stale
 // lockfile before its forwarded --locked flag reaches compilation.
 const metadata = spawnSync('cargo', ['metadata', '--locked', '--format-version', '1'], {

@@ -130,3 +130,20 @@ test('inspection checks decoded embedded WASM instead of incidental base64 text'
   await assert.rejects(()=>inspectProductionExtension(root,root+'.contents.sha256'),/application adapter/)
  } finally {await rm(fixture,{recursive:true,force:true})}
 })
+
+test('inspection rejects private compiler paths in JavaScript and embedded WASM even with a new digest', async () => {
+ const fixture = await mkdtemp(join(tmpdir(), 'castalia-private-build-path-'))
+ try {
+  const path = '/Users/synthetic-builder/source'
+  // Valid custom section: empty name followed by a synthetic source-path payload.
+  const section = Buffer.concat([Buffer.from([0]), Buffer.from(path)])
+  const wasm = Buffer.concat([Buffer.from('0061736d01000000', 'hex'), Buffer.from([0, section.length]), section])
+  assert.doesNotThrow(() => new WebAssembly.Module(wasm))
+  for (const [name, body] of [['plain', `const source = ${JSON.stringify(path)}`], ['embedded', `const module = atob('${wasm.toString('base64')}')`]]) {
+   const root = join(fixture, name); await writeValidPackage(root)
+   await writeFile(join(root, 'dist/service-worker.js'), body)
+   await writeExtensionPackageDigest(root, root + '.contents.sha256')
+   await assert.rejects(() => inspectProductionExtension(root, root + '.contents.sha256'), /private build path/)
+  }
+ } finally { await rm(fixture, { recursive: true, force: true }) }
+})

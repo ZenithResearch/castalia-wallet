@@ -108,3 +108,40 @@ export function prepareCredentialPresentation(raw: Uint8Array, pins: unknown, ca
 
 /** Trust changes invalidate all pending custody approvals, independently of provider branding. */
 export const invalidateCustodyApprovals = bumpCustodyEpoch
+/** Generic read custody shares the same Rust/WASM core and lock epoch. */
+export function prepareReadAccess(challenge:unknown,origin:string,installation:string,pins:unknown) {
+  const wallet=core
+  const invoke=<T>(operation:()=>T):T=>{try{return operation()}catch(error){
+    const allowed=['issuer_setup_required','invalid_read_policy','read_approval_expired',
+      'read_context_changed','read_access_required','read_access_expired','wallet_locked']
+    throw new Error(typeof error==='string'&&allowed.includes(error)?error:'read_access_failed')
+  }}
+  const handle=invoke(()=>wallet.prepareReadAccess(JSON.stringify(challenge),installation,
+    JSON.stringify(pins),JSON.stringify({kind:'browser',id:origin}),String(Math.floor(Date.now()/1000))))
+  let disposed=false
+  return {summary:()=>invoke(()=>JSON.parse(handle.summary())),
+    approve:()=>invoke(()=>JSON.parse(wallet.approveReadAccess(handle,String(Math.floor(Date.now()/1000))))),
+    accept:(credential:unknown)=>invoke(()=>JSON.parse(wallet.acceptReadCredential(handle,JSON.stringify(credential),String(Math.floor(Date.now()/1000))))),
+    present:(call:unknown,caller:string)=>invoke(()=>JSON.parse(wallet.presentReadCall(handle,JSON.stringify(call),caller,String(Math.floor(Date.now()/1000))))),
+    dispose:()=>{if(disposed)return;disposed=true;handle.dispose();handle.free()},
+  }
+}
+
+/** One-shot generic access-request consent, never a credential connection. */
+export function prepareAccessRequest(challenge: unknown, origin: string, installation: string, pins: unknown) {
+  const invoke = <T>(operation: () => T): T => {
+    try { return operation() } catch (error) {
+      const allowed = ['wallet_locked', 'issuer_setup_required', 'invalid_access_request',
+        'access_context_changed', 'access_approval_expired', 'access_approval_unavailable']
+      throw new Error(typeof error === 'string' && allowed.includes(error) ? error : 'access_request_failed')
+    }
+  }
+  const handle = invoke(() => core.prepareAccessRequest(JSON.stringify(challenge), installation,
+    JSON.stringify(pins), JSON.stringify({ kind: 'browser', id: origin }), String(Math.floor(Date.now() / 1000))))
+  let disposed = false
+  return {
+    summary: () => invoke(() => JSON.parse(handle.summary())),
+    approve: () => invoke(() => JSON.parse(core.approveAccessRequest(handle, String(Math.floor(Date.now() / 1000))))),
+    dispose: () => { if (disposed) return; disposed = true; handle.dispose(); handle.free() },
+  }
+}

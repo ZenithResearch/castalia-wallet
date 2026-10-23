@@ -54,6 +54,7 @@ export function createOperationConfirmationBroker<Summary extends { expiresAt: n
       summary: Summary
       tabId: number
       owner?: object
+      onOpenFailure?(): void
     }): Promise<boolean> {
       if (pending) return Promise.reject(new Error('A operation confirmation is already pending'))
       const nowMs = platform.nowMs()
@@ -104,6 +105,7 @@ export function createOperationConfirmationBroker<Summary extends { expiresAt: n
               pending.deadlineMs - openedAtMs,
             )
           } catch {
+            try { input.onOpenFailure?.() } catch {}
             finish(requestId, false, false)
           }
         })()

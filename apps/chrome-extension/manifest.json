@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Castalia",
   "short_name": "Castalia",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Encrypted Member Key custody with independently approved providers and credentials.",
   "icons": {
     "16": "icons/castalia-16.png",
@@ -58,5 +58,6 @@
   ],
   "optional_host_permissions": [
     "https://*/*"
-  ]
+  ],
+  "version_name": "0.0.1 \u00b7 generic graph access"
 }

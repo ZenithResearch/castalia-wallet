@@ -1,3 +1,5 @@
+import { installReadAccessRuntime } from './read-access-runtime.js'
+import { prepareReadAccess, prepareAccessRequest } from './custody-runtime.js'
 import { installProviderProfilesRuntime, NEUTRAL_CAPABILITIES } from './provider-profiles-runtime.js'
 import { invalidateCustodyApprovals } from './custody-runtime.js'
 import { installCredentialPresentationRuntime } from './credential-presentation-runtime.js'
@@ -404,6 +406,20 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     state: async () => { const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null },
     approveOrigin: origin => sessionState.approveOrigin(origin).then(()=>undefined),
     sign: bytes => durableSigningIdentity().signBytes(bytes), legacyCredential: () => zenithMembershipState.get(),
+  })
+  installReadAccessRuntime(chrome, {
+    run: <T>(f:()=>Promise<T>)=>custodyOperations.run(f), epoch:custodyEpoch, onChange:subscribeCustodyChanges,
+    state:async()=>{const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null},
+    installation:async()=>{
+      const key='castalia-read-installation-v1',saved=(await chrome.storage.local.get(key))[key]
+      if(saved!==undefined){if(typeof saved!=='string'||!/^[a-f0-9]{32}$/.test(saved))throw new Error('invalid_installation');return saved}
+      const value=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('')
+      await chrome.storage.local.set({[key]:value});return value
+    },
+    memberships:(origin:string)=>providerProfilesRuntime.memberships(origin),
+    membership:(origin:string,holder:string,profileId?:string)=>providerProfilesRuntime.readMembership(origin,holder,profileId),
+    prepareRequest:async(challenge:unknown,origin:string,installation:string)=>prepareAccessRequest(challenge,origin,installation,await providerProfilesRuntime.pins()),
+    prepare:async(challenge:unknown,origin:string,installation:string)=>prepareReadAccess(challenge,origin,installation,await providerProfilesRuntime.pins()),
   })
   const credentialPresentationRuntime = installCredentialPresentationRuntime(chrome, {
     run: operation => custodyOperations.run(operation), epoch: custodyEpoch, onChange: subscribeCustodyChanges,

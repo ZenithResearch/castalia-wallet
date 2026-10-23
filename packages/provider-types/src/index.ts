@@ -1,3 +1,5 @@
+import type { ReadAccessProvider } from './read-access.js'
+export * from './read-access.js'
 import type { ProviderProfilesProvider } from './provider-profiles.js'
 import type { CredentialPresentationProvider } from './credential-presentation.js'
 export * from './credential-presentation.js'
@@ -119,7 +121,7 @@ export type CastaliaWalletOnboardingPresentation = {
   payload: string
 }
 
-export type CastaliaWalletProvider = CredentialPresentationProvider & ProviderProfilesProvider & FilesKeyProviderV1 & {
+export type CastaliaWalletProvider = ReadAccessProvider & CredentialPresentationProvider & ProviderProfilesProvider & FilesKeyProviderV1 & {
   readonly kind: 'castalia.wallet-provider'
   readonly version: '1'
   readonly membershipJoinProtocol?: 'castalia.zenith-membership.v3'

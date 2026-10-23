@@ -91,6 +91,7 @@ async function bundle() {
   });
 
   await build({ ...common, format: 'iife', entryPoints: [join(extensionDir, 'src/provider-settings.ts')], outfile: join(distDir, 'provider-settings.js') });
+  await build({ ...common, format: 'iife', entryPoints: [join(extensionDir, 'src/read-access-confirmation.ts')], outfile: join(distDir, 'read-access-confirmation.js') });
   await writeFilesystemNotices(extensionDir);
   console.log('✅ Extension bundles created successfully.');
 }

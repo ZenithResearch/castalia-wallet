@@ -71,6 +71,7 @@ castalia-wallet/
 
 - Unknown origins can detect provider availability only.
 - Membership issuance requires setup, unlock, the fixed possession transcript, and an explicitly approved runtime issuer trust policy.
+- [Generic graph access](docs/browser-graph-access.md) adds explicit access requests and verified read connections using the shared core; a receiver grant remains required.
 - Applications use the generic credential-bound presentation v2 interface. Wallet verifies the approved issuer and exact request/disclosure bindings and requires fresh consent; request semantics and execution belong to the application.
 - The generic `castalia-wallet-present-credential-v2` terminal signer requires interactive approval. Application-specific signing methods, CLI and native bridge have been [retired](docs/wallet-application-adapter-retirement.md); old clients must explicitly migrate.
 - Unsupported proof/private paths fail closed.

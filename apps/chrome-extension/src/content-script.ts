@@ -1,3 +1,4 @@
+import { forwardReadAccess } from './read-access-content.js'
 import { forwardCredentialPresentation } from './credential-presentation-content.js'
 import { forwardFilesKey } from './files-key-content.js'
 import { forwardRegistration } from './registration-content.js'
@@ -87,6 +88,10 @@ declare const chrome: any;
 
 if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.runtime?.sendMessage) {
   injectPageProvider(document, chrome.runtime.getURL('dist/provider.js'))
+  chrome.runtime.onMessage.addListener((message: any, sender: any) => {
+    if (sender?.id === chrome.runtime.id && message?.type === 'CASTALIA_READ_ACCESS_INVALIDATED')
+      window.dispatchEvent(new CustomEvent('castalia:wallet:read-access-invalidated'))
+  })
   window.addEventListener('message', (event) => {
   // Only accept messages from the same origin (the page itself)
   if (event.source !== window) return
@@ -97,6 +102,12 @@ if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.ru
   })
 
   if (!normalized) return
+
+  if (normalized.method === 'castalia.wallet.readAccess') {
+    const reply = (response: unknown) => window.postMessage({ type: CASTALIA_WALLET_RESPONSE, id: normalized.id, ...(response as object) }, window.location.origin)
+    forwardReadAccess(chrome, normalized.payload, reply, window, navigator.userActivation?.isActive === true)
+    return
+  }
 
   if (normalized.method === 'castalia.wallet.presentCredential') {
     const reply = (response: unknown) => window.postMessage({ type: CASTALIA_WALLET_RESPONSE, id: normalized.id, ...(response as object) }, window.location.origin)

@@ -18,7 +18,7 @@ export const CASTALIA_WALLET_RESPONSE = 'castalia:wallet:response'
 export type CastaliaWalletRequestEnvelope = {
   type: typeof CASTALIA_WALLET_REQUEST
   id: string
-  method: 'castalia.wallet.requestConnection' | 'castalia.wallet.proposeProviderProfile' | 'castalia.wallet.listMembershipProfiles' | 'castalia.wallet.requestMembership' | 'castalia.wallet.getMembershipCredential' | 'castalia.wallet.requestRegistrationV2' | 'castalia.wallet.getCapabilities' | 'castalia.wallet.presentCredential' | 'castalia.wallet.wrapFilesKey' | 'castalia.wallet.unwrapFilesKey' | 'castalia.wallet.requestFilesServiceAuthentication' | 'castalia.wallet.requestRegistration' | 'castalia.wallet.isAvailable' | 'castalia.wallet.openMembershipFlow' | 'castalia.wallet.getSubject' | 'castalia.wallet.getMembership' | 'castalia.wallet.signChallenge' | 'castalia.wallet.requestMembershipPresentation'
+  method: 'castalia.wallet.readAccess' | 'castalia.wallet.requestConnection' | 'castalia.wallet.proposeProviderProfile' | 'castalia.wallet.listMembershipProfiles' | 'castalia.wallet.requestMembership' | 'castalia.wallet.getMembershipCredential' | 'castalia.wallet.requestRegistrationV2' | 'castalia.wallet.getCapabilities' | 'castalia.wallet.presentCredential' | 'castalia.wallet.wrapFilesKey' | 'castalia.wallet.unwrapFilesKey' | 'castalia.wallet.requestFilesServiceAuthentication' | 'castalia.wallet.requestRegistration' | 'castalia.wallet.isAvailable' | 'castalia.wallet.openMembershipFlow' | 'castalia.wallet.getSubject' | 'castalia.wallet.getMembership' | 'castalia.wallet.signChallenge' | 'castalia.wallet.requestMembershipPresentation'
   payload: unknown
 }
 
@@ -45,6 +45,7 @@ export function createCastaliaWalletProvider(
   }
 
   return {
+    readAccess: input => request('castalia.wallet.readAccess', input),
     getCapabilities: () => request<string[]>('castalia.wallet.getCapabilities', {}),
     requestConnection: () => request('castalia.wallet.requestConnection', {}),
     proposeProviderProfile: profile => request('castalia.wallet.proposeProviderProfile', profile),
@@ -114,7 +115,7 @@ export function createPageMessageTransport(
   timeoutMs = DEFAULT_PAGE_MESSAGE_TIMEOUT_MS,
 ): CastaliaWalletTransport {
   return (request) => new Promise((resolve, reject) => {
-    const requestTimeoutMs = ['castalia.wallet.requestConnection','castalia.wallet.proposeProviderProfile','castalia.wallet.requestMembership','castalia.wallet.openMembershipFlow','castalia.wallet.requestRegistrationV2','castalia.wallet.presentCredential','castalia.wallet.requestRegistration','castalia.wallet.wrapFilesKey','castalia.wallet.unwrapFilesKey','castalia.wallet.requestFilesServiceAuthentication'].includes(request.method) ? 125_000 : timeoutMs
+    const requestTimeoutMs = ['castalia.wallet.readAccess','castalia.wallet.requestConnection','castalia.wallet.proposeProviderProfile','castalia.wallet.requestMembership','castalia.wallet.openMembershipFlow','castalia.wallet.requestRegistrationV2','castalia.wallet.presentCredential','castalia.wallet.requestRegistration','castalia.wallet.wrapFilesKey','castalia.wallet.unwrapFilesKey','castalia.wallet.requestFilesServiceAuthentication'].includes(request.method) ? 125_000 : timeoutMs
     const timeout = pageWindow.setTimeout(() => {
       pageWindow.removeEventListener('message', onMessage)
       const error = new Error('Castalia Wallet request timed out')

@@ -106,10 +106,7 @@ test('WASM build failures behaviorally preserve the underlying spawn diagnostic'
   try {
     await mkdir(join(fixture, 'scripts'), { recursive: true })
     await mkdir(join(fixture, 'apps/chrome-extension/src'), { recursive: true })
-    await cp(
-      new URL('./build-castalia-wallet-wasm.mjs', import.meta.url),
-      join(fixture, 'scripts/build-castalia-wallet-wasm.mjs'),
-    )
+    await copyWasmBuilder(fixture)
     const bin = join(fixture, 'bin')
     await mkdir(bin)
     const cargoMissing = spawnSync(process.execPath, ['scripts/build-castalia-wallet-wasm.mjs'], {
@@ -138,8 +135,7 @@ test('the actual WASM builder rejects missing and stale Cargo locks without repa
         await mkdir(join(fixture, 'scripts'), { recursive: true })
         const crate = join(fixture, 'crates/castalia-wallet-core')
         await mkdir(join(crate, 'src'), { recursive: true })
-        await cp(new URL('./build-castalia-wallet-wasm.mjs', import.meta.url),
-          join(fixture, 'scripts/build-castalia-wallet-wasm.mjs'))
+        await copyWasmBuilder(fixture)
         await writeFile(join(fixture, 'Cargo.toml'), '[workspace]\nmembers = ["crates/castalia-wallet-core"]\nresolver = "2"\n')
         const manifest = '[package]\nname = "locked-wallet-fixture"\nversion = "0.1.0"\nedition = "2021"\n[lib]\ncrate-type = ["cdylib"]\n'
         await writeFile(join(crate, 'Cargo.toml'), manifest)
@@ -171,7 +167,7 @@ test('the WASM builder checks locked metadata before passing the lock requiremen
   const fixture = await mkdtemp(join(tmpdir(), 'castalia-wasm-commands-'))
   try {
     await mkdir(join(fixture, 'scripts'), { recursive: true })
-    await cp(new URL('./build-castalia-wallet-wasm.mjs', import.meta.url), join(fixture, 'scripts/build-castalia-wallet-wasm.mjs'))
+    await copyWasmBuilder(fixture)
     const bin = join(fixture, 'bin')
     await mkdir(bin)
     const shim = `#!${process.execPath}
@@ -199,3 +195,9 @@ if (command === 'wasm-pack') {
     await rm(fixture, { recursive: true, force: true })
   }
 })
+
+async function copyWasmBuilder(fixture) {
+  for (const name of ['build-castalia-wallet-wasm.mjs', 'local-build-environment.mjs']) {
+    await cp(new URL('./' + name, import.meta.url), join(fixture, 'scripts', name))
+  }
+}

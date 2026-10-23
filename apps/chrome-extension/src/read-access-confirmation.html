@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Allow read access · Castalia Wallet</title>
+    <link rel="stylesheet" href="confirmation.css" />
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Castalia Wallet</p>
+      <h1 id="heading">Allow read access?</h1>
+      <p id="origin"></p>
+      <p id="explanation">
+        This connection can read the information listed below. It cannot make
+        changes.
+      </p>
+      <dl>
+        <dt>Server</dt>
+        <dd id="receiver"></dd>
+        <dt id="expiry-label">Expires</dt>
+        <dd id="expires"></dd>
+      </dl>
+      <details>
+        <summary id="details-label">Requested permissions</summary>
+        <pre
+          id="permissions"
+          style="white-space: pre-wrap; overflow-wrap: anywhere"
+        ></pre>
+      </details>
+      <p id="membership-disclosure" hidden></p>
+      <p id="status" role="status"></p>
+      <div class="actions">
+        <button id="deny" disabled>Cancel</button
+        ><button id="approve" disabled>Allow read access</button>
+      </div>
+    </main>
+    <script src="../dist/read-access-confirmation.js"></script>
+  </body>
+</html>

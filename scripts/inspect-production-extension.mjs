@@ -62,6 +62,9 @@ export async function inspectProductionExtension(packageRoot, sidecarPath) {
 
   for (const path of await packageFiles(root)) {
     const bytes = await readFile(path)
+    if (/\.(?:js|wasm)$/.test(path) && /\/Users\//.test(decodedExecutableText(bytes, path))) {
+      throw new Error(`production extension contains a private build path: ${path}`)
+    }
     if (/devgraph|kanban|arena/i.test(path.slice(root.length)) || /\.(?:js|wasm|html)$/.test(path) && /devgraph|kanban|arena|connectNative|nativeMessaging/i.test(decodedExecutableText(bytes, path))) {
       throw new Error(`production extension contains an application adapter: ${path}`)
     }
