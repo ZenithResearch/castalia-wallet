@@ -138,7 +138,25 @@ fn lost_initial_ack_has_current_and_partial_init_never_implicitly_recreates() {
         }
         drop(l);
         if !has_current {
-            assert!(r.initialize().is_ok());
+            // Another parallel test can fork while this lease is live. Its
+            // CLOEXEC copy retains the OFD lock until exec closes it. Busy is
+            // valid during that interval; every other error still fails now.
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+            loop {
+                match r.initialize() {
+                    Ok(lease) => {
+                        drop(lease);
+                        break;
+                    }
+                    Err(error)
+                        if error.kind() == std::io::ErrorKind::WouldBlock
+                            && std::time::Instant::now() < deadline =>
+                    {
+                        std::thread::sleep(std::time::Duration::from_millis(1));
+                    }
+                    Err(error) => panic!("reinitialize after {step}: {error:?}"),
+                }
+            }
         }
     }
 }
