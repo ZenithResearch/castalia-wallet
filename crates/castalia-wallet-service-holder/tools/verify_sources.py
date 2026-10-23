@@ -16,7 +16,8 @@ PRIVATE_FILES_SHA256 = {
     'src/service_store.rs': '55a89a0642024b50bd021d5e4602f6cd2d4bc10f69e51f2ff3397dd7fc5edb4e',
     'src/service_store_tests.rs': 'b901f40761ee3e1033c80f965ec05bd01d5a7cbb91286f919d107887d4b36d5f',
 }
-GENERIC_LOCK_SHA256 = '7f5b976bf78a15870e698c0dab8dae608274dfcc02b4f233558e634143f7424f'
+# Reviewed Transfer native dependency update; standalone holder lock remains unchanged.
+GENERIC_LOCK_SHA256 = 'fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5'
 GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
 PACKAGE = 'crates/castalia-wallet-service-holder'
 VENDOR = 'vendor/secS-magik-7e32f13'

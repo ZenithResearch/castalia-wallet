@@ -333,5 +333,13 @@
       "path": "docs/vectors/grant-validity-v1.json",
       "sha256": "323348935d5b187240d4a9c3cbcc02b7c0a6b56f90fb095e7cef0cadfb2d877f"
     }
+  ],
+  "public_packaging_changes": [
+    {
+      "path": "crates/castalia-wallet-service-holder/tools/verify_sources.py",
+      "previous_public_sha256": "7cf4f413172c3afe1eed18bc39fd9bc4dd1f71ace3adb2e3c6e116b59aaf6e4b",
+      "sha256": "e638de7f79dc76ff708d0b80af164f0d57fccf1c86781e4e3b2199960a2237d2",
+      "reason": "Pin the reviewed generic workspace lockfile used by this source publication; immutable Native exports and independent holder lock remain unchanged."
+    }
   ]
 }

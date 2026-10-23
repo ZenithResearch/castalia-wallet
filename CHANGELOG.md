@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Update the generic lockfile integrity pin for the reviewed Transfer dependency closure — source packaging checks must accept this exact lockfile while rejecting later tampering.
+
 - Publish native graph/operator and first-owner consent dependencies used by Zenith Transfer — the public application pinned a private-only Wallet commit and could not be built from public sources.
 
 ### Fixed
