@@ -40,8 +40,11 @@ void (async () => {
       document.getElementById('expiry-label')!.textContent='Approval expires';
       document.getElementById('details-label')!.textContent='Exact request details';
       document.querySelector('details')!.open=true;
-      if(summary.membershipIncluded){document.getElementById('membership-disclosure')!.hidden=false;document.getElementById('membership-disclosure')!.textContent='An active membership proof from your selected Wallet profile will accompany this request.';}
       approve.textContent=summary.operation==='access.request'?'Send request':summary.operation==='access.decide'?'Approve decision':'Continue';
+    }
+    if (summary.membershipIncluded) {
+      document.getElementById('membership-disclosure')!.hidden = false;
+      document.getElementById('membership-disclosure')!.textContent = 'An active membership proof from your selected Wallet profile will accompany this request.';
     }
     document.getElementById("origin")!.textContent =
       `Requested by ${summary.origin}`;

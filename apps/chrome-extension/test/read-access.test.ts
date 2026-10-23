@@ -155,3 +155,14 @@ test("graph v2 still validates a supplied membership and needs actual consent",a
  await assert.rejects(h.controller.handle({operation:'approve_graph_v2',challenge:{},profileId:'invalid'},h.context),/membership_invalid/);
  h.deny();await assert.rejects(h.controller.handle({operation:'approve_graph_v2',challenge:{}},h.context),/approval_denied/);assert.equal(h.counts().signed,0);
 });
+
+for (const [operation, profileId, included] of [
+ ['approve', undefined, true],
+ ['approve_graph_v2', undefined, false],
+ ['approve_graph_v2', 'membership', true],
+] as const) test(operation + ' discloses membership inclusion: ' + String(included), async () => {
+ const h = fixture()
+ h.deps.confirm = async (summary: any) => { assert.equal(summary.membershipIncluded, included); return false }
+ await assert.rejects(h.controller.handle({ operation, challenge: {}, ...(profileId ? { profileId } : {}) }, h.context), /approval_denied/)
+ assert.equal(h.counts().signed, 0)
+})

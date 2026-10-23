@@ -176,7 +176,7 @@ export function createReadAccessController(deps: Dependencies) {
             installation,
           );
           await state(context, epoch);
-          return { proof, summary: prepared.summary() };
+          return { proof, summary: { ...prepared.summary(), membershipIncluded: !graphV2 || input.profileId !== undefined } };
         });
         if (!context.current() || deps.epoch() !== epoch)
           throw new Error("read_context_changed");

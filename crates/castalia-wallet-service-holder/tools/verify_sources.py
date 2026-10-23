@@ -14,7 +14,8 @@ CUSTODY_MANIFEST_SHA256 = 'f3a5d9aed996cad7dc5c810869803e8a8b1d17c0edfd92557678e
 PRIVATE_FILES_SHA256 = {
     'src/lib.rs': '56a29e496705bab57cbaafa03df727c11be417f8a34763faae8e5011ee53f968',
     'src/service_store.rs': '55a89a0642024b50bd021d5e4602f6cd2d4bc10f69e51f2ff3397dd7fc5edb4e',
-    'src/service_store_tests.rs': 'b901f40761ee3e1033c80f965ec05bd01d5a7cbb91286f919d107887d4b36d5f',
+    # Root fixture only: bounded WouldBlock wait after concurrent fork. Production pins above are unchanged.
+    'src/service_store_tests.rs': '8ab5e28d8497f73a02e7303b7bb832d2b22c3285c7e105d1db82789a8f10bab0',
 }
 # Reviewed Transfer native dependency update; standalone holder lock remains unchanged.
 GENERIC_LOCK_SHA256 = 'fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5'
