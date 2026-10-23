@@ -43,3 +43,30 @@ Only an approved request can stage a matching returned credential. The host stor
 Run `cargo fmt --all -- --check`, `cargo test --workspace --locked --offline`, `npm test`, and `npm run typecheck`. Build `castalia-wallet-native` for all XCFramework targets. The `recovery_contract_driver` example is a bounded test helper used by Devgraph's disposable cross-language suite, not a packaged signer or unattended approval substitute.
 
 Source tests and Simulator launch do not qualify physical-device Files interactions, accessibility, or custody security. Exact-artifact iPhone qualification and usability review remain required. No production activation, extension interface replacement, identity switching, key rotation, grant expansion, or change to existing generic Wallet consent is included.
+
+## Embedded host credential presentation candidate
+
+The shared session additionally exposes closed host-only operations for existing
+`castalia.credential-presentation-request.v2` requests. `approve_presentation_trust`
+accepts the existing `castalia.wallet-presentation-trust.v1` configuration only
+after the host obtains explicit approval of its compiled issuer/caller policy.
+Discovery and imported data must never install that policy. It lives in session
+memory only; lock/unlock clears it. No custody, snapshot or recovery format changes.
+
+`presentation_identity` returns only the current public key and reverified active
+v3/v4 membership proof, after backup eligibility. This does not establish a login,
+workspace grant or service admission. `prepare_credential_presentation` uses the
+same private OpenedWallet and existing presentation verifier, then returns an
+opaque token and verified disclosure summary. After a distinct visible approval,
+`approve_credential_presentation` consumes that token once and uses the existing
+signer with OS randomness. Wrong tokens, invalid requests, changed local state,
+clock rollback/expiry, cancellation and lock invalidate the preview. No generic
+arbitrary signing entrypoint or key export is added.
+
+Hosts serialize calls, check exact persisted snapshot continuity before preparing
+and approving, bind the caller to their actual origin rather than page input,
+and cancel on navigation. Native/browser host consent is a separate reviewed UI
+boundary. This API does not claim the page-owned embedded host has the isolation
+of the extension-owned popup, does not change extension approval rules, and is
+not a custody security qualification. An application may not advertise this path
+as production-qualified before its exact artifact and consent UI are reviewed.
