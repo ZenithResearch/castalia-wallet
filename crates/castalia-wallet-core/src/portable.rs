@@ -479,6 +479,13 @@ fn identity(v: &Value, owner: &str) -> Result<()> {
     Ok(())
 }
 pub fn validate(wallet: &OpenedWallet, contents: &Value, trust: &Trust) -> Result<()> {
+    validate_contents(wallet, contents, Some(trust))
+}
+/// Public data allowlist only. This never establishes issuer trust or membership.
+pub fn validate_descriptors(wallet: &OpenedWallet, contents: &Value) -> Result<()> {
+    validate_contents(wallet, contents, None)
+}
+fn validate_contents(wallet: &OpenedWallet, contents: &Value, trust: Option<&Trust>) -> Result<()> {
     if serde_json::to_vec(contents)
         .map_err(|_| "invalid_contents")?
         .len()
@@ -546,7 +553,11 @@ pub fn validate(wallet: &OpenedWallet, contents: &Value, trust: &Trust) -> Resul
             let mut ids = BTreeSet::new();
             let mut scopes = BTreeSet::new();
             for p in array(proofs, 16)? {
-                verify_proof(p, &wallet.public_key_hex(), trust, scoped)?;
+                if let Some(trust) = trust {
+                    verify_proof(p, &wallet.public_key_hex(), trust, scoped)?;
+                } else {
+                    validate_proof_descriptor(p, &wallet.public_key_hex(), scoped)?;
+                }
                 if !ids.insert(text(&p["membershipId"], 64)?)
                     || (scoped && !scopes.insert(text(&p["scopeId"], 64)?))
                 {
@@ -721,4 +732,50 @@ pub fn with_wallet_identities(contents: &Value, identities: &Value, owner: &str)
     next["schema"] = json!("castalia.castaway-contents.v2");
     next["version"] = json!(2);
     Ok(next)
+}
+
+fn validate_proof_descriptor(proof: &Value, owner: &str, scoped: bool) -> Result<()> {
+    let mut fields = vec![
+        "schema",
+        "version",
+        "membershipId",
+        "ownerPublicKey",
+        "status",
+        "issuerId",
+        "issuerKeyId",
+        "signatureSuite",
+        "issuerSignature",
+    ];
+    if scoped {
+        fields.extend(["scopeType", "scopeId"]);
+    }
+    exact(proof, &fields)?;
+    eq(
+        &proof["schema"],
+        if scoped {
+            "castalia.scoped-membership-credential.v4"
+        } else {
+            "castalia.zenith-membership-credential.v3"
+        },
+    )?;
+    version(&proof["version"], if scoped { 4 } else { 3 })?;
+    eq(&proof["ownerPublicKey"], owner)?;
+    eq(&proof["status"], "active")?;
+    eq(&proof["signatureSuite"], "Ed25519")?;
+    id(&proof["issuerId"])?;
+    id(&proof["issuerKeyId"])?;
+    let mut bytes = if scoped {
+        b"castalia/scoped-membership-id/v4\0".to_vec()
+    } else {
+        b"castalia/zenith-membership-id/v3\0".to_vec()
+    };
+    bytes.extend(hex32(&proof["ownerPublicKey"])?);
+    if scoped {
+        eq(&proof["scopeType"], "community")?;
+        bytes.extend(hex32(&proof["scopeId"])?);
+    }
+    eq(&proof["membershipId"], &digest(&bytes))?;
+    crate::decode_exact::<64>(text(&proof["issuerSignature"], 86)?)
+        .map_err(|_| "invalid_signature")?;
+    Ok(())
 }

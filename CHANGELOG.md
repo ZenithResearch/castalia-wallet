@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Validate full Castaway public descriptors in the shared core — blocks hidden authority fields in browser/extension imports without treating stored public proofs as trusted membership.
+
 ### Added
 
 - Add shared descriptor-only Wallet identities and Castaway v2 readers/writers — preserves stable public account references across native and browser clients without importing sessions, keys or authority. Existing v1 data/recovery formats remain compatible; imports reject account conflicts without writes.

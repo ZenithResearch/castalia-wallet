@@ -233,3 +233,39 @@ fn session_stages_preserves_and_merges_records_across_recovery_and_old_imports()
             .is_err()
     );
 }
+
+#[test]
+fn portable_descriptor_checks_exclude_hidden_authority_without_activating_proofs() {
+    use sha2::{Digest, Sha256};
+    let (wallet, _) = create_wallet("long local password", 1).unwrap();
+    let mut contents = portable::with_wallet_identities(
+        &portable::empty_contents(&wallet, 1).unwrap(),
+        &section(&wallet.public_key_hex()),
+        &wallet.public_key_hex(),
+    )
+    .unwrap();
+    let mut id = b"castalia/zenith-membership-id/v3\0".to_vec();
+    id.extend(hex::decode(wallet.public_key_hex()).unwrap());
+    contents["sections"]["memberships"] = json!([{"schema":"castalia.zenith-membership-credential.v3","version":3,"membershipId":hex::encode(Sha256::digest(id)),"ownerPublicKey":wallet.public_key_hex(),"status":"active","issuerId":"synthetic","issuerKeyId":"untrusted-fixture","signatureSuite":"Ed25519","issuerSignature":"A".repeat(86)}]);
+    portable::validate_descriptors(&wallet, &contents).unwrap();
+    assert!(portable::validate(&wallet, &contents, &Trust::default()).is_err());
+    let mut hidden = contents.clone();
+    hidden["sections"]["identity"]["subject"]["privateKey"] = json!("forbidden");
+    assert!(
+        wallet
+            .validate_castaway_descriptors(&hidden.to_string())
+            .is_err()
+    );
+    assert!(
+        wallet
+            .export_castaway(&hidden.to_string(), "backup password", 2)
+            .is_err()
+    );
+    hidden = contents.clone();
+    hidden["sections"]["memberships"][0]["bearerToken"] = json!("forbidden");
+    assert!(
+        wallet
+            .validate_castaway_descriptors(&hidden.to_string())
+            .is_err()
+    );
+}

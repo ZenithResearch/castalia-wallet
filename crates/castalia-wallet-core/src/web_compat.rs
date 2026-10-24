@@ -102,11 +102,13 @@ fn open(mut envelope: Value, key: &[u8]) -> Result<Zeroizing<String>> {
     object(&text)?;
     Ok(text)
 }
-fn data_contents(value: &Value, owner: &str) -> Result<()> {
+fn data_contents(value: &Value, wallet: &OpenedWallet) -> Result<()> {
+    let owner = wallet.public_key_hex();
     exact(value, &["schema", "version", "sections"])?;
     let v2 = crate::portable::contents_version(value).map_err(closed)? == 2;
     if v2 {
-        crate::wallet_identities::validate(&value["sections"]["walletIdentities"], owner)
+        crate::portable::validate_descriptors(wallet, value).map_err(closed)?;
+        crate::wallet_identities::validate(&value["sections"]["walletIdentities"], &owner)
             .map_err(closed)?;
         if value["sections"]["identity"]["subject"]["memberKey"] != owner {
             return Err(invalid());
@@ -232,7 +234,7 @@ impl OpenedWallet {
         time: u64,
     ) -> Result<Zeroizing<String>> {
         let value = object(raw)?;
-        data_contents(&value, &self.public_key_hex())?;
+        data_contents(&value, self)?;
         let mut salt = [0; 16];
         let mut n = [0; 12];
         OsRng.fill_bytes(&mut salt);
@@ -278,11 +280,16 @@ impl OpenedWallet {
         let key = derive_key(password, &decode_exact::<16>(&kdf.salt)?)?;
         let plaintext = open(value, key.as_ref())?;
         let contents = object(&plaintext)?;
-        data_contents(&contents, &self.public_key_hex())?;
+        data_contents(&contents, self)?;
         if crate::portable::contents_version(&contents).map_err(closed)? != file_version {
             return Err(invalid());
         }
         Ok(plaintext)
+    }
+    pub fn validate_castaway_descriptors(&self, raw: &str) -> Result<String> {
+        let value = object(raw)?;
+        crate::portable::validate_descriptors(self, &value).map_err(closed)?;
+        serde_json::to_string(&value).map_err(closed)
     }
     pub fn validate_wallet_identities(&self, raw: &str) -> Result<String> {
         let value = crate::wallet_identities::validate(&object(raw)?, &self.public_key_hex())
