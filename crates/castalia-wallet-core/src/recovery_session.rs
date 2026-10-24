@@ -73,6 +73,21 @@ enum Command {
         scoped: bool,
     },
     DataSummary {},
+    // Host-only, explicitly approved runtime policy. Never installed by discovery
+    // or serialized into a recovery file/local snapshot.
+    ApprovePresentationTrust {
+        config: Value,
+    },
+    PresentationIdentity {},
+    PrepareCredentialPresentation {
+        request: String,
+        now: u64,
+    },
+    ApproveCredentialPresentation {
+        token: String,
+        now: u64,
+    },
+    CancelCredentialPresentation {},
     // Opt-in native graph protocol v2. Historical membership-gated methods stay unchanged.
     GraphAccessIdentityV2 {},
     PrepareResourceOwnerV1 {
@@ -233,6 +248,11 @@ struct Pending {
     local: LocalState,
     started: bool,
 }
+struct SessionPresentation {
+    token: String,
+    revision: u64,
+    prepared: castalia_wallet_presentation::PreparedRequest,
+}
 #[derive(Default)]
 pub struct RecoverySession {
     wallet: Option<OpenedWallet>,
@@ -241,6 +261,8 @@ pub struct RecoverySession {
     local: LocalState,
     pending: Option<Pending>,
     restore_trust: Trust,
+    presentation_trust: Option<castalia_wallet_presentation::TrustConfig>,
+    presentation: Option<SessionPresentation>,
     access_request: Option<(String, crate::access_request::PreparedAccessRequest)>,
     graph_access_request: Option<(String, crate::access_request::PreparedAccessRequest)>,
     operator_access: Option<(String, crate::access_request::PreparedAccessRequest)>,
@@ -258,10 +280,20 @@ impl RecoverySession {
     }
     pub fn invoke(&mut self, raw: &str) -> Result<Value> {
         if raw.is_empty() || raw.len() > MAX * 3 {
+            self.presentation = None;
             return Err("request_too_large");
         }
-        portable::parse_unique(raw).map_err(|_| "invalid_request")?;
-        let command: Command = serde_json::from_str(raw).map_err(|_| "invalid_request")?;
+        // A malformed invocation cannot leave an earlier signing preview live.
+        let command: Command = match portable::parse_unique(raw)
+            .map_err(|_| "invalid_request")
+            .and_then(|_| serde_json::from_str(raw).map_err(|_| "invalid_request"))
+        {
+            Ok(command) => command,
+            Err(error) => {
+                self.presentation = None;
+                return Err(error);
+            }
+        };
         if !matches!(
             &command,
             Command::State {}
@@ -312,6 +344,18 @@ impl RecoverySession {
             Command::State {} | Command::ApproveResourceOwnerV1 { .. }
         ) {
             self.resource_owner = None;
+        }
+        // Passive reads cannot transfer consent. Every other operation invalidates
+        // a pending presentation, even an unsuccessful mutation or new preparation.
+        if !matches!(
+            &command,
+            Command::State {}
+                | Command::Identity {}
+                | Command::DataSummary {}
+                | Command::PresentationIdentity {}
+                | Command::ApproveCredentialPresentation { .. }
+        ) {
+            self.presentation = None;
         }
         match command {
             Command::PrepareResourceOwnerV1 {
@@ -991,6 +1035,78 @@ impl RecoverySession {
                 local.read_credentials.remove(&receiver);
                 self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
             }
+            Command::ApprovePresentationTrust { config } => {
+                self.presentation_trust = None;
+                self.presentation_identity()?;
+                let raw = serde_json::to_vec(&config).map_err(|_| "invalid_trust")?;
+                let config = castalia_wallet_presentation::TrustConfig::parse(&raw)?;
+                // The approved caller must actually occur in the pinned policy.
+                if !config
+                    .pins
+                    .iter()
+                    .all(|pin| pin.callers.contains(&config.caller))
+                {
+                    return Err("invalid_trust");
+                }
+                self.presentation_trust = Some(config);
+                Ok(self.state())
+            }
+            Command::PresentationIdentity {} => self.presentation_identity(),
+            Command::PrepareCredentialPresentation { request, now } => {
+                self.presentation_identity()?;
+                if self.pending.is_some() {
+                    return Err("session_busy");
+                }
+                let config = self
+                    .presentation_trust
+                    .as_ref()
+                    .ok_or("trust_setup_required")?;
+                let prepared = self.open_wallet()?.prepare_credential_presentation(
+                    request.as_bytes(),
+                    &config.pins,
+                    &config.caller,
+                    now,
+                )?;
+                let summary: Value =
+                    serde_json::from_slice(&prepared.summary()?).map_err(|_| "encoding_failed")?;
+                let mut nonce = [0; 16];
+                OsRng
+                    .try_fill_bytes(&mut nonce)
+                    .map_err(|_| "randomness_unavailable")?;
+                let token = hex::encode(nonce);
+                self.presentation = Some(SessionPresentation {
+                    token: token.clone(),
+                    revision: self.revision,
+                    prepared,
+                });
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveCredentialPresentation { token, now } => {
+                // Consume before validation, including wrong token, stale state or clock.
+                let pending = self.presentation.take().ok_or("preview_expired")?;
+                self.presentation_identity()?;
+                if pending.token != token
+                    || pending.revision != self.revision
+                    || self.pending.is_some()
+                {
+                    return Err("preview_stale");
+                }
+                self.presentation_trust
+                    .as_ref()
+                    .ok_or("trust_setup_required")?;
+                let mut nonce = [0; 16];
+                OsRng
+                    .try_fill_bytes(&mut nonce)
+                    .map_err(|_| "randomness_unavailable")?;
+                let bytes = self.open_wallet()?.approve_credential_presentation(
+                    pending.prepared,
+                    now,
+                    &nonce,
+                )?;
+                let presentation = String::from_utf8(bytes).map_err(|_| "encoding_failed")?;
+                Ok(json!({"presentation":presentation}))
+            }
+            Command::CancelCredentialPresentation {} => Ok(self.state()),
             Command::DataSummary {} => {
                 self.open_wallet()?;
                 Ok(
@@ -1132,6 +1248,20 @@ impl RecoverySession {
         }
         Ok(wallet)
     }
+    fn presentation_identity(&self) -> Result<Value> {
+        let wallet = self.open_wallet()?;
+        if !self.local.backup_verified && !self.local.legacy_confirmed {
+            return Err("backup_verification_required");
+        }
+        let proof = self
+            .local
+            .active_membership
+            .as_ref()
+            .ok_or("membership_required")?;
+        let scoped = proof["schema"] == "castalia.scoped-membership-credential.v4";
+        portable::verify_proof(proof, &wallet.public_key_hex(), &self.local.trust, scoped)?;
+        Ok(json!({"public_key":wallet.public_key_hex(),"membership":proof}))
+    }
     fn open_wallet(&self) -> Result<&OpenedWallet> {
         self.wallet.as_ref().ok_or("wallet_locked")
     }
@@ -1151,6 +1281,8 @@ impl RecoverySession {
             "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
     }
     fn lock(&mut self) {
+        self.presentation = None;
+        self.presentation_trust = None;
         self.resource_owner = None;
         self.operator_access = None;
         self.graph_access_request = None;
