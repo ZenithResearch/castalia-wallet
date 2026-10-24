@@ -17,8 +17,10 @@ PRIVATE_FILES_SHA256 = {
     # Root fixture only: bounded WouldBlock wait after concurrent fork. Production pins above are unchanged.
     'src/service_store_tests.rs': '8ab5e28d8497f73a02e7303b7bb832d2b22c3285c7e105d1db82789a8f10bab0',
 }
-# Reviewed Transfer native dependency update; standalone holder lock remains unchanged.
-GENERIC_LOCK_SHA256 = 'fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5'
+# Reviewed shared Web/native core closure and core0.3.0 version stamp.
+# Portable source gates and cross-client fixtures pass; standalone holder/native exports are unchanged.
+# Historical reviewed closure: fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5.
+GENERIC_LOCK_SHA256 = '566f5c755c2ad42b97a7dfa3a361a12ca646ad16fa399e1ba1efc5db5dd7ee32'
 GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
 PACKAGE = 'crates/castalia-wallet-service-holder'
 VENDOR = 'vendor/secS-magik-7e32f13'
