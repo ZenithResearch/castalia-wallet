@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add Wallet Core 0.4 reusable provider grants with the shared secS verifier, encrypted reviewed storage and grant backups. The same Wallet can derive equal or narrower finite credentials; onward delegation remains disabled. Existing formats retain their bytes. The new populated local-state snapshot requires the new Core, and live qualification is still pending.
+
 ### Fixed
 
 - Refresh the read-only source verifier’s reviewed workspace lock hash for the shared core0.3.0 dependency closure — keeps exact source checks and tamper rejection aligned with the qualified producer, without changing holder locks or authority.

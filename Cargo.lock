@@ -149,7 +149,7 @@ dependencies = [
 
 [[package]]
 name = "castalia-wallet-core"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -166,6 +166,7 @@ dependencies = [
  "js-sys",
  "k256",
  "rand_core",
+ "secs-grant-contract",
  "serde",
  "serde_jcs",
  "serde_json",
@@ -877,6 +878,18 @@ dependencies = [
  "pkcs8",
  "subtle",
  "zeroize",
+]
+
+[[package]]
+name = "secs-grant-contract"
+version = "0.1.0"
+dependencies = [
+ "ed25519-dalek",
+ "hex",
+ "serde",
+ "serde_jcs",
+ "serde_json",
+ "sha2",
 ]
 
 [[package]]
