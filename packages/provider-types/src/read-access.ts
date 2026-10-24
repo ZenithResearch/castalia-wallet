@@ -2,7 +2,9 @@
 export const ACCESS_REQUEST_CAPABILITY = "access_request_v1" as const;
 export const GRAPH_ACCESS_CAPABILITY = "graph_access_v2" as const;
 export const READ_ACCESS_CAPABILITY = "read_access_v1" as const;
+export const READ_SETUP_STATUS_CAPABILITY = "read_setup_status_v1" as const;
 export type ReadAccessRequest =
+  | { operation: "setup_status"; profile: unknown }
   | { operation: "identity" }
   | { operation: "request"; challenge: unknown; profileId?: string }
   | { operation: "approve_graph_v2"; challenge: unknown; profileId?: string }

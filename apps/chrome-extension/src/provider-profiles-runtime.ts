@@ -2,6 +2,7 @@ import {
   createProviderProfileStore,
   parseProviderProfile,
   profileOrigin,
+  providerProfileBytes,
   PROVIDER_PROFILE_CAPABILITIES,
   type ProviderProfileV1,
 } from '@castalia-wallet/provider-types'
@@ -24,7 +25,7 @@ type Dependencies = {
   legacyCredential(): Promise<unknown>
 }
 const STORAGE_KEY = 'castalia-provider-profiles-v1'
-export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2', 'read_access_v1', 'access_request_v1', 'graph_access_v2']
+export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2', 'read_access_v1', 'access_request_v1', 'graph_access_v2', 'read_setup_status_v1']
 function base64url(s: string) {
   return s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }
@@ -442,6 +443,21 @@ export function installProviderProfilesRuntime(chrome: any, deps: Dependencies) 
   return {
     store,
     ready,
+    async setupStatus(input: unknown, origin: string) {
+      const profile = parseProviderProfile(input)
+      if (profile.origins.length !== 1 || profile.origins[0] !== profileOrigin(origin))
+        throw new Error('proposal_caller_scope')
+      const state = await deps.state()
+      // Unknown origins learn no installed trust, identity or membership data.
+      // Locked and unconnected Wallets are indistinguishable to discovery.
+      if (!state?.approvedOrigins.has(origin)) return {
+        schema: 'castalia.read-setup-status.v1', connection_approved: false, profile_approved: false,
+      }
+      const bytes = providerProfileBytes(profile)
+      const approved = (await store.snapshot()).profiles.some(p =>
+        p.active && providerProfileBytes(p.profile) === bytes)
+      return { schema: 'castalia.read-setup-status.v1', connection_approved: true, profile_approved: approved }
+    },
     async memberships(origin:string) {await ready;return store.list(origin)},
     async readMembership(origin:string,holder:string,profileId?:string) {
       await ready

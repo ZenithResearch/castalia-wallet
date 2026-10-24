@@ -183,6 +183,29 @@ test('zero profiles support connection without enrollment or signing', async () 
   assert.equal(f.restricted(), true)
   assert.deepEqual((await f.runtime.store.snapshot()).profiles, [])
 })
+test('setup status reveals exact active trust only to a connected origin, without another ceremony', async () => {
+  const f = setup(), readProfile = { ...profile, membership: null }
+  await f.runtime.store.approve(readProfile)
+  assert.deepEqual(await f.runtime.setupStatus(readProfile, origin), {
+    schema: 'castalia.read-setup-status.v1', connection_approved: false, profile_approved: false,
+  })
+  f.approvedOrigins.add(origin)
+  assert.deepEqual(await f.runtime.setupStatus(readProfile, origin), {
+    schema: 'castalia.read-setup-status.v1', connection_approved: true, profile_approved: true,
+  })
+  const changed = structuredClone(readProfile)
+  changed.presentations[0].public_key = '56'.repeat(32)
+  assert.equal((await f.runtime.setupStatus(changed, origin)).profile_approved, false)
+  const stored = (await f.runtime.store.snapshot()).profiles[0]
+  await f.runtime.store.remove(stored.id, stored.revision)
+  assert.equal((await f.runtime.setupStatus(readProfile, origin)).profile_approved, false)
+  assert.equal(f.windows.length, 0)
+  await assert.rejects(f.runtime.setupStatus(readProfile, 'https://other.example'))
+  f.lock()
+  assert.deepEqual(await f.runtime.setupStatus(readProfile, origin), {
+    schema: 'castalia.read-setup-status.v1', connection_approved: false, profile_approved: false,
+  })
+})
 test('app cannot trust itself; purpose choices are independent and approval persists', async () => {
   const f = setup()
   const c = f.call('propose', profile)

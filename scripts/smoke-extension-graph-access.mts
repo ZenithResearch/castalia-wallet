@@ -89,8 +89,9 @@ try {
   else await clickClosingApproval(popup, dialog === 'connection' ? 'Connect' : 'Allow read access', page)
   return result(page)
  }
- assert.equal((await advance('profile')).ok, true)
- const denied = await advance('connection'); assert.equal(denied.ok, false); assert.equal(denied.error, 'wallet_read_denied')
+ // Discovery reveals no trust before site connection. New setup connects first.
+ assert.equal((await advance('connection')).ok, true)
+ const denied = await advance('profile'); assert.equal(denied.ok, false); assert.equal(denied.error, 'wallet_read_denied')
  assert.equal(enrollments, 0)
  const now = Math.floor(Date.now() / 1000)
  const challenge = { schema: 'castalia.access-request-challenge.v1', challenge_id: 'c'.repeat(32), nonce: randomBytes(32).toString('base64url'), issuer: 'synthetic-provider', receiver: origin, subject_public_key: owner, installation_id: installation, operation: 'access.request', issued_at: now, expires_at: now + 120, details: { schema: 'devgraph.access-request-action.v2', action: 'submit', request_id: 'd'.repeat(32), subject_public_key: owner, installation_id: installation, intent: null } }
@@ -105,8 +106,16 @@ try {
  assert.equal(await page.evaluate(() => (window as any).client.stage), 'ready')
  await page.locator('#read').click(); const read = await result(page); assert.equal(read.ok, true, read.error); assert.equal(read.value.total, 1)
  assert.equal(enrollments, 1); assert.equal(reads, 1)
+ const openPages = context.pages().length
+ await page.reload(); await page.waitForFunction(() => (window as any).ready && (window as any).castaliaWallet?.readAccess)
+ await page.locator('#select').click(); assert.equal((await result(page)).ok, true)
+ assert.equal(await page.evaluate(() => (window as any).client.stage), 'approval')
+ assert.equal(context.pages().length, openPages, 'returning setup opens no trust or site consent window')
+ assert.equal((await advance('read')).ok, true)
+ await page.locator('#read').click(); assert.equal((await result(page)).ok, true)
+ assert.equal(enrollments, 2); assert.equal(reads, 2)
  await custody.getByText('Recovery', { exact: true }).click(); await custody.getByRole('button', { name: 'Lock wallet', exact: true }).click(); await custody.getByText('Wallet locked', { exact: true }).waitFor()
  await page.locator('#read').click(); assert.equal((await result(page)).ok, false)
  assert.equal((await verifyExtensionPackageDigest(root, `${root}.contents.sha256`)).digest, before.digest)
- console.log(JSON.stringify({ qualification: 'Loaded public Chrome package + actual DevGraph client + synthetic issuer/receiver', package_digest: before.digest, request_consent: true, membership_optional: true, no_grant_no_read: true, issuer_signature_checked: true, scoped_read: true, lock_denies: true, enrollments, reads }))
+ console.log(JSON.stringify({ qualification: 'Loaded public Chrome package + actual DevGraph client + synthetic issuer/receiver', package_digest: before.digest, request_consent: true, membership_optional: true, no_grant_no_read: true, issuer_signature_checked: true, scoped_read: true, returning_setup_without_consent_windows: true, lock_denies: true, enrollments, reads }))
 } finally { await context.close(); await rm(directory, { recursive: true, force: true }) }

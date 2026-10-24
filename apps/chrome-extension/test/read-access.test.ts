@@ -95,6 +95,14 @@ test("read access needs one human approval and cryptographic acceptance before u
     /read_access_required/,
   );
 });
+test('setup discovery verifies document and epoch without signing or opening consent', async () => {
+ const h=fixture();let queried=0;
+ Object.assign(h.deps,{setupStatus:async(_profile:unknown,origin:string)=>{queried++;assert.equal(origin,h.context.origin);return{schema:'castalia.read-setup-status.v1',connection_approved:true,profile_approved:true};}});
+ const result=await h.controller.handle({operation:'setup_status',profile:{}},h.context);
+ assert.equal(result.profile_approved,true);assert.equal(queried,1);assert.equal(h.counts().signed,0);
+ Object.assign(h.deps,{setupStatus:async()=>{h.setEpoch();return result;}});
+ await assert.rejects(h.controller.handle({operation:'setup_status',profile:{}},h.context),/read_context_changed/);
+});
 for (const action of ["deny", "navigate", "setEpoch"] as const)
   test(action + " cannot produce a read approval", async () => {
     const h = fixture();

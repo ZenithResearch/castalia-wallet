@@ -34,6 +34,7 @@ type Dependencies = {
   confirm(summary: any, context: ReadContext): Promise<boolean>;
   randomId(): string;
   now(): number;
+  setupStatus?(profile: unknown, origin: string): Promise<unknown>;
 };
 type Entry = {
   handle: ReadHandle;
@@ -93,6 +94,7 @@ export function createReadAccessController(deps: Dependencies) {
     )
       throw new Error("invalid_read_request");
     const fields: Record<string, string[]> = {
+      setup_status: ["operation", "profile"],
       identity: ["operation"],
       approve: ["operation", "challenge", "profileId"],
       approve_graph_v2: ["operation", "challenge", "profileId"],
@@ -109,6 +111,19 @@ export function createReadAccessController(deps: Dependencies) {
     )
       throw new Error("invalid_read_request");
     for (const [id, e] of entries) if (e.expires <= deps.now()) forget(id);
+    if (input.operation === "setup_status") return deps.run(async () => {
+      if (!deps.setupStatus || !object(input.profile)) throw new Error("invalid_read_request");
+      const epoch = deps.epoch();
+      const check = async () => {
+        if (!context.current() || deps.epoch() !== epoch) throw new Error("read_context_changed");
+        await context.verify?.();
+        if (!context.current() || deps.epoch() !== epoch) throw new Error("read_context_changed");
+      };
+      await check();
+      const result = await deps.setupStatus(input.profile, context.origin);
+      await check();
+      return result;
+    });
     if (input.operation === "identity")
       return deps.run(async () => {
         const epoch = deps.epoch(),

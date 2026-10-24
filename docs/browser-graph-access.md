@@ -21,6 +21,14 @@ paths, documents, tabs, custody epochs or origins. Navigation, lock, custody or
 trust changes invalidate them. Credentials and handles are memory-only; signing
 keys remain inside encrypted Wallet custody. Request consent never grants access.
 
+Starting with Chrome extension 0.0.2, `read_setup_status_v1` lets a connected site
+check whether its exact provider profile is still approved. Returning users can
+reuse that setup without repeating server review. Locked or unconnected Wallets
+reveal no installed trust. First connections, changed profiles and revoked trust
+still require Wallet review; read consent and server grant checks remain separate.
+Older extensions keep their existing setup flow. See
+[the setup-status contract](shared-read-authority.md#returning-browser-setup).
+
 This additive bridge preserves existing request, credential and signing bytes.
 It does **not** migrate legacy receiver/origin-bound credentials into canonical
 service credentials or unify receiver stores. A future service-identity contract
@@ -43,7 +51,8 @@ Chrome and uses DevGraph's actual read client against a synthetic service. Set
 `CASTALIA_EXTENSION_DIRECTORY` and `DEVGRAPH_SOURCE_DIRECTORY`; optionally set
 `CASTALIA_CHROMIUM_EXECUTABLE` and `CASTALIA_HEADLESS=1`. It exercises provider
 approval, connection, no-grant denial, exact access-request signing, verified read
-credential acceptance, a signed scoped read and denial after lock. The unchanged
+credential acceptance, a signed scoped read, reload without repeated setup consent
+and denial after lock. The unchanged
 package digest is checked before and after. This is integration evidence, not a
 real user's consent, live grant or production-custody qualification.
 

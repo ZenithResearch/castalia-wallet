@@ -33,3 +33,20 @@ seconds. The secS host must check current trusted registry status and atomically
 consume verified nonces before dispatch; signature verification alone is not
 complete authorization. Renewal cannot create wider operator permission. No
 Dregg self-attenuation or child delegation is claimed.
+## Returning browser setup
+
+The optional `read_setup_status_v1` provider capability supports
+`readAccess({operation: 'setup_status', profile})`, returning exactly
+`{schema: 'castalia.read-setup-status.v1', connection_approved, profile_approved}`.
+This is a bounded read of existing approvals, never a trust mutation, signature,
+credential import, or owner authorization. The actual main-frame origin must
+match the single proposed origin. A locked Wallet or an origin without current connection
+approval returns false/false, without discovering installed profiles or identity.
+For a connected origin, profile approval requires the exact canonical profile to
+remain active in Wallet. Lock, navigation and custody/trust epoch changes reject
+stale results. New or changed settings still need trusted Wallet review.
+
+DevGraph can connect the site first when needed, then reuse unchanged approved
+settings. An already connected site goes straight to checking its existing grant.
+Older providers keep their explicit setup steps. This capability does not persist
+read credentials, renew expired credentials, or change any grant/signature schema.
