@@ -431,6 +431,7 @@ impl RecoverySession {
                 local
                     .holder_grants
                     .insert(stored.pin.service.clone(), stored);
+                crate::holder_grants::validate_capacity(&local.holder_grants)?;
                 self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
             }
             Command::HolderGrants {} => {
@@ -513,9 +514,7 @@ impl RecoverySession {
                     }
                     local.holder_grants.insert(service, g);
                 }
-                if local.holder_grants.len() > 128 {
-                    return Err("grant_capacity");
-                }
+                crate::holder_grants::validate_capacity(&local.holder_grants)?;
                 self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
             }
             Command::PrepareResourceOwnerV1 {

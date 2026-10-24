@@ -255,3 +255,17 @@ impl WasmWallet {
         Ok(summary.to_string())
     }
 }
+
+/// Reserve backup envelope space so every accepted collection can be restored
+/// through the same bounded parser, rather than exporting an unreadable file.
+pub fn validate_capacity(grants: &std::collections::BTreeMap<String, StoredGrant>) -> Result<()> {
+    if grants.len() > 128
+        || serde_json::to_vec(grants)
+            .map_err(|_| "encoding_failed")?
+            .len()
+            > 130_000
+    {
+        return Err("grant_capacity");
+    }
+    Ok(())
+}

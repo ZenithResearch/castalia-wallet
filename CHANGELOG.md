@@ -8,6 +8,10 @@
 
 ### Fixed
 
+- Bound saved grant collections to the backup parser's capacity, so an accepted collection cannot produce an unrestorable grant backup.
+
+### Fixed
+
 - Refresh the read-only source verifier’s reviewed workspace lock hash for the shared core0.3.0 dependency closure — keeps exact source checks and tamper rejection aligned with the qualified producer, without changing holder locks or authority.
 
 - Keep identity descriptions and edit/import controls in a readable responsive layout — long Nostr keys and provider identifiers must not run into form labels or action buttons.

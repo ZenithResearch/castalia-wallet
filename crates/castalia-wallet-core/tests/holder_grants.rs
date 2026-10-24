@@ -165,3 +165,28 @@ fn wrong_wallet_scope_expiry_and_failed_prepare_preserve_storage() {
     assert!(s.invoke(&json!({"operation":"derive_holder_credential","service":pin.service,"permissions":rights,"expires_at":300,"now":102}).to_string()).is_err());
     assert!(s.invoke(&json!({"operation":"derive_holder_credential","service":pin.service,"permissions":null,"expires_at":4000,"now":102}).to_string()).is_err());
 }
+
+#[test]
+fn stored_collection_must_fit_its_own_backup_parser() {
+    use castalia_wallet_core::holder_grants::{StoredGrant, validate_capacity};
+    let mut session = ready();
+    let (pin, grant) = grant(&mut session);
+    let stored = StoredGrant {
+        pin,
+        grant,
+        saved_at: 101,
+    };
+    let mut collection = std::collections::BTreeMap::new();
+    collection.insert("service:fixture".into(), stored.clone());
+    assert!(validate_capacity(&collection).is_ok());
+    for index in 0..128 {
+        let mut record = stored.clone();
+        record.grant.claims.permissions[0].constraints =
+            json!({"fixture_padding":"x".repeat(1024)});
+        collection.insert(format!("service:fixture:{index}"), record);
+    }
+    assert_eq!(validate_capacity(&collection), Err("grant_capacity"));
+    collection.remove("service:fixture");
+    assert_eq!(collection.len(), 128);
+    assert_eq!(validate_capacity(&collection), Err("grant_capacity"));
+}
