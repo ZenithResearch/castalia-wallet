@@ -1,0 +1,36 @@
+{
+  "schema": "castalia.wallet-identities.v1",
+  "version": 1,
+  "ownerMemberKey": "1111111111111111111111111111111111111111111111111111111111111111",
+  "authority": "descriptor-only",
+  "accounts": [
+    {
+      "accountId": "018d0000-0000-4000-8000-000000000001",
+      "kind": "matrix",
+      "label": "Chat",
+      "identifier": "@alice:example.test",
+      "server": "https://matrix.example.test"
+    },
+    {
+      "accountId": "018d0000-0000-4000-8000-000000000002",
+      "kind": "nostr",
+      "label": "Public identity",
+      "identifier": "79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798",
+      "server": "wss://relay.example.test"
+    },
+    {
+      "accountId": "018d0000-0000-4000-8000-000000000003",
+      "kind": "github",
+      "label": "Gallery",
+      "identifier": "1234567",
+      "server": ""
+    },
+    {
+      "accountId": "018d0000-0000-4000-8000-000000000004",
+      "kind": "x",
+      "label": "Social",
+      "identifier": "2345678",
+      "server": ""
+    }
+  ]
+}

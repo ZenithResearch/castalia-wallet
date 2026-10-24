@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add shared descriptor-only Wallet identities and Castaway v2 readers/writers — preserves stable public account references across native and browser clients without importing sessions, keys or authority. Existing v1 data/recovery formats remain compatible; imports reject account conflicts without writes.
+
 ### Removed
 
 - Retire the rewards bridge and rewards-specific identity database from the active workspace — reward workflows belong in applications, while future Wallet identities must share a portable contract across browser and native clients. Existing custody and account data are unchanged.

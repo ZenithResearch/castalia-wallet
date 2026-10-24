@@ -102,21 +102,27 @@ fn open(mut envelope: Value, key: &[u8]) -> Result<Zeroizing<String>> {
     object(&text)?;
     Ok(text)
 }
-fn data_contents(value: &Value) -> Result<()> {
+fn data_contents(value: &Value, owner: &str) -> Result<()> {
     exact(value, &["schema", "version", "sections"])?;
-    if value["schema"] != "castalia.castaway-contents.v1" || value["version"] != 1 {
-        return Err(invalid());
+    let v2 = crate::portable::contents_version(value).map_err(closed)? == 2;
+    if v2 {
+        crate::wallet_identities::validate(&value["sections"]["walletIdentities"], owner)
+            .map_err(closed)?;
+        if value["sections"]["identity"]["subject"]["memberKey"] != owner {
+            return Err(invalid());
+        }
     }
     let sections = value["sections"].as_object().ok_or_else(invalid)?;
     if !sections.get("identity").is_some_and(Value::is_object)
         || sections.keys().any(|k| {
-            ![
+            !([
                 "identity",
                 "memberships",
                 "scopedMemberships",
                 "chainAccounts",
             ]
             .contains(&k.as_str())
+                || (v2 && k == "walletIdentities"))
         })
         || ["memberships", "scopedMemberships"]
             .iter()
@@ -226,13 +232,14 @@ impl OpenedWallet {
         time: u64,
     ) -> Result<Zeroizing<String>> {
         let value = object(raw)?;
-        data_contents(&value)?;
+        data_contents(&value, &self.public_key_hex())?;
         let mut salt = [0; 16];
         let mut n = [0; 12];
         OsRng.fill_bytes(&mut salt);
         OsRng.fill_bytes(&mut n);
+        let v2 = crate::portable::contents_version(&value).map_err(closed)? == 2;
         seal(
-            json!({"schema":"castalia.castaway.v1","contentsSchema":"castalia.castaway-contents.v1","ownerPublicKey":self.public_key_hex(),"exportedAt":time,"kdf":{"name":"Argon2id","version":19,"salt":B64.encode(salt),"memoryKiB":65536,"iterations":3,"parallelism":1,"derivedKeyBytes":32},"aead":aead(&n)}),
+            json!({"schema":if v2 {"castalia.castaway.v2"} else {"castalia.castaway.v1"},"contentsSchema":if v2 {"castalia.castaway-contents.v2"} else {"castalia.castaway-contents.v1"},"ownerPublicKey":self.public_key_hex(),"exportedAt":time,"kdf":{"name":"Argon2id","version":19,"salt":B64.encode(salt),"memoryKiB":65536,"iterations":3,"parallelism":1,"derivedKeyBytes":32},"aead":aead(&n)}),
             &value,
             derive_key(password, &salt)?.as_ref(),
             &n,
@@ -252,9 +259,8 @@ impl OpenedWallet {
                 "ciphertext",
             ],
         )?;
-        if value["schema"] != "castalia.castaway.v1"
-            || value["contentsSchema"] != "castalia.castaway-contents.v1"
-            || value["ownerPublicKey"] != self.public_key_hex()
+        let file_version = crate::portable::envelope_version(&value).map_err(closed)?;
+        if value["ownerPublicKey"] != self.public_key_hex()
             || value["exportedAt"].as_u64().is_none()
         {
             return Err(invalid());
@@ -271,8 +277,26 @@ impl OpenedWallet {
         }
         let key = derive_key(password, &decode_exact::<16>(&kdf.salt)?)?;
         let plaintext = open(value, key.as_ref())?;
-        data_contents(&object(&plaintext)?)?;
+        let contents = object(&plaintext)?;
+        data_contents(&contents, &self.public_key_hex())?;
+        if crate::portable::contents_version(&contents).map_err(closed)? != file_version {
+            return Err(invalid());
+        }
         Ok(plaintext)
+    }
+    pub fn validate_wallet_identities(&self, raw: &str) -> Result<String> {
+        let value = crate::wallet_identities::validate(&object(raw)?, &self.public_key_hex())
+            .map_err(closed)?;
+        serde_json::to_string(&value).map_err(closed)
+    }
+    pub fn merge_wallet_identities(&self, current: &str, incoming: &str) -> Result<String> {
+        let value = crate::wallet_identities::merge(
+            &object(current)?,
+            &object(incoming)?,
+            &self.public_key_hex(),
+        )
+        .map_err(closed)?;
+        serde_json::to_string(&value).map_err(closed)
     }
     pub fn seal_files_backup(&self, zip: &[u8]) -> Result<Vec<u8>> {
         if zip.is_empty() || zip.len() > MAX_ZIP {
@@ -486,6 +510,22 @@ impl WebWalletCustody {
         self.wallet()?
             .import_castaway(value, password)
             .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name=validateWalletIdentities)]
+    pub fn validate_identities(&self, value: &str) -> core::result::Result<String, JsValue> {
+        self.wallet()?
+            .validate_wallet_identities(value)
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name=mergeWalletIdentities)]
+    pub fn merge_identities(
+        &self,
+        current: &str,
+        incoming: &str,
+    ) -> core::result::Result<String, JsValue> {
+        self.wallet()?
+            .merge_wallet_identities(current, incoming)
             .map_err(js_closed)
     }
     #[wasm_bindgen(js_name=sealFilesBackup)]
