@@ -1,6 +1,6 @@
 # Rewards retirement and portable Wallet identities
 
-Decision date: October 23, 2026. Rewards integration is deprecated; the identity direction below is a design requirement, not an implemented migration or new file format.
+Decision date: October 23, 2026. Rewards integration is deprecated. Implementation update: core0.3.0 now implements the descriptor-only Wallet identities subset and Castaway v2 described in [the shared contract](../contracts/wallet-identities/v1/README.md). The broader CWS-001 custody profile remains proposed. Existing application records require explicit reviewed copying; no automatic migration is performed by installing the update.
 
 ## Retired work
 
@@ -22,7 +22,7 @@ Keep these boundaries explicit:
 
 ## Compatibility and implementation order
 
-The implemented `castalia.castaway-contents.v1` parser enumerates its sections strictly. Its current identity/profile, membership and chain-account data must keep their exact meaning. The native `zenith.identity-account.v1` registry and retired browser `castalia.identity-database.v1/v2` snapshots are different existing records, not interchangeable portable Wallet identities. Neither is currently collected by the common Castaway exporter.
+The implemented `castalia.castaway-contents.v1` parser enumerates its sections strictly. Its current identity/profile, membership and chain-account data must keep their exact meaning. The native `zenith.identity-account.v1` registry and retired browser `castalia.identity-database.v1/v2` snapshots are different existing records, not interchangeable portable Wallet identities. Neither legacy store is serialized directly. The reviewed migration copies supported public references into the common Wallet identities section while retaining original records; the common Castaway exporter includes that new section.
 
 1. Inventory existing public identity/profile contracts, persisted native registry records, and browser snapshots. Define provider namespaces and stable identity mapping without merging by labels or generating replacement Wallet roots.
 2. Review a versioned portable descriptor extension with the existing ontology/CWS work. Specify bounds, owner binding, duplicate/conflict handling, provenance, independent verification state, and secret exclusion. Do not add fields or sections to a strict v1 parser while retaining its identifier.

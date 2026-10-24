@@ -8,6 +8,8 @@
 
 ### Added
 
+- Add a Wallet-owned Chrome identity editor and reviewed Castaway import/export — uses the same core validation as native and Web, preserves original custody and saved accounts, and never exposes identities through application-origin provider methods.
+
 - Add shared descriptor-only Wallet identities and Castaway v2 readers/writers — preserves stable public account references across native and browser clients without importing sessions, keys or authority. Existing v1 data/recovery formats remain compatible; imports reject account conflicts without writes.
 
 ### Removed
