@@ -71,7 +71,7 @@ function render() {
             <button id="copy-public-member-key" class="text-action" type="button">Copy public Member Key</button>
             <p id="copy-public-member-key-status" class="copy-status" role="status" aria-live="polite"></p>
           </section>` : ''}
-        ${state.unlocked ? '<button id="wallet-identities" class="text-action">Wallet identities &amp; Castaway</button>' : ''}
+        ${state.unlocked ? '<button id="holder-grants" class="text-action">Saved grants &amp; backup</button><button id="wallet-identities" class="text-action">Wallet identities &amp; Castaway</button>' : ''}
         ${state.unlocked && chainAccounts.length ? `<section class="account-list" aria-labelledby="account-list-title"><p class="eyebrow" id="account-list-title">Preview accounts</p>${chainAccounts.map(account => `<div><strong>${accountName(account.networkId)}</strong><code>${account.address}</code></div>`).join('')}<p class="account-warning"><strong>Do not fund yet.</strong> The recovery root is stable, but balances and transaction signing are not enabled.</p></section>` : ''}
         ${state.unlocked ? '<button id="providers" class="text-action">Providers and memberships</button>' : ''}
         ${state.unlocked ? '<button id="connect-site" class="text-action">Connect this site</button>' : ''}
@@ -176,3 +176,5 @@ if (document.readyState === 'loading') {
 } else {
   void refresh()
 }
+
+document.addEventListener("click",event=>{if((event.target as HTMLElement)?.id==="holder-grants")void chrome.tabs.create({url:chrome.runtime.getURL("src/holder-grants.html")})})

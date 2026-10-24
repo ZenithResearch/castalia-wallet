@@ -25,7 +25,7 @@ type Dependencies = {
   legacyCredential(): Promise<unknown>
 }
 const STORAGE_KEY = 'castalia-provider-profiles-v1'
-export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2', 'read_access_v1', 'access_request_v1', 'graph_access_v2', 'read_setup_status_v1']
+export const NEUTRAL_CAPABILITIES = [...PROVIDER_PROFILE_CAPABILITIES, 'credential_presentation_v2', 'read_access_v1', 'access_request_v1', 'graph_access_v2', 'read_setup_status_v1', 'holder_grant_v1']
 function base64url(s: string) {
   return s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 }

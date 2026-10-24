@@ -1,3 +1,4 @@
+import { createHolderGrantsStore } from "./holder-grants-store.js"
 import { createWalletIdentitiesStore } from './wallet-identities-store.js'
 import { initSync, WasmWallet } from './generated/castalia-wallet-core/bindings.js'
 import { CASTALIA_WALLET_CORE_WASM } from './generated/castalia-wallet-core/wasm-bytes.js'
@@ -160,3 +161,14 @@ export const walletIdentities = createWalletIdentitiesStore({
   exportFile:(raw,password,now)=>core.exportCastaway(raw,password,BigInt(now)),
 })
 subscribeCustodyChanges(()=>{walletIdentities.cancel();void chrome.runtime.sendMessage({type:'WALLET_IDENTITIES_INVALIDATED'}).catch(()=>{})})
+
+export function holderGrantStore(pins:()=>Promise<unknown>) {
+ return createHolderGrantsStore({storage,owner:()=>core.publicKey(),now:()=>Math.floor(Date.now()/1000),
+ seal:raw=>core.sealIdentitySection(raw),open:raw=>core.openIdentitySection(encoder.encode(raw)),
+ validateBackup:raw=>(core as any).validateHolderGrantBackup(raw),
+ review:async(grant,origin,installation)=>JSON.parse((core as any).reviewHolderGrant(JSON.stringify(grant),JSON.stringify(await pins()),JSON.stringify({kind:'browser',id:origin}),installation,String(Math.floor(Date.now()/1000)))),
+ reviewDerivation:(stored,permissions,installation,expires)=>JSON.parse((core as any).reviewHolderDerivation(JSON.stringify(stored),JSON.stringify(permissions),installation,String(Math.floor(Date.now()/1000)),String(expires))),
+ derive:(stored,permissions,installation,expires)=>JSON.parse((core as any).deriveHolderCredential(JSON.stringify(stored),JSON.stringify(permissions),installation,String(Math.floor(Date.now()/1000)),String(expires))),
+ present:(stored,credential,call)=>JSON.parse((core as any).presentHolderCredential(JSON.stringify(stored),JSON.stringify(credential),JSON.stringify(call),String(Math.floor(Date.now()/1000)))),
+ })
+}

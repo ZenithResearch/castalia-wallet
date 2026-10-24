@@ -34,6 +34,7 @@ type Dependencies = {
   confirm(summary: any, context: ReadContext): Promise<boolean>;
   randomId(): string;
   now(): number;
+  holderGrants?: ReturnType<typeof import("./holder-grants-store.js").createHolderGrantsStore>;
   setupStatus?(profile: unknown, origin: string): Promise<unknown>;
 };
 type Entry = {
@@ -54,6 +55,7 @@ const object = (v: unknown): v is Record<string, any> =>
   Object.getPrototypeOf(v) === Object.prototype;
 export function createReadAccessController(deps: Dependencies) {
   const entries = new Map<string, Entry>();
+  const grants = new Map<string, {context:ReadContext;epoch:number;expires:number;stored:unknown;credential:unknown}>();
   const forget = (id: string) => {
     const e = entries.get(id);
     if (e) {
@@ -71,6 +73,7 @@ export function createReadAccessController(deps: Dependencies) {
         });
         forget(id);
       }
+    for(const [id,e] of grants)if(tabId===undefined||e.context.tabId===tabId){affected.set(e.context.documentId,e.context);grants.delete(id)}
     return [...affected.values()];
   };
   async function state(context: ReadContext, epoch: number) {
@@ -94,6 +97,9 @@ export function createReadAccessController(deps: Dependencies) {
     )
       throw new Error("invalid_read_request");
     const fields: Record<string, string[]> = {
+      save_grant:["operation","service","grant","permissions"],
+      use_grant:["operation","service","permissions"],
+      present_grant:["operation","accessId","call"],
       setup_status: ["operation", "profile"],
       identity: ["operation"],
       approve: ["operation", "challenge", "profileId"],
@@ -111,6 +117,22 @@ export function createReadAccessController(deps: Dependencies) {
     )
       throw new Error("invalid_read_request");
     for (const [id, e] of entries) if (e.expires <= deps.now()) forget(id);
+    for(const [id,e]of grants)if(e.expires<=deps.now())grants.delete(id);
+    if(input.operation==='save_grant'||input.operation==='use_grant'){
+      if(!deps.holderGrants||typeof input.service!=='string'||input.service.length>256||!input.service||input.operation==='save_grant'&&!object(input.grant)||input.permissions!==undefined&&!Array.isArray(input.permissions))throw Error('invalid_read_request');
+      if(entries.size+grants.size>=128)throw Error('read_capacity');
+      const epoch=deps.epoch(),save=input.operation==='save_grant';
+      const prepared=await deps.run(async()=>{await state(context,epoch);const installation=await deps.installation();const p=await deps.holderGrants!.prepare(save?input.grant:undefined,input.service,context.origin,installation,input.permissions??null);await state(context,epoch);return p});
+      const approvalExpires=Math.min(deps.now()+120,prepared.expires);
+      if(!await deps.confirm({...prepared.summary,kind:'holder_grant',save,origin:context.origin,receiver:input.service,approval_expires_at:approvalExpires},context))throw Error('approval_denied');
+      return deps.run(async()=>{await state(context,epoch);if(deps.now()>=approvalExpires)throw Error('read_approval_expired');const result=await deps.holderGrants!.activate(prepared,save,await deps.installation());await state(context,epoch);const accessId=deps.randomId();grants.set(accessId,{context,epoch,expires:result.expires_at,stored:result.stored,credential:result.credential});return {accessId,service:input.service,expires_at:result.expires_at,state:save?'saved':'ready'}});
+    }
+    if(input.operation==='present_grant')return deps.run(async()=>{
+      const e=typeof input.accessId==='string'?grants.get(input.accessId):undefined;
+      if(!e||!deps.holderGrants||e.context.origin!==context.origin||e.context.documentId!==context.documentId||e.context.tabId!==context.tabId||!object(input.call))throw Error('read_access_required');
+      await state(context,e.epoch);if(deps.now()>=e.expires){grants.delete(input.accessId);throw Error('read_access_expired')}
+      return deps.holderGrants.present(e.stored,e.credential,input.call);
+    });
     if (input.operation === "setup_status") return deps.run(async () => {
       if (!deps.setupStatus || !object(input.profile)) throw new Error("invalid_read_request");
       const epoch = deps.epoch();
@@ -227,6 +249,9 @@ export function createReadAccessController(deps: Dependencies) {
       } finally {
         prepared?.dispose();
       }
+    }
+    if(input.operation==='disconnect'&&typeof input.accessId==='string'&&grants.has(input.accessId)){
+      const e=grants.get(input.accessId)!;if(e.context.origin!==context.origin||e.context.documentId!==context.documentId||e.context.tabId!==context.tabId)throw Error('read_access_required');grants.delete(input.accessId);return {state:'disconnected'};
     }
     if (typeof input.accessId !== "string")
       throw new Error("invalid_read_request");

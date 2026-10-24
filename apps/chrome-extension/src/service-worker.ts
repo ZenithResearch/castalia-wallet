@@ -1,3 +1,4 @@
+import { holderGrantStore } from "./custody-runtime.js"
 import { isWalletIdentityPage } from './wallet-identities-store.js'
 import { walletIdentities } from './custody-runtime.js'
 import { installReadAccessRuntime } from './read-access-runtime.js'
@@ -415,7 +416,9 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     approveOrigin: origin => sessionState.approveOrigin(origin).then(()=>undefined),
     sign: bytes => durableSigningIdentity().signBytes(bytes), legacyCredential: () => zenithMembershipState.get(),
   })
+  const grantsStore=holderGrantStore(()=>providerProfilesRuntime.pins());
   installReadAccessRuntime(chrome, {
+    holderGrants:grantsStore,
     run: <T>(f:()=>Promise<T>)=>custodyOperations.run(f), epoch:custodyEpoch, onChange:subscribeCustodyChanges,
     state:async()=>{const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null},
     installation:async()=>{
@@ -430,6 +433,27 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     prepareRequest:async(challenge:unknown,origin:string,installation:string)=>prepareAccessRequest(challenge,origin,installation,await providerProfilesRuntime.pins()),
     prepare:async(challenge:unknown,origin:string,installation:string)=>prepareReadAccess(challenge,origin,installation,await providerProfilesRuntime.pins()),
   })
+  let grantImport:{token:string;file:string;epoch:number;owner:string;revision:number;expires:number}|null=null;
+  subscribeCustodyChanges(()=>{grantImport=null;void chrome.runtime.sendMessage({type:'HOLDER_GRANTS_INVALIDATED'}).catch(()=>{})});
+  chrome.runtime.onMessage.addListener((message:any,sender:any,respond:(r:unknown)=>void)=>{
+    if(!['HOLDER_GRANTS_LIST','HOLDER_GRANTS_EXPORT','HOLDER_GRANTS_REVIEW','HOLDER_GRANTS_CONFIRM','HOLDER_GRANTS_CANCEL'].includes(message?.type))return false;
+    void custodyOperations.run(async()=>{
+      if(!isWalletIdentityPage(sender,chrome.runtime.id,chrome.runtime.getURL('src/holder-grants.html')))throw Error('wallet_ui_required');
+      const keys=message.type==='HOLDER_GRANTS_REVIEW'?['file','type']:message.type==='HOLDER_GRANTS_CONFIRM'?['token','type']:['type'];if(Object.keys(message).sort().join(',')!==keys.sort().join(','))throw Error('invalid_request');
+      const state=await getCurrentExtensionStateForProvider();if(!state)throw Error('wallet_locked');
+      if(message.type==='HOLDER_GRANTS_LIST')return {grants:await grantsStore.list()};
+      if(message.type==='HOLDER_GRANTS_EXPORT')return {file:await grantsStore.exportBackup()};
+      if(message.type==='HOLDER_GRANTS_CANCEL'){grantImport=null;return {}};
+      if(message.type==='HOLDER_GRANTS_REVIEW'){
+        grantImport=null;if(typeof message.file!=='string'||new TextEncoder().encode(message.file).length>1048576)throw Error('invalid_grant_backup');
+        const epoch=custodyEpoch(),owner=state.signingIdentity.publicKeyRawHex;
+        const review=await grantsStore.reviewBackup(message.file);if(epoch!==custodyEpoch())throw Error('wallet_changed_or_locked');
+        const token=crypto.randomUUID();grantImport={token,file:message.file,epoch,owner,revision:review.revision,expires:Date.now()+120000};return {token,grants:review.grants};
+      }
+      const p=grantImport;grantImport=null;if(!p||p.token!==message.token||p.epoch!==custodyEpoch()||p.owner!==state.signingIdentity.publicKeyRawHex||Date.now()>=p.expires)throw Error('grant_review_expired');
+      await grantsStore.importBackup(p.file,p.revision);return {};
+    }).then(value=>respond({ok:true,...value}),error=>respond({ok:false,error:error instanceof Error?error.message:'grant_operation_failed'}));return true;
+  });
   const credentialPresentationRuntime = installCredentialPresentationRuntime(chrome, {
     run: operation => custodyOperations.run(operation), epoch: custodyEpoch, onChange: subscribeCustodyChanges,
     state: async () => { const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null },
@@ -527,7 +551,7 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
   sendResponse: (response?: any) => void
 ) => {
   // IMPORTANT: Let provider requests (from content script) pass through to the dedicated listener below
-  if ((message as any).type === "CASTALIA_PROVIDER_REQUEST" || ["GET_REGISTRATION_CONFIRMATION", "RESOLVE_REGISTRATION_CONFIRMATION", "GET_CREDENTIAL_PRESENTATION_CONFIRMATION", "RESOLVE_CREDENTIAL_PRESENTATION_CONFIRMATION", "GET_FILES_KEY_CONFIRMATION", "RESOLVE_FILES_KEY_CONFIRMATION", "PROFILE_SETTINGS_GET", "PROFILE_SETTINGS_SAVE", "PROFILE_SETTINGS_REMOVE", "PROFILE_SETTINGS_BIND_LEGACY", "GET_PROVIDER_APPROVAL", "RESOLVE_PROVIDER_APPROVAL"].includes((message as any).type)) {
+  if ((message as any).type?.startsWith("HOLDER_GRANTS_") || (message as any).type === "CASTALIA_PROVIDER_REQUEST" || ["GET_REGISTRATION_CONFIRMATION", "RESOLVE_REGISTRATION_CONFIRMATION", "GET_CREDENTIAL_PRESENTATION_CONFIRMATION", "RESOLVE_CREDENTIAL_PRESENTATION_CONFIRMATION", "GET_FILES_KEY_CONFIRMATION", "RESOLVE_FILES_KEY_CONFIRMATION", "PROFILE_SETTINGS_GET", "PROFILE_SETTINGS_SAVE", "PROFILE_SETTINGS_REMOVE", "PROFILE_SETTINGS_BIND_LEGACY", "GET_PROVIDER_APPROVAL", "RESOLVE_PROVIDER_APPROVAL"].includes((message as any).type)) {
     return false;
   }
 
