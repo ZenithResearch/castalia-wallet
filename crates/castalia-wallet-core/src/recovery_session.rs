@@ -507,10 +507,14 @@ impl RecoverySession {
                 let grants = crate::holder_grants::parse_backup(wallet, &opened)?;
                 let mut local = self.local.clone();
                 for (service, g) in grants {
-                    if let Some(old) = local.holder_grants.get(&service)
-                        && secs_grant_contract::digest(old)? != secs_grant_contract::digest(&g)?
-                    {
-                        return Err("grant_backup_conflict");
+                    match local.holder_grants.get(&service) {
+                        Some(old)
+                            if secs_grant_contract::digest(old)?
+                                != secs_grant_contract::digest(&g)? =>
+                        {
+                            return Err("grant_backup_conflict");
+                        }
+                        _ => {}
                     }
                     local.holder_grants.insert(service, g);
                 }

@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Keep grant backup conflict checks compatible with the pinned Rust1.85.1 toolchain, without changing conflict rejection or storage behavior.
+
 - Align shared root/credential/presentation size and nesting budgets, so same-scope self-derivation remains transportable through the native verifier.
 
 
