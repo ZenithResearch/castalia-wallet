@@ -1,0 +1,89 @@
+{
+  "schema": "castalia.wallet-source-import.v1",
+  "repository": "https://github.com/ZenithResearch/castalia-wallet",
+  "imports": [
+    {
+      "package": "identities",
+      "origin": "existing local Castalia Wallet authoring source",
+      "base_revision": "f74cc633e8bca4fe3138f8962ea35631a2879e8d",
+      "source_state": "uncommitted package; not represented by base revision",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "2d0326835b37b0e63ebf709dd136004a9fa535af39ab94b4ab5d9f0292f633c8"
+        },
+        {
+          "path": "package.json",
+          "sha256": "bd2712f0ec6930ed5d5ec8d2407c7bf18d2ffc0e9a2f1b2175228700631319e3"
+        },
+        {
+          "path": "src/index.ts",
+          "sha256": "f35a8c52ab55a45ed005d0a4c9b77bb0414f1c3ee6e22e7580e8a3e42cc15ea5"
+        },
+        {
+          "path": "test/custody.test.ts",
+          "sha256": "f79206ca6816a7f167b2ad6e1110ca7b0fc412eb627a27bfac897949171f2386"
+        },
+        {
+          "path": "test/database.test.ts",
+          "sha256": "4a5a5a9512fb316c3964157b2510accc2aa75fc2846fbf9b4f65a7ba24bd97ff"
+        },
+        {
+          "path": "test/receipt-migration.test.ts",
+          "sha256": "145343599ff6fa144e71daa19e10e711a6d03a748ac07fc91af9bb3851d07ad2"
+        },
+        {
+          "path": "tsconfig.build.json",
+          "sha256": "c80b17adbbf55d70aa932d9d93df3d5137c4f5ee7e6bb0bb0a7a26565d998be1"
+        },
+        {
+          "path": "tsconfig.json",
+          "sha256": "473e71c4f5030f2e075f4c527bbaf095d8ef433363e3056f17ef5213695bc3ef"
+        }
+      ]
+    },
+    {
+      "package": "rewards-bridge",
+      "origin": "existing local Castalia Wallet authoring source",
+      "base_revision": "f74cc633e8bca4fe3138f8962ea35631a2879e8d",
+      "source_state": "uncommitted package; not represented by base revision",
+      "files": [
+        {
+          "path": "README.md",
+          "sha256": "6765ea54970547ed9fb97c1979d7fda5de0946b0952fdb39744317bdc3dfc4d8"
+        },
+        {
+          "path": "fixtures/connection-v1.json",
+          "sha256": "b18281d95c90b9779a1568fb71aa8b6cd34b6c6448d9e6747af4bbae736b3670"
+        },
+        {
+          "path": "package.json",
+          "sha256": "3c3c161436b3a4080eb91cc0a5e5ec61a59a563cb3e19058007d860d9db817c3"
+        },
+        {
+          "path": "src/index.ts",
+          "sha256": "8f5e870883d5c2db325b9093a7c8d63f136481e1538ee21b10c06f2f77df62bf"
+        },
+        {
+          "path": "test/bridge.test.ts",
+          "sha256": "294a3267684a63a48e4bec9780dafb817c9ba9ef7a53d665b63e195f993957b7"
+        },
+        {
+          "path": "tsconfig.build.json",
+          "sha256": "c80b17adbbf55d70aa932d9d93df3d5137c4f5ee7e6bb0bb0a7a26565d998be1"
+        },
+        {
+          "path": "tsconfig.json",
+          "sha256": "473e71c4f5030f2e075f4c527bbaf095d8ef433363e3056f17ef5213695bc3ef"
+        }
+      ]
+    },
+    {
+      "package": "matrix-companion",
+      "origin": "existing Anima vendored candidate",
+      "base_revision": "b499f794e6d857d0f0949f06435d61e8efeae78d",
+      "source_state": "uncommitted vendor source; provisional upstream reference did not contain package",
+      "source_sha256": "cf7639e6d1b30536e0c382813155e0de63b49ccddf1a8bb7f8f27fffe44b3694"
+    }
+  ]
+}

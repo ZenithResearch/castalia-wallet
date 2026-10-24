@@ -2,7 +2,7 @@ use bech32::{Bech32, Hrp};
 use blake2::{Blake2bVar, digest::VariableOutput};
 use ed25519_dalek::SigningKey;
 use k256::elliptic_curve::sec1::ToEncodedPoint;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sha3::{Digest as _, Keccak256};
 use zeroize::{Zeroize, Zeroizing};
 
@@ -21,8 +21,8 @@ const SOLANA_KEY_DOMAIN: &str = "castalia/chain-account/solana/v1";
 const CHAIN_KEY_ID_DOMAIN: &str = "castalia/chain-key-id/v1";
 const CHAIN_ACCOUNT_ID_DOMAIN: &str = "castalia/chain-account-id/v1";
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct ChainAccountsSection {
     pub schema: String,
     pub version: u32,
@@ -32,8 +32,8 @@ pub struct ChainAccountsSection {
     pub accounts: Vec<ChainAccountDescriptor>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct ChainAccountDescriptor {
     pub account_id: String,
     pub key_id: String,

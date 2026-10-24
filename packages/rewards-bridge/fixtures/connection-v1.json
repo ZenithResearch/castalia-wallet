@@ -1,0 +1,21 @@
+{
+  "now": 1000,
+  "origin": "https://rewards.example",
+  "request": {
+    "schema": "wallet.rewards.request.v1",
+    "id": "abababababababababababababababab",
+    "operation": "connect",
+    "issuedAt": 1000,
+    "expiresAt": 1300
+  },
+  "response": {
+    "schema": "wallet.rewards.response.v1",
+    "id": "abababababababababababababababab",
+    "operation": "connect",
+    "result": {
+      "walletPublicKey": "1111111111111111111111111111111111111111111111111111111111111111",
+      "solanaPublicKey": "0000000000000000000000000000000000000000000000000000000000000000",
+      "solanaAddress": "11111111111111111111111111111111"
+    }
+  }
+}

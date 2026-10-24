@@ -1,0 +1,65 @@
+{
+  "fixture": true,
+  "capability": "matrix_companion_v1",
+  "connect": {
+    "request": {
+      "schema": "castalia.matrix-connection-request.v1",
+      "homeserver": "https://matrix.example",
+      "user_id": "@anima:example"
+    },
+    "result": {
+      "schema": "castalia.matrix-connection.v1",
+      "connection_handle": "matrix-connection-fixture-1",
+      "homeserver": "https://matrix.example",
+      "user_id": "@anima:example"
+    }
+  },
+  "rooms": {
+    "request": {
+      "schema": "castalia.matrix-list-rooms-request.v1",
+      "connection_handle": "matrix-connection-fixture-1",
+      "limit": 20,
+      "cursor": null
+    },
+    "result": {
+      "schema": "castalia.matrix-room-page.v1",
+      "rooms": [
+        {
+          "room_id": "!anima-space:example",
+          "kind": "space",
+          "name": "Anima",
+          "canonical_alias": "#anima:example",
+          "topic": "Fixture Space metadata",
+          "avatar_url": null,
+          "parent_space_ids": []
+        },
+        {
+          "room_id": "!requests:example",
+          "kind": "room",
+          "name": "Requests",
+          "canonical_alias": "#requests:example",
+          "topic": "Fixture request transport",
+          "avatar_url": "mxc://example/fixture",
+          "parent_space_ids": ["!anima-space:example"]
+        }
+      ],
+      "next_cursor": null
+    }
+  },
+  "send": {
+    "request": {
+      "schema": "castalia.matrix-send-request.v1",
+      "connection_handle": "matrix-connection-fixture-1",
+      "room_id": "!requests:example",
+      "body": "Fixture-only request summary",
+      "client_request_id": "anima-request-01"
+    },
+    "result": {
+      "schema": "castalia.matrix-delivery.v1",
+      "delivery_handle": "matrix-delivery-fixture-1",
+      "transaction_id": "matrix-txn-fixture-1",
+      "state": "sent",
+      "event_id": "$fixture-event"
+    }
+  }
+}

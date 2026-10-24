@@ -24,7 +24,14 @@ mod files_keys;
 pub mod portable;
 pub mod read_access;
 pub mod recovery_session;
+pub mod web_compat;
+pub use web_compat::WebWalletCustody;
 mod resource_owner;
+
+#[wasm_bindgen]
+pub fn wallet_core_version() -> String {
+    env!("CARGO_PKG_VERSION").to_owned()
+}
 
 mod chain_accounts;
 mod membership_presentation_v2;
