@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Keep identity descriptions and edit/import controls in a readable responsive layout — long Nostr keys and provider identifiers must not run into form labels or action buttons.
+
 - Validate full Castaway public descriptors in the shared core — blocks hidden authority fields in browser/extension imports without treating stored public proofs as trusted membership.
 
 ### Added
