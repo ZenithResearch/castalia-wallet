@@ -479,6 +479,13 @@ fn identity(v: &Value, owner: &str) -> Result<()> {
     Ok(())
 }
 pub fn validate(wallet: &OpenedWallet, contents: &Value, trust: &Trust) -> Result<()> {
+    validate_contents(wallet, contents, Some(trust))
+}
+/// Public data allowlist only. This never establishes issuer trust or membership.
+pub fn validate_descriptors(wallet: &OpenedWallet, contents: &Value) -> Result<()> {
+    validate_contents(wallet, contents, None)
+}
+fn validate_contents(wallet: &OpenedWallet, contents: &Value, trust: Option<&Trust>) -> Result<()> {
     if serde_json::to_vec(contents)
         .map_err(|_| "invalid_contents")?
         .len()
@@ -487,14 +494,20 @@ pub fn validate(wallet: &OpenedWallet, contents: &Value, trust: &Trust) -> Resul
         return Err("file_too_large");
     }
     exact(contents, &["schema", "version", "sections"])?;
-    eq(&contents["schema"], "castalia.castaway-contents.v1")?;
-    version(&contents["version"], 1)?;
+    let v2 = contents_version(contents)? == 2;
     let sections = &contents["sections"];
     let mut keys = vec!["identity"];
     for k in ["memberships", "scopedMemberships", "chainAccounts"] {
         if sections.get(k).is_some() {
             keys.push(k)
         }
+    }
+    if v2 {
+        keys.push("walletIdentities");
+        crate::wallet_identities::validate(
+            &sections["walletIdentities"],
+            &wallet.public_key_hex(),
+        )?;
     }
     exact(sections, &keys)?;
     identity(&sections["identity"], &wallet.public_key_hex())?;
@@ -540,7 +553,11 @@ pub fn validate(wallet: &OpenedWallet, contents: &Value, trust: &Trust) -> Resul
             let mut ids = BTreeSet::new();
             let mut scopes = BTreeSet::new();
             for p in array(proofs, 16)? {
-                verify_proof(p, &wallet.public_key_hex(), trust, scoped)?;
+                if let Some(trust) = trust {
+                    verify_proof(p, &wallet.public_key_hex(), trust, scoped)?;
+                } else {
+                    validate_proof_descriptor(p, &wallet.public_key_hex(), scoped)?;
+                }
                 if !ids.insert(text(&p["membershipId"], 64)?)
                     || (scoped && !scopes.insert(text(&p["scopeId"], 64)?))
                 {
@@ -588,8 +605,7 @@ pub fn import(wallet: &OpenedWallet, raw: &str, password: &str, trust: &Trust) -
             "ciphertext",
         ],
     )?;
-    eq(&v["schema"], "castalia.castaway.v1")?;
-    eq(&v["contentsSchema"], "castalia.castaway-contents.v1")?;
+    let file_version = envelope_version(&v)?;
     eq(&v["ownerPublicKey"], &wallet.public_key_hex())?;
     number(&v["exportedAt"])?;
     exact(
@@ -645,6 +661,9 @@ pub fn import(wallet: &OpenedWallet, raw: &str, password: &str, trust: &Trust) -
     );
     let contents = parse_unique(std::str::from_utf8(&plain).map_err(|_| "invalid_file")?)?;
     validate(wallet, &contents, trust)?;
+    if contents_version(&contents)? != file_version {
+        return Err("contents_version_mismatch");
+    }
     Ok(contents)
 }
 pub fn export(
@@ -663,6 +682,10 @@ pub fn export(
     OsRng.fill_bytes(&mut salt);
     OsRng.fill_bytes(&mut nonce);
     let mut v = json!({"schema":"castalia.castaway.v1","contentsSchema":"castalia.castaway-contents.v1","ownerPublicKey":wallet.public_key_hex(),"exportedAt":now,"kdf":{"name":"Argon2id","version":19,"salt":B64.encode(salt),"memoryKiB":65536,"iterations":3,"parallelism":1,"derivedKeyBytes":32},"aead":{"name":"AES-256-GCM","nonce":B64.encode(nonce),"tagBits":128}});
+    if contents_version(contents)? == 2 {
+        v["schema"] = json!("castalia.castaway.v2");
+        v["contentsSchema"] = json!("castalia.castaway-contents.v2");
+    }
     number(&v["exportedAt"])?;
     let aad = serde_jcs::to_vec(&v).map_err(|_| "encoding_failed")?;
     let plain = Zeroizing::new(serde_jcs::to_vec(contents).map_err(|_| "encoding_failed")?);
@@ -686,4 +709,73 @@ pub fn export(
         return Err("file_too_large");
     }
     Ok(Zeroizing::new(result))
+}
+
+/// Frozen v1 remains strict. V2 is the public-descriptor extension.
+pub fn contents_version(value: &Value) -> Result<u64> {
+    match (value["schema"].as_str(), value["version"].as_u64()) {
+        (Some("castalia.castaway-contents.v1"), Some(1)) => Ok(1),
+        (Some("castalia.castaway-contents.v2"), Some(2)) => Ok(2),
+        _ => Err("unsupported_version"),
+    }
+}
+pub fn envelope_version(value: &Value) -> Result<u64> {
+    match (value["schema"].as_str(), value["contentsSchema"].as_str()) {
+        (Some("castalia.castaway.v1"), Some("castalia.castaway-contents.v1")) => Ok(1),
+        (Some("castalia.castaway.v2"), Some("castalia.castaway-contents.v2")) => Ok(2),
+        _ => Err("unsupported_version"),
+    }
+}
+pub fn with_wallet_identities(contents: &Value, identities: &Value, owner: &str) -> Result<Value> {
+    let mut next = contents.clone();
+    next["sections"]["walletIdentities"] = crate::wallet_identities::validate(identities, owner)?;
+    next["schema"] = json!("castalia.castaway-contents.v2");
+    next["version"] = json!(2);
+    Ok(next)
+}
+
+fn validate_proof_descriptor(proof: &Value, owner: &str, scoped: bool) -> Result<()> {
+    let mut fields = vec![
+        "schema",
+        "version",
+        "membershipId",
+        "ownerPublicKey",
+        "status",
+        "issuerId",
+        "issuerKeyId",
+        "signatureSuite",
+        "issuerSignature",
+    ];
+    if scoped {
+        fields.extend(["scopeType", "scopeId"]);
+    }
+    exact(proof, &fields)?;
+    eq(
+        &proof["schema"],
+        if scoped {
+            "castalia.scoped-membership-credential.v4"
+        } else {
+            "castalia.zenith-membership-credential.v3"
+        },
+    )?;
+    version(&proof["version"], if scoped { 4 } else { 3 })?;
+    eq(&proof["ownerPublicKey"], owner)?;
+    eq(&proof["status"], "active")?;
+    eq(&proof["signatureSuite"], "Ed25519")?;
+    id(&proof["issuerId"])?;
+    id(&proof["issuerKeyId"])?;
+    let mut bytes = if scoped {
+        b"castalia/scoped-membership-id/v4\0".to_vec()
+    } else {
+        b"castalia/zenith-membership-id/v3\0".to_vec()
+    };
+    bytes.extend(hex32(&proof["ownerPublicKey"])?);
+    if scoped {
+        eq(&proof["scopeType"], "community")?;
+        bytes.extend(hex32(&proof["scopeId"])?);
+    }
+    eq(&proof["membershipId"], &digest(&bytes))?;
+    crate::decode_exact::<64>(text(&proof["issuerSignature"], 86)?)
+        .map_err(|_| "invalid_signature")?;
+    Ok(())
 }

@@ -24,6 +24,7 @@ mod files_keys;
 pub mod portable;
 pub mod read_access;
 pub mod recovery_session;
+pub mod wallet_identities;
 pub mod web_compat;
 pub use web_compat::WebWalletCustody;
 mod resource_owner;
@@ -539,6 +540,82 @@ impl WasmWallet {
             .map_err(js_closed)
     }
 
+    #[wasm_bindgen(js_name = validateCastawayDescriptors)]
+    pub fn validate_castaway_descriptors(
+        &self,
+        value: &str,
+    ) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .validate_castaway_descriptors(value)
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = validateWalletIdentities)]
+    pub fn validate_wallet_identities(&self, value: &str) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .validate_wallet_identities(value)
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = mergeWalletIdentities)]
+    pub fn merge_wallet_identities(
+        &self,
+        current: &str,
+        incoming: &str,
+    ) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .merge_wallet_identities(current, incoming)
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = sealIdentitySection)]
+    pub fn seal_identity_section(&self, value: &str) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .seal_identity_section(value)
+            .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = openIdentitySection)]
+    pub fn open_identity_section(&self, value: &[u8]) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .open_identity_section(value)
+            .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = exportCastaway)]
+    pub fn export_castaway(
+        &self,
+        value: &str,
+        password: &str,
+        now: u64,
+    ) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .export_castaway(value, password, now)
+            .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name = importCastaway)]
+    pub fn import_castaway(
+        &self,
+        value: &[u8],
+        password: &str,
+    ) -> core::result::Result<String, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .import_castaway(value, password)
+            .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
     #[wasm_bindgen(js_name = wrapFilesKey)]
     pub fn wrap_files_key(
         &self,

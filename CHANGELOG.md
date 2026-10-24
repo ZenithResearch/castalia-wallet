@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Refresh the read-only source verifier’s reviewed workspace lock hash for the shared core0.3.0 dependency closure — keeps exact source checks and tamper rejection aligned with the qualified producer, without changing holder locks or authority.
+
+- Keep identity descriptions and edit/import controls in a readable responsive layout — long Nostr keys and provider identifiers must not run into form labels or action buttons.
+
+- Validate full Castaway public descriptors in the shared core — blocks hidden authority fields in browser/extension imports without treating stored public proofs as trusted membership.
+
+### Added
+
+- Add a Wallet-owned Chrome identity editor and reviewed Castaway import/export — uses the same core validation as native and Web, preserves original custody and saved accounts, and never exposes identities through application-origin provider methods.
+
+- Add shared descriptor-only Wallet identities and Castaway v2 readers/writers — preserves stable public account references across native and browser clients without importing sessions, keys or authority. Existing v1 data/recovery formats remain compatible; imports reject account conflicts without writes.
+
 ### Removed
 
 - Retire the rewards bridge and rewards-specific identity database from the active workspace — reward workflows belong in applications, while future Wallet identities must share a portable contract across browser and native clients. Existing custody and account data are unchanged.

@@ -46,6 +46,8 @@ async function bundle() {
     outfile: join(distDir, 'service-worker.js'),
   });
 
+  await build({...common,format:'iife',entryPoints:[join(extensionDir,'src/wallet-identities.ts')],outfile:join(distDir,'wallet-identities.js')});
+
   // Bundle Content Script as IIFE (required for MV3 content scripts)
   await build({
     ...common,

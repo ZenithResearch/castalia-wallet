@@ -73,6 +73,12 @@ enum Command {
         scoped: bool,
     },
     DataSummary {},
+    WalletIdentities {},
+    ChainAccounts {},
+    PrepareWalletIdentities {
+        identities: Value,
+        expected_revision: u64,
+    },
     // Host-only, explicitly approved runtime policy. Never installed by discovery
     // or serialized into a recovery file/local snapshot.
     ApprovePresentationTrust {
@@ -312,6 +318,7 @@ impl RecoverySession {
                 | Command::PrepareRestore { .. }
                 | Command::PrepareLegacy { .. }
                 | Command::PrepareData { .. }
+                | Command::PrepareWalletIdentities { .. }
                 | Command::PrepareTrust { .. }
                 | Command::VerifyBackup { .. }
                 | Command::ActivateMembership { .. }
@@ -659,6 +666,44 @@ impl RecoverySession {
                     .map_err(|_| "recovery_failed")?;
                 self.prepare(Some(wallet), custody.to_string(), LocalState::default())
             }
+            Command::ChainAccounts {} => serde_json::from_str(
+                &self
+                    .open_wallet()?
+                    .chain_accounts()
+                    .map_err(|_| "account_validation_failed")?,
+            )
+            .map_err(|_| "account_validation_failed"),
+            Command::WalletIdentities {} => {
+                let owner = self.open_wallet()?.public_key_hex();
+                let records = self
+                    .local
+                    .contents
+                    .as_ref()
+                    .and_then(|v| v["sections"].get("walletIdentities"))
+                    .cloned()
+                    .unwrap_or_else(|| crate::wallet_identities::empty(&owner));
+                crate::wallet_identities::validate(&records, &owner)
+            }
+            Command::PrepareWalletIdentities {
+                identities,
+                expected_revision,
+            } => {
+                if expected_revision != self.revision {
+                    return Err("preview_stale");
+                }
+                let wallet = self.open_wallet()?;
+                let old = self
+                    .local
+                    .contents
+                    .clone()
+                    .unwrap_or(portable::empty_contents(wallet, 0)?);
+                let next =
+                    portable::with_wallet_identities(&old, &identities, &wallet.public_key_hex())?;
+                portable::validate(wallet, &next, &self.local.trust)?;
+                let mut local = self.local.clone();
+                local.contents = Some(next);
+                self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
+            }
             Command::PrepareData {
                 file,
                 password,
@@ -695,11 +740,32 @@ impl RecoverySession {
                 if let Some(a) = incoming["sections"].get("chainAccounts") {
                     next["sections"]["chainAccounts"] = a.clone();
                 }
+                // Preserve committed identities even if a host supplies an older profile snapshot.
+                let owner = wallet.public_key_hex();
+                let committed = self
+                    .local
+                    .contents
+                    .as_ref()
+                    .and_then(|v| v["sections"].get("walletIdentities"));
+                let previous = old["sections"].get("walletIdentities");
+                let incoming_ids = incoming["sections"].get("walletIdentities");
+                if committed.is_some() || previous.is_some() || incoming_ids.is_some() {
+                    let mut identities = crate::wallet_identities::empty(&owner);
+                    for section in [committed, previous, incoming_ids].into_iter().flatten() {
+                        identities = crate::wallet_identities::merge(&identities, section, &owner)?;
+                    }
+                    next = portable::with_wallet_identities(&next, &identities, &owner)?;
+                }
                 portable::validate(wallet, &next, &self.local.trust)?;
                 let mut local = self.local.clone();
                 local.contents = Some(next);
                 let mut preview =
                     self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)?;
+                preview["imported_wallet_identities"] = json!(
+                    incoming["sections"]["walletIdentities"]["accounts"]
+                        .as_array()
+                        .map_or(0, Vec::len)
+                );
                 preview["replaces_profile"] =
                     json!(old["sections"]["identity"] != incoming["sections"]["identity"]);
                 preview["replaced_proofs"] = json!(
@@ -1325,7 +1391,7 @@ impl RecoverySession {
         OsRng.fill_bytes(&mut nonce);
         let token = hex::encode(nonce);
         let result = json!({"token":token,"expected_revision":self.revision,"public_key":wallet.public_key_hex(),
-            "ml_dsa_commitment":wallet.ml_dsa_public_key_commitment_hex(),"chain_accounts":serde_json::from_str::<Value>(&wallet.chain_accounts().map_err(|_| "account_validation_failed")?).map_err(|_| "account_validation_failed")?,"backup_verified":local.backup_verified,"profile":local.contents.as_ref().map(|c|c["sections"]["identity"].clone()),"memberships":local.contents.as_ref().map(|c|c["sections"].clone()),"trust":local.trust});
+            "ml_dsa_commitment":wallet.ml_dsa_public_key_commitment_hex(),"chain_accounts":serde_json::from_str::<Value>(&wallet.chain_accounts().map_err(|_| "account_validation_failed")?).map_err(|_| "account_validation_failed")?,"backup_verified":local.backup_verified,"profile":local.contents.as_ref().map(|c|c["sections"]["identity"].clone()),"memberships":local.contents.as_ref().map(|c|c["sections"].clone()),"wallet_identities":local.contents.as_ref().and_then(|c|c["sections"].get("walletIdentities")).cloned().unwrap_or_else(||crate::wallet_identities::empty(&wallet.public_key_hex())),"trust":local.trust});
         self.pending = Some(Pending {
             token,
             expected_revision: self.revision,

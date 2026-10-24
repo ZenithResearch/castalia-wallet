@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wallet identities · Castalia Wallet</title><link rel="stylesheet" href="confirmation.css"><style>
+main{width:min(100%,48rem);margin:1.5rem auto;line-height:1.5}
+#identities{list-style:none;padding:0;display:grid;gap:1rem;margin-block:1.5rem}
+#identities li{overflow-wrap:anywhere;padding:1rem;border:1px solid #cbd4df;border-radius:8px}
+#identities li span{display:block;margin-bottom:.7rem}
+#identities li button{margin:0 .5rem .25rem 0;padding:.5rem .8rem}
+form{display:grid;gap:1rem;margin-block:2rem;padding-top:1.5rem;border-top:1px solid #cbd4df}
+form h2,form p{margin:0}form label{display:grid;gap:.35rem}
+input,select{width:100%;padding:.7rem;font:inherit;border:1px solid #8999ad;border-radius:6px;background:white;color:inherit}
+button{padding:.6rem 1rem;border-radius:6px}form button{justify-self:start}
+#review{padding:1rem;border:1px solid #1259c3;border-radius:8px}
+#notice{overflow-wrap:anywhere}
+</style></head>
+<body><main><p class="eyebrow">Castalia Wallet</p><h1>Wallet identities</h1><p>Portable public account descriptions. These records do not log you in, prove control, or restore provider keys and sessions.</p><ul id="identities"></ul>
+<form id="identity-form"><h2 id="edit-heading">Add identity</h2><label>Provider<select id="kind"><option value="matrix">Matrix</option><option value="nostr">Nostr</option><option value="github">GitHub</option><option value="x">X</option></select></label><label>Label<input id="label" required maxlength="100"></label><label>Stable account identifier<input id="identifier" required maxlength="320"></label><label>Homeserver or relay<input id="server" maxlength="500"></label><p>Matrix: @user:server and HTTPS homeserver. Nostr: public key in hex and optional wss relay. GitHub/X: stable numeric provider ID and no server. Never enter passwords, tokens or private keys.</p><button>Save identity</button><button type="button" id="cancel-edit" hidden>Cancel edit</button></form>
+<form id="import-form"><h2>Import Castaway data</h2><label>Castaway file<input id="file" type="file" accept=".castaway" required></label><label>File password<input id="import-password" type="password" required autocomplete="current-password"></label><button>Review file</button></form>
+<section id="review" hidden><h2>Review import</h2><p id="summary"></p><ul id="review-accounts"></ul><p>No login, account-control assertion, or access approval will be created. Retained membership proofs are data and are not activated by this import.</p><button id="confirm">Import reviewed data</button><button id="cancel">Cancel import</button></section>
+<form id="export-form"><h2>Save Castaway data</h2><label>New file password<input id="export-password" type="password" required minlength="12" autocomplete="new-password"></label><button>Save Castaway file</button><p>Open files containing shared identities with an updated Castalia Wallet; older versions cannot read them. Use a separate recovery backup for signing authority.</p></form>
+<p id="notice" role="status"></p><button id="refresh">Refresh</button></main><script src="../dist/wallet-identities.js"></script></body></html>

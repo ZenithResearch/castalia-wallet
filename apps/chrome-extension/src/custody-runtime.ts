@@ -1,3 +1,4 @@
+import { createWalletIdentitiesStore } from './wallet-identities-store.js'
 import { initSync, WasmWallet } from './generated/castalia-wallet-core/bindings.js'
 import { CASTALIA_WALLET_CORE_WASM } from './generated/castalia-wallet-core/wasm-bytes.js'
 import { createCustodyStateManager } from './state/custody-state.js'
@@ -145,3 +146,17 @@ export function prepareAccessRequest(challenge: unknown, origin: string, install
     dispose: () => { if (disposed) return; disposed = true; handle.dispose(); handle.free() },
   }
 }
+
+/** Descriptor portability is private to the Wallet UI, never a provider method. */
+export const walletIdentities = createWalletIdentitiesStore({
+  state:()=>custodyState.getState(),epoch:custodyEpoch,now:()=>Date.now(),storage,
+  chainAccounts:()=>JSON.parse(hybridCore.chainAccounts()),
+  validateContents:raw=>core.validateCastawayDescriptors(raw),
+  validate:raw=>core.validateWalletIdentities(raw),
+  merge:(current,incoming)=>core.mergeWalletIdentities(current,incoming),
+  seal:raw=>core.sealIdentitySection(raw),
+  open:raw=>core.openIdentitySection(encoder.encode(raw)),
+  importFile:(raw,password)=>core.importCastaway(encoder.encode(raw),password),
+  exportFile:(raw,password,now)=>core.exportCastaway(raw,password,BigInt(now)),
+})
+subscribeCustodyChanges(()=>{walletIdentities.cancel();void chrome.runtime.sendMessage({type:'WALLET_IDENTITIES_INVALIDATED'}).catch(()=>{})})

@@ -1,3 +1,5 @@
+import { isWalletIdentityPage } from './wallet-identities-store.js'
+import { walletIdentities } from './custody-runtime.js'
 import { installReadAccessRuntime } from './read-access-runtime.js'
 import { prepareReadAccess, prepareAccessRequest } from './custody-runtime.js'
 import { installProviderProfilesRuntime, NEUTRAL_CAPABILITIES } from './provider-profiles-runtime.js'
@@ -308,6 +310,12 @@ async function enforceSessionReset(): Promise<void> {
 
 // Popup <-> Service Worker messaging (Wave 3 T1.3/T1.4 foundation)
 type PopupMessage =
+  | {type:'WALLET_IDENTITIES_READ'}
+  | {type:'WALLET_IDENTITIES_SAVE';identities:unknown;expected_revision:number}
+  | {type:'WALLET_IDENTITIES_REVIEW';file:string;password:string}
+  | {type:'WALLET_IDENTITIES_CONFIRM';token:string}
+  | {type:'WALLET_IDENTITIES_CANCEL'}
+  | {type:'WALLET_IDENTITIES_EXPORT';password:string}
   | { type: 'GET_STATE' }
   | { type: 'CUSTODY_GET_STATE'; requestId?: string }
   | { type: 'CUSTODY_CREATE'; passphrase: string }
@@ -527,6 +535,27 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
   ;(async () => {
     try {
       switch (message.type) {
+        case 'WALLET_IDENTITIES_SAVE':
+        case 'WALLET_IDENTITIES_READ':
+        case 'WALLET_IDENTITIES_REVIEW':
+        case 'WALLET_IDENTITIES_CONFIRM':
+        case 'WALLET_IDENTITIES_CANCEL':
+        case 'WALLET_IDENTITIES_EXPORT': {
+          if(!isWalletIdentityPage(sender,chrome.runtime.id,chrome.runtime.getURL('src/wallet-identities.html')))throw new Error('wallet_ui_required')
+          const expectedFields=message.type==='WALLET_IDENTITIES_SAVE'?['expected_revision','identities','type']:message.type==='WALLET_IDENTITIES_REVIEW'?['file','password','type']:message.type==='WALLET_IDENTITIES_CONFIRM'?['token','type']:message.type==='WALLET_IDENTITIES_EXPORT'?['password','type']:['type']
+          if(Object.keys(message).sort().join(',')!==expectedFields.sort().join(','))throw new Error('invalid_request')
+          const result=await custodyOperations.run(async()=>{
+            switch(message.type){
+              case 'WALLET_IDENTITIES_READ':return walletIdentities.read()
+              case 'WALLET_IDENTITIES_SAVE':return walletIdentities.saveIdentities(message.identities,message.expected_revision)
+              case 'WALLET_IDENTITIES_REVIEW':return walletIdentities.reviewImport(message.file,message.password)
+              case 'WALLET_IDENTITIES_CONFIRM':return walletIdentities.confirmImport(message.token)
+              case 'WALLET_IDENTITIES_CANCEL':walletIdentities.cancel();return {}
+              case 'WALLET_IDENTITIES_EXPORT':return {file:await walletIdentities.exportFile(message.password)}
+            }
+          })
+          sendResponse({ok:true,...result});break
+        }
         case 'GET_MEMBERSHIP_CONFIRMATION': {
           assertConfirmationSender(sender, message.requestId)
           const summary = membershipConfirmationBroker.claimPendingSummary(message.requestId)

@@ -1,6 +1,6 @@
 [package]
 name = "castalia-wallet-core"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Encrypted custody core for the Castalia Member Key."
 license = "MIT"
