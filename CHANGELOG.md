@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- Retire the rewards bridge and rewards-specific identity database from the active workspace — reward workflows belong in applications, while future Wallet identities must share a portable contract across browser and native clients. Existing custody and account data are unchanged.
+
 ### Fixed
 
 - Update the generic lockfile integrity pin for the reviewed Transfer dependency closure — source packaging checks must accept this exact lockfile while rejecting later tampering.

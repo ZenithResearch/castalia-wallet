@@ -40,7 +40,11 @@
           "path": "tsconfig.json",
           "sha256": "473e71c4f5030f2e075f4c527bbaf095d8ef433363e3056f17ef5213695bc3ef"
         }
-      ]
+      ],
+      "status": "deprecated-and-removed",
+      "retired_on": "2026-10-23",
+      "last_source_revision": "575895f70e4cbdc982b7c9271b468470271dbb0b",
+      "reason": "Rewards workflow belongs to applications; replace rewards-specific identity store with shared portable identity primitives after versioned cross-client qualification."
     },
     {
       "package": "rewards-bridge",
@@ -76,7 +80,11 @@
           "path": "tsconfig.json",
           "sha256": "473e71c4f5030f2e075f4c527bbaf095d8ef433363e3056f17ef5213695bc3ef"
         }
-      ]
+      ],
+      "status": "deprecated-and-removed",
+      "retired_on": "2026-10-23",
+      "last_source_revision": "575895f70e4cbdc982b7c9271b468470271dbb0b",
+      "reason": "Rewards workflow belongs to applications; replace rewards-specific identity store with shared portable identity primitives after versioned cross-client qualification."
     },
     {
       "package": "matrix-companion",
