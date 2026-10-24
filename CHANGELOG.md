@@ -8,6 +8,9 @@
 
 ### Fixed
 
+- Align shared root/credential/presentation size and nesting budgets, so same-scope self-derivation remains transportable through the native verifier.
+
+
 - Bound saved grant collections to the backup parser's capacity, so an accepted collection cannot produce an unrestorable grant backup.
 
 ### Fixed
