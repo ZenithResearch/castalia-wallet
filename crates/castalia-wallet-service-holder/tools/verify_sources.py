@@ -17,10 +17,12 @@ PRIVATE_FILES_SHA256 = {
     # Root fixture only: bounded WouldBlock wait after concurrent fork. Production pins above are unchanged.
     'src/service_store_tests.rs': '8ab5e28d8497f73a02e7303b7bb832d2b22c3285c7e105d1db82789a8f10bab0',
 }
-# Reviewed shared Web/native core closure and core0.3.0 version stamp.
+# Reviewed shared Web/native Core 0.4.0 reusable-grant closure.
 # Portable source gates and cross-client fixtures pass; standalone holder/native exports are unchanged.
 # Historical reviewed closure: fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5.
-GENERIC_LOCK_SHA256 = '566f5c755c2ad42b97a7dfa3a361a12ca646ad16fa399e1ba1efc5db5dd7ee32'
+# Compared with Core 0.3.0: only the Core version/dependency and local
+# secs-grant-contract lock entry change. Registry dependency bytes are unchanged.
+GENERIC_LOCK_SHA256 = 'fd40d9518d51723f191abc0e13494e66e534f208f62df0490bdfb72b8c011ea1'
 GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
 PACKAGE = 'crates/castalia-wallet-service-holder'
 VENDOR = 'vendor/secS-magik-7e32f13'
@@ -34,7 +36,8 @@ STAGE_B_VENDOR = PACKAGE + '/vendor/secS-service-b'
 STAGE_B_FS = STAGE_B_VENDOR + '/vendor/castalia-wallet-private-files-9cc8140'
 STAGE_B_FS_SOURCE_SHA256 = '0f6f7fa87424c99dbca1718d5d391563d5958f812a232e7449d61f77508c4434'
 HOLDER_REGISTRY_SHA256 = '214e310642b7c3f0dc641f57a62a85eee5ab499a15d576fdb322131ddddfc4f0'
-GENERIC_MANIFEST_SHA256 = 'e23c951b6847201e9d7fabf60f363d88630f313cd010e3f307258dbf56cc9110'
+# The new contract keeps its own workspace; existing members/exclusions remain.
+GENERIC_MANIFEST_SHA256 = '4347d4ee5723fab595fac76301d19404b3e3bb91e0a71acae9242c5606492b06'
 
 # All five historical exports remain immutable and independently checked.
 BOOTSTRAP_COMMIT = 'afeb6e60f5e3b062e503e545c8d6417c0c3ca9e7'
