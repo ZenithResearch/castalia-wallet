@@ -1,0 +1,3 @@
+# Public SHA-256 of the checked-in synthetic service binding golden vector.
+# Verified against the file bytes; this exact historical finding is not a key.
+19ec02f0000f7c59f7341f87ad4c04fd54784fe1:vendor/secs-grant-contract/SOURCE.json:generic-api-key:10
