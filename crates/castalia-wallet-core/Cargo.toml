@@ -1,6 +1,6 @@
 [package]
 name = "castalia-wallet-core"
-version = "0.3.0"
+version = "0.4.1"
 edition = "2024"
 description = "Encrypted custody core for the Castalia Member Key."
 license = "MIT"
@@ -10,6 +10,7 @@ publish = false
 crate-type = ["rlib", "cdylib"]
 
 [dependencies]
+secs-grant-contract = { path = "../../vendor/secs-grant-contract" }
 castalia-wallet-presentation = { path = "../castalia-wallet-presentation" }
 aes-gcm = "0.10"
 argon2 = "0.5"

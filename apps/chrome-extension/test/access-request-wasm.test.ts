@@ -18,3 +18,14 @@ test('actual WASM signs the shared request vector once and lock invalidates prep
  assert.throws(()=>w.approveAccessRequest(p,'101'));p.free();
  const stale=prepare(w);w.lock();assert.throws(()=>w.approveAccessRequest(stale,'101'));stale.free();w.free();
 });
+test('actual WASM accepts bounded multi-root operator consent and retains the member limit',()=>{
+ const w=wallet(),challenge=structuredClone(vector.challenge);
+ const paths=Array.from({length:16},(_,i)=>({schema:'devgraph.resource-path.v1',path:[`Arena/area-${i}`,`Initiative/initiative-${i}`,`Project/project-${i}`]}));
+ challenge.operation='access.review';challenge.details={action:{selection:{grants:Array.from({length:12},(_,i)=>({operation:`test.operation.${i}`,resource_paths:paths}))}}};
+ assert.ok(Buffer.byteLength(JSON.stringify(challenge))>16384);
+ const p=w.prepareAccessRequest(JSON.stringify(challenge),'b'.repeat(32),JSON.stringify(pins),JSON.stringify(pins[0].callers[0]),'100');
+ const approved=JSON.parse(w.approveAccessRequest(p,'101'));assert.deepEqual(approved.challenge,challenge);p.free();
+ challenge.operation='access.request';
+ assert.throws(()=>w.prepareAccessRequest(JSON.stringify(challenge),'b'.repeat(32),JSON.stringify(pins),JSON.stringify(pins[0].callers[0]),'100'));
+ w.free();
+});

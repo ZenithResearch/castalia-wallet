@@ -42,6 +42,13 @@ void (async () => {
       document.querySelector('details')!.open=true;
       approve.textContent=summary.operation==='access.request'?'Send request':summary.operation==='access.decide'?'Approve decision':'Continue';
     }
+    if(summary.kind==='holder_grant'){
+      document.getElementById('heading')!.textContent=summary.save?'Save grant in Wallet?':'Use saved grant?';
+      document.getElementById('explanation')!.textContent='Wallet will produce a short-lived credential for this same Wallet within the permissions below. It cannot delegate access to another Wallet. Saving keeps an encrypted copy for future use and Wallet database backup.';
+      document.getElementById('details-label')!.textContent='Granted permissions and current-resource scope';
+      document.querySelector('details')!.open=true;
+      approve.textContent=summary.save?'Save grant and connect':'Use saved grant';
+    }
     if (summary.membershipIncluded) {
       document.getElementById('membership-disclosure')!.hidden = false;
       document.getElementById('membership-disclosure')!.textContent = 'An active membership proof from your selected Wallet profile will accompany this request.';

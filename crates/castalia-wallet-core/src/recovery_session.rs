@@ -137,6 +137,46 @@ enum Command {
         call: castalia_wallet_presentation::read_authority::Call,
         now: u64,
     },
+    VerifyServiceAccessPoint {
+        pin: secs_grant_contract::IssuerPin,
+        binding: secs_grant_contract::AccessPointBinding,
+        origin: String,
+        now: u64,
+    },
+    ReviewHolderGrant {
+        pin: secs_grant_contract::IssuerPin,
+        grant: Box<secs_grant_contract::Grant>,
+        now: u64,
+    },
+    PrepareHolderGrant {
+        pin: secs_grant_contract::IssuerPin,
+        grant: Box<secs_grant_contract::Grant>,
+        now: u64,
+    },
+    HolderGrants {},
+    HolderGrant {
+        service: String,
+        now: u64,
+    },
+    DeriveHolderCredential {
+        service: String,
+        permissions: Option<Vec<secs_grant_contract::Permission>>,
+        expires_at: u64,
+        now: u64,
+    },
+    PresentHolderCredential {
+        service: String,
+        credential: Box<secs_grant_contract::Credential>,
+        call: Value,
+        now: u64,
+    },
+    ForgetHolderGrant {
+        service: String,
+    },
+    ExportHolderGrantBackup {},
+    PrepareHolderGrantBackup {
+        file: String,
+    },
     ReadAccessIdentity {},
     PrepareAccessRequest {
         challenge: String,
@@ -245,6 +285,8 @@ struct LocalState {
     access: std::collections::BTreeMap<String, crate::read_access::StoredAccess>,
     #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
     read_credentials: std::collections::BTreeMap<String, crate::read_access::SignedAccess>,
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    holder_grants: std::collections::BTreeMap<String, crate::holder_grants::StoredGrant>,
 }
 struct Pending {
     token: String,
@@ -300,6 +342,18 @@ impl RecoverySession {
                 return Err(error);
             }
         };
+        // Public destination authentication neither unlocks custody nor changes
+        // a pending consent or encrypted snapshot.
+        if let Command::VerifyServiceAccessPoint {
+            pin,
+            binding,
+            origin,
+            now,
+        } = &command
+        {
+            secs_grant_contract::verify_access_point(pin, binding, origin, *now)?;
+            return Ok(serde_json::json!(binding.claims));
+        }
         if !matches!(
             &command,
             Command::State {}
@@ -314,6 +368,9 @@ impl RecoverySession {
         if matches!(
             &command,
             Command::PrepareExisting { .. }
+                | Command::PrepareHolderGrant { .. }
+                | Command::PrepareHolderGrantBackup { .. }
+                | Command::ForgetHolderGrant { .. }
                 | Command::PrepareCreate { .. }
                 | Command::PrepareRestore { .. }
                 | Command::PrepareLegacy { .. }
@@ -365,6 +422,124 @@ impl RecoverySession {
             self.presentation = None;
         }
         match command {
+            Command::VerifyServiceAccessPoint { .. } => unreachable!(),
+            Command::ReviewHolderGrant { pin, grant, now } => {
+                let stored = crate::holder_grants::StoredGrant::review(
+                    self.graph_wallet_v2()?,
+                    pin,
+                    *grant,
+                    &self.local.installation_id,
+                    now,
+                )?;
+                Ok(stored.summary())
+            }
+            Command::PrepareHolderGrant { pin, grant, now } => {
+                let stored = crate::holder_grants::StoredGrant::review(
+                    self.graph_wallet_v2()?,
+                    pin,
+                    *grant,
+                    &self.local.installation_id,
+                    now,
+                )?;
+                let mut local = self.local.clone();
+                if !local.holder_grants.contains_key(&stored.pin.service)
+                    && local.holder_grants.len() >= 128
+                {
+                    return Err("grant_capacity");
+                }
+                local
+                    .holder_grants
+                    .insert(stored.pin.service.clone(), stored);
+                crate::holder_grants::validate_capacity(&local.holder_grants)?;
+                self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
+            }
+            Command::HolderGrants {} => {
+                self.open_wallet()?;
+                Ok(
+                    json!({"schema":"castalia.holder-grant-list.v1","grants":self.local.holder_grants.values().map(|g|g.summary()).collect::<Vec<_>>()}),
+                )
+            }
+            Command::HolderGrant { service, now } => {
+                self.graph_wallet_v2()?;
+                let g = self
+                    .local
+                    .holder_grants
+                    .get(&service)
+                    .ok_or("grant_not_saved")?;
+                secs_grant_contract::verify_grant(&g.pin, &g.grant, now)?;
+                serde_json::to_value(g).map_err(|_| "encoding_failed")
+            }
+            Command::DeriveHolderCredential {
+                service,
+                permissions,
+                expires_at,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let g = self
+                    .local
+                    .holder_grants
+                    .get(&service)
+                    .ok_or("grant_not_saved")?;
+                serde_json::to_value(g.derive(
+                    wallet,
+                    permissions,
+                    &self.local.installation_id,
+                    now,
+                    expires_at,
+                )?)
+                .map_err(|_| "encoding_failed")
+            }
+            Command::PresentHolderCredential {
+                service,
+                credential,
+                call,
+                now,
+            } => {
+                let wallet = self.graph_wallet_v2()?;
+                let g = self
+                    .local
+                    .holder_grants
+                    .get(&service)
+                    .ok_or("grant_not_saved")?;
+                g.present(wallet, &credential, &call, now)
+            }
+            Command::ForgetHolderGrant { service } => {
+                self.open_wallet()?;
+                let mut local = self.local.clone();
+                local.holder_grants.remove(&service);
+                self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
+            }
+            Command::ExportHolderGrantBackup {} => {
+                let wallet = self.graph_wallet_v2()?;
+                let contents = json!({"schema":"castalia.holder-grant-backup.v1","owner_public_key":wallet.public_key_hex(),"grants":self.local.holder_grants});
+                let file = wallet
+                    .seal_identity_section(&contents.to_string())
+                    .map_err(|_| "encoding_failed")?;
+                Ok(json!({"file":file.as_str()}))
+            }
+            Command::PrepareHolderGrantBackup { file } => {
+                let wallet = self.graph_wallet_v2()?;
+                let opened = wallet
+                    .open_identity_section(file.as_bytes())
+                    .map_err(|_| "invalid_grant_backup")?;
+                let grants = crate::holder_grants::parse_backup(wallet, &opened)?;
+                let mut local = self.local.clone();
+                for (service, g) in grants {
+                    match local.holder_grants.get(&service) {
+                        Some(old)
+                            if secs_grant_contract::digest(old)?
+                                != secs_grant_contract::digest(&g)? =>
+                        {
+                            return Err("grant_backup_conflict");
+                        }
+                        _ => {}
+                    }
+                    local.holder_grants.insert(service, g);
+                }
+                crate::holder_grants::validate_capacity(&local.holder_grants)?;
+                self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
+            }
             Command::PrepareResourceOwnerV1 {
                 challenge,
                 binding,
@@ -626,6 +801,7 @@ impl RecoverySession {
                     installation_id: installation_id(),
                     access: Default::default(),
                     read_credentials: Default::default(),
+                    holder_grants: Default::default(),
                 };
                 self.prepare(Some(wallet), custody.to_string(), local)
             }
@@ -1344,7 +1520,7 @@ impl RecoverySession {
         json!({"configured":self.custody.is_some(),"unlocked":self.wallet.is_some(),"revision":self.revision,
             "public_key":self.wallet.as_ref().map(OpenedWallet::public_key_hex),
             "backup_verified":self.wallet.is_some() && self.local.backup_verified,
-            "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
+            "holder_grant_protocol":"secs.holder-grant.v1", "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
     }
     fn lock(&mut self) {
         self.presentation = None;
@@ -1390,7 +1566,7 @@ impl RecoverySession {
         let mut nonce = [0; 16];
         OsRng.fill_bytes(&mut nonce);
         let token = hex::encode(nonce);
-        let result = json!({"token":token,"expected_revision":self.revision,"public_key":wallet.public_key_hex(),
+        let result = json!({"holder_grants":local.holder_grants.values().map(|g|g.summary()).collect::<Vec<_>>(),"token":token,"expected_revision":self.revision,"public_key":wallet.public_key_hex(),
             "ml_dsa_commitment":wallet.ml_dsa_public_key_commitment_hex(),"chain_accounts":serde_json::from_str::<Value>(&wallet.chain_accounts().map_err(|_| "account_validation_failed")?).map_err(|_| "account_validation_failed")?,"backup_verified":local.backup_verified,"profile":local.contents.as_ref().map(|c|c["sections"]["identity"].clone()),"memberships":local.contents.as_ref().map(|c|c["sections"].clone()),"wallet_identities":local.contents.as_ref().and_then(|c|c["sections"].get("walletIdentities")).cloned().unwrap_or_else(||crate::wallet_identities::empty(&wallet.public_key_hex())),"trust":local.trust});
         self.pending = Some(Pending {
             token,

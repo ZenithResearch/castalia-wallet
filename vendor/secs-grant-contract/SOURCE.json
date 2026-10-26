@@ -1,0 +1,12 @@
+{
+  "schema": "castalia.vendored-source.v1",
+  "repository": "https://github.com/ZenithResearch/secS-magik",
+  "commit": "179722216216121ace98ae1a916512099e5add54",
+  "package": "crates/secs-grant-contract",
+  "files": {
+    "Cargo.toml": "3899f6185d4efee1facb791a6b9fa2de0d206c2209b0bc27833ec2b2e4af9f16",
+    "src/lib.rs": "9d1bf36602a97f27b80b2cace052566a6906737b8eb8435894ef3b2f54b0d3a9",
+    "tests/holder_grants.rs": "17a8b1ad9608c392d2b3e41ab7bfd61e3012cabee92d5fca2e558feac61da49e",
+    "tests/fixtures/access-point.json": "d709009e7bbf9b2c0d7a252bc86c5e82ebb48a2753fa8d207422b6f5fba37710"
+  }
+}

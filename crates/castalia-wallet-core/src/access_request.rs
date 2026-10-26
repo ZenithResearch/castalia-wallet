@@ -9,6 +9,10 @@ use serde_json::{Value, json};
 use wasm_bindgen::prelude::*;
 type Result<T> = core::result::Result<T, &'static str>;
 
+// Operator selections repeat exact path constraints across permissions. Keep
+// member requests at 16 KiB while allowing bounded multi-root operator consent.
+pub const MAX_OPERATOR_CHALLENGE_BYTES: usize = 131_072;
+pub const MAX_MEMBER_CHALLENGE_BYTES: usize = 16_384;
 pub const DOMAIN: &[u8] = b"castalia/access-request-approval/v1\0";
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -53,11 +57,16 @@ fn parse_challenge(
     expected_receiver: &str,
     now: u64,
 ) -> Result<Challenge> {
-    let value: Value = parse(raw.as_bytes(), 16384)?;
+    let value: Value = parse(raw.as_bytes(), MAX_OPERATOR_CHALLENGE_BYTES)?;
     if !portable(&value, 0) {
         return Err("invalid_access_request");
     }
     let c: Challenge = serde_json::from_value(value).map_err(|_| "invalid_access_request")?;
+    if matches!(c.operation.as_str(), "access.request" | "access.status")
+        && raw.len() > MAX_MEMBER_CHALLENGE_BYTES
+    {
+        return Err("invalid_access_request");
+    }
     let receiver = url::Url::parse(&c.receiver).map_err(|_| "invalid_access_request")?;
     if receiver.scheme() != "https"
         || receiver.origin().ascii_serialization() != c.receiver

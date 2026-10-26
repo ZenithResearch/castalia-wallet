@@ -68,3 +68,56 @@ fn native_request_rejects_operator_actions_and_changed_identity_origin_or_time()
     .unwrap();
     assert!(prepared.approve(&wallet, 220).is_err());
 }
+
+#[test]
+fn operator_multi_root_consent_has_a_separate_bounded_budget() {
+    use castalia_wallet_core::access_request::MAX_OPERATOR_CHALLENGE_BYTES;
+    let (wallet, pin, mut challenge) = fixture();
+    let paths: Vec<Value> = (0..16).map(|i| json!({
+        "schema":"devgraph.resource-path.v1",
+        "path":[format!("Arena/area-{i:02}"), format!("Initiative/initiative-{i:02}"), format!("Project/project-{i:02}")]
+    })).collect();
+    let grants: Vec<Value> = (0..12)
+        .map(|i| json!({"operation":format!("test.operation.{i}"),"resource_paths":paths}))
+        .collect();
+    challenge["operation"] = json!("access.review");
+    challenge["details"] = json!({"action":{"selection":{"grants":grants}}});
+    let raw = challenge.to_string();
+    assert!(raw.len() > 16_384);
+    let prepared = PreparedAccessRequest::prepare_native_operator(
+        &raw,
+        &wallet.public_key_hex(),
+        &"bb".repeat(16),
+        &pin,
+        100,
+    )
+    .unwrap();
+    assert_eq!(
+        prepared.approve(&wallet, 101).unwrap()["challenge"],
+        challenge
+    );
+    // Member requests do not inherit the larger operator allowance.
+    challenge["operation"] = json!("access.request");
+    assert!(
+        PreparedAccessRequest::prepare_native(
+            &challenge.to_string(),
+            &wallet.public_key_hex(),
+            &"bb".repeat(16),
+            &pin,
+            100
+        )
+        .is_err()
+    );
+    challenge["operation"] = json!("access.review");
+    challenge["details"] = json!({"payload":"x".repeat(MAX_OPERATOR_CHALLENGE_BYTES)});
+    assert!(
+        PreparedAccessRequest::prepare_native_operator(
+            &challenge.to_string(),
+            &wallet.public_key_hex(),
+            &"bb".repeat(16),
+            &pin,
+            100
+        )
+        .is_err()
+    );
+}
