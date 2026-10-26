@@ -137,6 +137,12 @@ enum Command {
         call: castalia_wallet_presentation::read_authority::Call,
         now: u64,
     },
+    VerifyServiceAccessPoint {
+        pin: secs_grant_contract::IssuerPin,
+        binding: secs_grant_contract::AccessPointBinding,
+        origin: String,
+        now: u64,
+    },
     ReviewHolderGrant {
         pin: secs_grant_contract::IssuerPin,
         grant: Box<secs_grant_contract::Grant>,
@@ -336,6 +342,18 @@ impl RecoverySession {
                 return Err(error);
             }
         };
+        // Public destination authentication neither unlocks custody nor changes
+        // a pending consent or encrypted snapshot.
+        if let Command::VerifyServiceAccessPoint {
+            pin,
+            binding,
+            origin,
+            now,
+        } = &command
+        {
+            secs_grant_contract::verify_access_point(pin, binding, origin, *now)?;
+            return Ok(serde_json::json!(binding.claims));
+        }
         if !matches!(
             &command,
             Command::State {}
@@ -404,6 +422,7 @@ impl RecoverySession {
             self.presentation = None;
         }
         match command {
+            Command::VerifyServiceAccessPoint { .. } => unreachable!(),
             Command::ReviewHolderGrant { pin, grant, now } => {
                 let stored = crate::holder_grants::StoredGrant::review(
                     self.graph_wallet_v2()?,

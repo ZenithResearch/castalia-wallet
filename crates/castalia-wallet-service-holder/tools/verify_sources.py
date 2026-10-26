@@ -17,12 +17,13 @@ PRIVATE_FILES_SHA256 = {
     # Root fixture only: bounded WouldBlock wait after concurrent fork. Production pins above are unchanged.
     'src/service_store_tests.rs': '8ab5e28d8497f73a02e7303b7bb832d2b22c3285c7e105d1db82789a8f10bab0',
 }
-# Reviewed shared Web/native Core 0.4.0 reusable-grant closure.
+# Reviewed shared Web/native Core 0.4.1 reusable-grant/access-point closure.
 # Portable source gates and cross-client fixtures pass; standalone holder/native exports are unchanged.
 # Historical reviewed closure: fa716bd58592f85f8847337926be14d0eae4fbdd9437cd7dca6139dd7c4eecc5.
 # Compared with Core 0.3.0: only the Core version/dependency and local
-# secs-grant-contract lock entry change. Registry dependency bytes are unchanged.
-GENERIC_LOCK_SHA256 = 'fd40d9518d51723f191abc0e13494e66e534f208f62df0490bdfb72b8c011ea1'
+# secs-grant-contract lock entry change. This revision also authenticates route
+# bindings; native custody/holder exports stay unchanged. Registry bytes are unchanged.
+GENERIC_LOCK_SHA256 = 'd49dd46cabe9d5afd00f2bbed3a8e297eb2b6d8c330ed05f0e905ae265e9d762'
 GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
 PACKAGE = 'crates/castalia-wallet-service-holder'
 VENDOR = 'vendor/secS-magik-7e32f13'

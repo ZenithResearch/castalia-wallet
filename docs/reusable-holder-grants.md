@@ -58,3 +58,19 @@ The generic contract can represent service permissions, but the first DevGraph
 adapter here qualifies reads; existing write authority is not automatically
 replaced or widened by a saved read grant. Native app packaging, full suites,
 negative boundaries and actual Tailscale qualification are required before release.
+
+## Service and route identity
+
+Core 0.4.1 verifies the shared issuer-signed `secs.service-access-point.v1`
+binding. A binding authenticates an HTTPS access point, fixed protocol prefix
+and stable authority receiver for a canonical service; it grants no access.
+Chrome keeps site approval and document/installation binding on the actual origin.
+Only an already-approved issuer/caller can translate consent to the signed
+authority receiver. No translated trust pin is persisted, no site is approved
+automatically, and existing legacy pending actions retain their original receiver.
+
+The public `servicePresentationContext` WASM helper and native
+`verify_service_access_point` command verify public metadata without unlocking
+or altering custody. Existing read APIs and credential bytes remain unchanged.
+Providers still check current assignments, revocation and replay on every use.
+Deployment and real-device qualification remain distinct from source tests.

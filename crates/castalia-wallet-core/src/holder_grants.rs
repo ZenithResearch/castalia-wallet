@@ -269,3 +269,17 @@ pub fn validate_capacity(grants: &std::collections::BTreeMap<String, StoredGrant
     }
     Ok(())
 }
+
+/// Public issuer-signed destination authentication, with no Wallet key access.
+#[wasm_bindgen(js_name = verifyServiceAccessPoint)]
+pub fn verify_service_access_point(
+    pin: &str,
+    binding: &str,
+    origin: &str,
+    at: &str,
+) -> std::result::Result<String, JsValue> {
+    let pin: IssuerPin = contract::parse(pin.as_bytes()).map_err(js)?;
+    let binding: contract::AccessPointBinding = contract::parse(binding.as_bytes()).map_err(js)?;
+    contract::verify_access_point(&pin, &binding, origin, now(at).map_err(js)?).map_err(js)?;
+    serde_json::to_string(&binding.claims).map_err(|_| js("invalid_service_binding"))
+}

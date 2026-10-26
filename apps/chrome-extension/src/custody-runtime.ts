@@ -1,6 +1,6 @@
 import { createHolderGrantsStore } from "./holder-grants-store.js"
 import { createWalletIdentitiesStore } from './wallet-identities-store.js'
-import { initSync, WasmWallet } from './generated/castalia-wallet-core/bindings.js'
+import { initSync, WasmWallet, servicePresentationContext } from './generated/castalia-wallet-core/bindings.js'
 import { CASTALIA_WALLET_CORE_WASM } from './generated/castalia-wallet-core/wasm-bytes.js'
 import { createCustodyStateManager } from './state/custody-state.js'
 import { createRecoveryManager } from './recovery.js'
@@ -111,7 +111,10 @@ export function prepareCredentialPresentation(raw: Uint8Array, pins: unknown, ca
 /** Trust changes invalidate all pending custody approvals, independently of provider branding. */
 export const invalidateCustodyApprovals = bumpCustodyEpoch
 /** Generic read custody shares the same Rust/WASM core and lock epoch. */
-export function prepareReadAccess(challenge:unknown,origin:string,installation:string,pins:unknown) {
+export function prepareReadAccess(challenge:unknown,origin:string,installation:string,pins:unknown,binding?:unknown) {
+  const context = binding ? JSON.parse(servicePresentationContext(JSON.stringify(pins),JSON.stringify({kind:"browser",id:origin}),JSON.stringify(binding),String(Math.floor(Date.now()/1000)))) : null
+  const receiver = context?.caller.id ?? origin
+  if(context) pins=context.pins
   const wallet=core
   const invoke=<T>(operation:()=>T):T=>{try{return operation()}catch(error){
     const allowed=['issuer_setup_required','invalid_read_policy','read_approval_expired',
@@ -119,18 +122,21 @@ export function prepareReadAccess(challenge:unknown,origin:string,installation:s
     throw new Error(typeof error==='string'&&allowed.includes(error)?error:'read_access_failed')
   }}
   const handle=invoke(()=>wallet.prepareReadAccess(JSON.stringify(challenge),installation,
-    JSON.stringify(pins),JSON.stringify({kind:'browser',id:origin}),String(Math.floor(Date.now()/1000))))
+    JSON.stringify(pins),JSON.stringify({kind:'browser',id:receiver}),String(Math.floor(Date.now()/1000))))
   let disposed=false
   return {summary:()=>invoke(()=>JSON.parse(handle.summary())),
     approve:()=>invoke(()=>JSON.parse(wallet.approveReadAccess(handle,String(Math.floor(Date.now()/1000))))),
     accept:(credential:unknown)=>invoke(()=>JSON.parse(wallet.acceptReadCredential(handle,JSON.stringify(credential),String(Math.floor(Date.now()/1000))))),
-    present:(call:unknown,caller:string)=>invoke(()=>JSON.parse(wallet.presentReadCall(handle,JSON.stringify(call),caller,String(Math.floor(Date.now()/1000))))),
+    present:(call:unknown,caller:string)=>invoke(()=>JSON.parse(wallet.presentReadCall(handle,JSON.stringify(call),receiver,String(Math.floor(Date.now()/1000))))),
     dispose:()=>{if(disposed)return;disposed=true;handle.dispose();handle.free()},
   }
 }
 
 /** One-shot generic access-request consent, never a credential connection. */
-export function prepareAccessRequest(challenge: unknown, origin: string, installation: string, pins: unknown) {
+export function prepareAccessRequest(challenge: unknown, origin: string, installation: string, pins: unknown,binding?:unknown) {
+  const context = binding ? JSON.parse(servicePresentationContext(JSON.stringify(pins),JSON.stringify({kind:"browser",id:origin}),JSON.stringify(binding),String(Math.floor(Date.now()/1000)))) : null
+  if(context) pins=context.pins
+  const receiver = context?.caller.id ?? origin
   const invoke = <T>(operation: () => T): T => {
     try { return operation() } catch (error) {
       const allowed = ['wallet_locked', 'issuer_setup_required', 'invalid_access_request',
@@ -139,7 +145,7 @@ export function prepareAccessRequest(challenge: unknown, origin: string, install
     }
   }
   const handle = invoke(() => core.prepareAccessRequest(JSON.stringify(challenge), installation,
-    JSON.stringify(pins), JSON.stringify({ kind: 'browser', id: origin }), String(Math.floor(Date.now() / 1000))))
+    JSON.stringify(pins), JSON.stringify({ kind: 'browser', id: receiver }), String(Math.floor(Date.now() / 1000))))
   let disposed = false
   return {
     summary: () => invoke(() => JSON.parse(handle.summary())),

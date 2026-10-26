@@ -1,4 +1,5 @@
 pub mod access_request;
+pub mod service_access_point;
 use aes_gcm::{
     Aes256Gcm, KeyInit,
     aead::{Aead, Payload},

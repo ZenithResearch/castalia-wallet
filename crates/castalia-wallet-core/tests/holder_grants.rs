@@ -190,3 +190,82 @@ fn stored_collection_must_fit_its_own_backup_parser() {
     assert_eq!(collection.len(), 128);
     assert_eq!(validate_capacity(&collection), Err("grant_capacity"));
 }
+
+#[test]
+fn public_service_binding_verification_never_unlocks_or_changes_wallet() {
+    let mut s = RecoverySession::new();
+    let before = call(&mut s, json!({"operation":"state"}));
+    let issuer = SigningKey::from_bytes(&[1; 32]);
+    let pin = IssuerPin {
+        issuer: "provider:fixture".into(),
+        key_id: "key:v1".into(),
+        public_key: hex::encode(issuer.verifying_key().to_bytes()),
+        service: "service:fixture".into(),
+    };
+    let binding = issue_access_point(
+        &pin,
+        AccessPointClaims {
+            schema: ACCESS_POINT.into(),
+            issuer: pin.issuer.clone(),
+            key_id: pin.key_id.clone(),
+            service: pin.service.clone(),
+            origin: "https://graph.example:9443".into(),
+            authority_receiver: "https://127.0.0.1:58754".into(),
+            prefix: "/service/v1".into(),
+            not_before: 100,
+            not_after: 1000,
+        },
+        &issuer,
+        101,
+    )
+    .unwrap();
+    let command = json!({"operation":"verify_service_access_point","pin":pin,"binding":binding,"origin":"https://graph.example:9443","now":102});
+    let verified = call(&mut s, command.clone());
+    assert_eq!(verified["service"], "service:fixture");
+    let mut bad = command;
+    bad["origin"] = "https://evil.example".into();
+    assert!(s.invoke(&bad.to_string()).is_err());
+    assert_eq!(before, call(&mut s, json!({"operation":"state"})));
+}
+
+#[test]
+fn service_alias_requires_current_browser_trust_and_exact_provider_signature() {
+    use castalia_wallet_core::service_access_point::presentation_context;
+    use castalia_wallet_presentation::{Caller, TrustPin};
+    let vector: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../vendor/secs-grant-contract/tests/fixtures/access-point.json"
+    ))
+    .unwrap();
+    let pin: IssuerPin = serde_json::from_value(vector["pin"].clone()).unwrap();
+    let binding: secs_grant_contract::AccessPointBinding =
+        serde_json::from_value(vector["binding"].clone()).unwrap();
+    let caller = Caller {
+        kind: "browser".into(),
+        id: binding.claims.origin.clone(),
+    };
+    let trusted = TrustPin {
+        issuer: pin.issuer,
+        key_id: pin.key_id,
+        public_key: pin.public_key,
+        audience: "devgraph".into(),
+        callers: vec![caller.clone()],
+    };
+    let (translated, canonical) =
+        presentation_context(&[trusted.clone()], &caller, &binding, 102).unwrap();
+    assert_eq!(canonical.id, binding.claims.authority_receiver);
+    assert_eq!(translated[0].callers, vec![canonical]);
+    assert!(presentation_context(&[], &caller, &binding, 102).is_err());
+    assert!(
+        presentation_context(
+            &[trusted.clone()],
+            &Caller {
+                kind: "browser".into(),
+                id: "https://other.example".into()
+            },
+            &binding,
+            102
+        )
+        .is_err()
+    );
+    assert!(presentation_context(&[trusted], &caller, &binding, 1000).is_err());
+}

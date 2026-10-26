@@ -430,8 +430,8 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     memberships:(origin:string)=>providerProfilesRuntime.memberships(origin),
     setupStatus:(profile:unknown,origin:string)=>providerProfilesRuntime.setupStatus(profile,origin),
     membership:(origin:string,holder:string,profileId?:string)=>providerProfilesRuntime.readMembership(origin,holder,profileId),
-    prepareRequest:async(challenge:unknown,origin:string,installation:string)=>prepareAccessRequest(challenge,origin,installation,await providerProfilesRuntime.pins()),
-    prepare:async(challenge:unknown,origin:string,installation:string)=>prepareReadAccess(challenge,origin,installation,await providerProfilesRuntime.pins()),
+    prepareRequest:async(challenge:unknown,origin:string,installation:string,binding?:unknown)=>prepareAccessRequest(challenge,origin,installation,await providerProfilesRuntime.pins(),binding),
+    prepare:async(challenge:unknown,origin:string,installation:string,binding?:unknown)=>prepareReadAccess(challenge,origin,installation,await providerProfilesRuntime.pins(),binding),
   })
   let grantImport:{token:string;file:string;epoch:number;owner:string;revision:number;expires:number}|null=null;
   subscribeCustodyChanges(()=>{grantImport=null;void chrome.runtime.sendMessage({type:'HOLDER_GRANTS_INVALIDATED'}).catch(()=>{})});

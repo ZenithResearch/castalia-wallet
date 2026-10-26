@@ -29,8 +29,9 @@ type Dependencies = {
     challenge: unknown,
     origin: string,
     installation: string,
+    binding?: unknown,
   ): Promise<ReadHandle>;
-  prepareRequest?(challenge: unknown, origin: string, installation: string): Promise<Pick<ReadHandle, "summary" | "approve" | "dispose">>;
+  prepareRequest?(challenge: unknown, origin: string, installation: string, binding?: unknown): Promise<Pick<ReadHandle, "summary" | "approve" | "dispose">>;
   confirm(summary: any, context: ReadContext): Promise<boolean>;
   randomId(): string;
   now(): number;
@@ -103,8 +104,8 @@ export function createReadAccessController(deps: Dependencies) {
       setup_status: ["operation", "profile"],
       identity: ["operation"],
       approve: ["operation", "challenge", "profileId"],
-      approve_graph_v2: ["operation", "challenge", "profileId"],
-      request: ["operation", "challenge", "profileId"],
+      approve_graph_v2: ["operation", "challenge", "profileId", "service_access_point"],
+      request: ["operation", "challenge", "profileId", "service_access_point"],
       accept: ["operation", "accessId", "credential"],
       accept_graph_v2: ["operation", "accessId", "credential"],
       present: ["operation", "accessId", "call"],
@@ -170,9 +171,9 @@ export function createReadAccessController(deps: Dependencies) {
           const installation = await deps.installation();
           if(input.profileId!==undefined)await deps.membership(context.origin, current.memberKey, input.profileId);
           await state(context, epoch);
-          prepared = await deps.prepareRequest!(input.challenge, context.origin, installation);
+          prepared = await deps.prepareRequest!(input.challenge, context.origin, installation, input.service_access_point);
           await state(context, epoch);
-          return {...prepared.summary(),membershipIncluded:input.profileId!==undefined};
+          return {...prepared.summary(),origin:context.origin,membershipIncluded:input.profileId!==undefined};
         });
         if (!(await deps.confirm(summary, context))) throw new Error("approval_denied");
         return await deps.run(async () => {
@@ -211,9 +212,10 @@ export function createReadAccessController(deps: Dependencies) {
             input.challenge,
             context.origin,
             installation,
+            input.service_access_point,
           );
           await state(context, epoch);
-          return { proof, summary: { ...prepared.summary(), membershipIncluded: !graphV2 || input.profileId !== undefined } };
+          return { proof, summary: { ...prepared.summary(), origin:context.origin, membershipIncluded: !graphV2 || input.profileId !== undefined } };
         });
         if (!context.current() || deps.epoch() !== epoch)
           throw new Error("read_context_changed");

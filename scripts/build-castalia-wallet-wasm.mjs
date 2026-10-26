@@ -31,5 +31,5 @@ const bindings = await readFile(join(generated, 'castalia_wallet_core.js'), 'utf
 await writeFile(join(generated, 'bindings.js'), bindings)
 await writeFile(
   join(generated, 'bindings.d.ts'),
-  "export { default, initSync, WasmWallet } from './castalia_wallet_core.js'\n",
+  "export { default, initSync, WasmWallet, servicePresentationContext, verifyServiceAccessPoint } from './castalia_wallet_core.js'\n",
 )
