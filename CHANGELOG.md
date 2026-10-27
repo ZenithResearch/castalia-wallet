@@ -4,6 +4,9 @@
 
 ### Added
 
+- Exercise independently scoped holder-grant actions through encrypted backup/restore and same-holder derivation — ensure app rule editors cannot mix another rule’s scope into a saved credential. Signed formats and Core behavior are unchanged.
+
+
 - Add Core 0.4.1 public service-access-point verification and browser consent routing — a verified service can reuse canonical authority through multiple access points while preserving site-specific consent, custody, and all existing grant/backup bytes.
 
 - Add Wallet Core 0.4 reusable provider grants with the shared secS verifier, encrypted reviewed storage and grant backups. The same Wallet can derive equal or narrower finite credentials; onward delegation remains disabled. Existing formats retain their bytes. The new populated local-state snapshot requires the new Core, and live qualification is still pending.
