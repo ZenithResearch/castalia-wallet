@@ -262,3 +262,108 @@ fn access_point_cross_language_golden_vector() {
         binding
     );
 }
+
+#[test]
+fn independent_action_hierarchies_are_not_a_cartesian_product() {
+    let (pin, issuer, holder, original) = setup();
+    let mut claims = original.claims;
+    let read = claims.permissions[0].clone();
+    let mut write = read.clone();
+    write.operation = "work.patch".into();
+    write.scope = Scope::Paths {
+        roots: vec![vec![Node {
+            kind: "Arena".into(),
+            id: "b".into(),
+        }]],
+    };
+    claims.permissions = vec![read.clone(), write.clone()];
+    let grant = issue_grant(&pin, claims, &issuer, 100).unwrap();
+    let derive = |permissions| {
+        derive_credential(
+            &pin,
+            grant.clone(),
+            permissions,
+            None,
+            "33".repeat(16),
+            101,
+            300,
+            &holder,
+        )
+    };
+    let equal = derive(vec![read.clone(), write.clone()]).unwrap();
+    verify_credential(&pin, &equal, 102).unwrap();
+    let mut narrow = write.clone();
+    if let Scope::Paths { roots } = &mut narrow.scope {
+        roots[0].push(Node {
+            kind: "Project".into(),
+            id: "p".into(),
+        });
+    }
+    verify_credential(&pin, &derive(vec![narrow]).unwrap(), 102).unwrap();
+    let mut mixed = write.clone();
+    mixed.scope = read.scope.clone();
+    assert!(
+        derive(vec![mixed]).is_err(),
+        "write-B cannot borrow read-A's scope"
+    );
+    let mut mixed = read;
+    mixed.scope = write.scope;
+    assert!(
+        derive(vec![mixed]).is_err(),
+        "read-A cannot borrow write-B's scope"
+    );
+    let mut relaxed = grant.claims.permissions.clone();
+    relaxed[0].constraints = serde_json::json!({});
+    assert!(
+        derive(relaxed).is_err(),
+        "opaque provider conditions must remain exact"
+    );
+    let mut delegated = grant.claims.clone();
+    delegated.onward_delegation = true;
+    assert!(issue_grant(&pin, delegated, &issuer, 100).is_err());
+}
+
+#[test]
+fn live_collection_scope_is_not_an_issuance_time_inventory() {
+    let (pin, issuer, holder, original) = setup();
+    let mut claims = original.claims;
+    claims.permissions[0].scope = Scope::All;
+    claims.permissions[0].operation = "catalog.item.get".into();
+    // Generic provider conditions stay opaque and exact; no object IDs are
+    // copied into the signed root to simulate collection coverage.
+    let root = issue_grant(&pin, claims, &issuer, 100).unwrap();
+    let same = derive_credential(
+        &pin,
+        root.clone(),
+        root.claims.permissions.clone(),
+        None,
+        "33".repeat(16),
+        101,
+        300,
+        &holder,
+    )
+    .unwrap();
+    verify_credential(&pin, &same, 102).unwrap();
+    let mut narrowed = root.claims.permissions.clone();
+    narrowed[0].scope = Scope::Paths {
+        roots: vec![vec![Node {
+            kind: "CollectionItem".into(),
+            id: "created-later".into(),
+        }]],
+    };
+    let fixed = derive_credential(
+        &pin,
+        root.clone(),
+        narrowed.clone(),
+        None,
+        "44".repeat(16),
+        102,
+        300,
+        &holder,
+    )
+    .unwrap();
+    verify_credential(&pin, &fixed, 103).unwrap();
+    assert!(permissions_within(&root.claims.permissions, &narrowed).is_err());
+    assert_eq!(same.claims.permissions[0].scope, Scope::All);
+    assert!(!root.claims.onward_delegation);
+}

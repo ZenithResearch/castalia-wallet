@@ -86,3 +86,20 @@ later. A fixed path cannot become `All`. Provider adapters enforce collection
 meaning and current status; Core never guesses predicate implication. No Core
 runtime, pin, signed format, backup migration or onward delegation change is
 needed for the DevGraph current-and-future Arena selector.
+
+## Resource selection prerequisite (source-only)
+
+Core's Rust `resource_selection::review` and `can_narrow` now use the shared
+`secs.resource-selector.v1` primitive. It distinguishes exact objects from
+descendants and All, binds explicit kinds to a verified canonical service, and
+retains hierarchy guards during exact narrowing. Unknown implications are rejected;
+Core never trusts a client graph to prove ancestry. The source is pinned in the
+existing vendored-source manifest and common media vectors run on both sides.
+
+This is unsigned public selection review, not a custody operation or grant. It
+adds no browser/native command, signer capability, stored Wallet field or backup
+migration. Existing holder-grant v1 permissions still accept only All/Paths; the
+new selector cannot be inserted into them. Operation/constraint/holder/lifetime
+checks and disabled onward delegation stay unchanged. Provider effect plans and
+a separately versioned signed integration must be implemented before issuance.
+No app is rebuilt or installed and no source pin used by installed apps changes.

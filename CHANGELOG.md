@@ -4,6 +4,10 @@
 
 ### Added
 
+- Reuse the secS resource-selector primitive for public Core selection review and conservative narrowing — retain exact object/hierarchy distinctions without changing custody, signed v1 permissions or stored grants.
+
+### Added
+
 - Qualify saved live-collection grants through encrypted backup/restore and equal or narrower same-Wallet derivation — future resource coverage reuses existing Core scopes without migrating fixed grants or enabling delegation.
 
 ### Added
