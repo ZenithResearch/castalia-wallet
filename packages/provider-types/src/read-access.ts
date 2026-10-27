@@ -3,6 +3,7 @@ export const ACCESS_REQUEST_CAPABILITY = "access_request_v1" as const;
 export const GRAPH_ACCESS_CAPABILITY = "graph_access_v2" as const;
 export const READ_ACCESS_CAPABILITY = "read_access_v1" as const;
 export const READ_SETUP_STATUS_CAPABILITY = "read_setup_status_v1" as const;
+export const SCOPED_HOLDER_GRANT_CAPABILITY = "holder_grant_v2" as const;
 export const HOLDER_GRANT_CAPABILITY = "holder_grant_v1" as const;
 export type ReadAccessRequest =
   | { operation: "save_grant"; service: string; grant: unknown; permissions?: unknown[] }

@@ -117,3 +117,16 @@ policy and resource versions, recheck the SAME rule before/after mutation and
 roll back on failed postconditions. Operation/holder/validity/revocation/replay
 checks remain mandatory. Database execution adapters and signed integration are
 still unimplemented here; existing v1 grants and encrypted backups are unchanged.
+
+## Scoped holder v2 candidate
+
+Core and the existing native JSON/Chrome WASM operations now accept separately
+versioned v2 grants, credentials and presentations. Complete role selectors narrow
+one parent permission; onward delegation remains disabled. Existing v1 serialized
+records, encrypted custody, backup owner checks and explicit save consent remain.
+A failed v2 verification never retries as v1. New clients must be coordinated with
+providers before offering v2; old clients refuse it. This is source integration,
+not an installed app, production migration or released package. The DevGraph
+adapter currently issues reusable read grants; writes retain the existing signed
+projection path with paired receiver checks. Generic role-specific administration
+and holder-derived write issuance remain follow-up gates.

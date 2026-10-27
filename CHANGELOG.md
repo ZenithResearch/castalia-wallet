@@ -4,6 +4,11 @@
 
 ### Added
 
+- Dual native/Chrome custody for versioned scoped holder grants — keep existing v1 backups and signatures while supporting complete selector-role narrowing through the same encrypted Wallet store.
+
+
+### Added
+
 - Reuse complete compound-resource rule narrowing in Core review — keep source/destination roles correlated without adding signing, storage or execution authority.
 
 ### Added
