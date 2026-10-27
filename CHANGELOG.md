@@ -4,6 +4,10 @@
 
 ### Added
 
+- Qualify saved live-collection grants through encrypted backup/restore and equal or narrower same-Wallet derivation — future resource coverage reuses existing Core scopes without migrating fixed grants or enabling delegation.
+
+### Added
+
 - Exercise independently scoped holder-grant actions through encrypted backup/restore and same-holder derivation — ensure app rule editors cannot mix another rule’s scope into a saved credential. Signed formats and Core behavior are unchanged.
 
 

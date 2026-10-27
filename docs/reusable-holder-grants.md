@@ -74,3 +74,15 @@ The public `servicePresentationContext` WASM helper and native
 or altering custody. Existing read APIs and credential bytes remain unchanged.
 Providers still check current assignments, revocation and replay on every use.
 Deployment and real-device qualification remain distinct from source tests.
+
+
+## Current and future resources
+
+The existing signed `Scope::All` covers the live resource collection selected by
+that permission's unchanged opaque provider conditions. It is not an inventory
+of IDs at issuance. A saved grant survives encrypted backup/restore and can
+produce an equal same-Wallet credential or narrow to a path for an item created
+later. A fixed path cannot become `All`. Provider adapters enforce collection
+meaning and current status; Core never guesses predicate implication. No Core
+runtime, pin, signed format, backup migration or onward delegation change is
+needed for the DevGraph current-and-future Arena selector.

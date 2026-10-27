@@ -348,3 +348,49 @@ fn wallet_backup_and_derivation_preserve_independent_action_scopes() {
     assert!(session.invoke(&derive(vec![crossed])).is_err());
     assert!(!root.claims.onward_delegation);
 }
+
+#[test]
+fn saved_live_collection_grant_can_derive_for_an_item_created_later() {
+    let mut session = ready();
+    let (pin, original) = grant(&mut session);
+    let issuer = SigningKey::from_bytes(&[1; 32]);
+    let mut claims = original.claims;
+    claims.permissions[0].operation = "catalog.item.get".into();
+    claims.permissions[0].scope = Scope::All;
+    let root = issue_grant(&pin, claims, &issuer, 100).unwrap();
+    let prepared = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant","pin":pin,"grant":root,"now":101}),
+    );
+    commit(&mut session, prepared);
+    let backup = call(
+        &mut session,
+        json!({"operation":"export_holder_grant_backup"}),
+    );
+    let imported = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant_backup","file":backup["file"]}),
+    );
+    commit(&mut session, imported);
+    let mut narrower = root.claims.permissions.clone();
+    narrower[0].scope = Scope::Paths {
+        roots: vec![vec![Node {
+            kind: "CollectionItem".into(),
+            id: "created-later".into(),
+        }]],
+    };
+    let derived = call(
+        &mut session,
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":narrower,"expires_at":300,"now":102}),
+    );
+    let credential: Credential = serde_json::from_value(derived).unwrap();
+    verify_credential(&pin, &credential, 103).unwrap();
+    assert_eq!(credential.claims.permissions, narrower);
+    let equal = call(
+        &mut session,
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":null,"expires_at":300,"now":103}),
+    );
+    let equal: Credential = serde_json::from_value(equal).unwrap();
+    assert_eq!(equal.claims.permissions[0].scope, Scope::All);
+    assert!(!equal.grant.claims.onward_delegation);
+}
