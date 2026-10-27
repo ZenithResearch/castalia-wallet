@@ -1,4 +1,5 @@
 pub mod access_request;
+pub mod resource_selection;
 pub mod service_access_point;
 use aes_gcm::{
     Aes256Gcm, KeyInit,
@@ -726,3 +727,5 @@ impl Default for WasmRecoverySession {
 }
 
 pub mod holder_grants;
+pub mod portable_holder_grants;
+pub mod scoped_holder_grants;

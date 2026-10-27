@@ -74,3 +74,59 @@ The public `servicePresentationContext` WASM helper and native
 or altering custody. Existing read APIs and credential bytes remain unchanged.
 Providers still check current assignments, revocation and replay on every use.
 Deployment and real-device qualification remain distinct from source tests.
+
+
+## Current and future resources
+
+The existing signed `Scope::All` covers the live resource collection selected by
+that permission's unchanged opaque provider conditions. It is not an inventory
+of IDs at issuance. A saved grant survives encrypted backup/restore and can
+produce an equal same-Wallet credential or narrow to a path for an item created
+later. A fixed path cannot become `All`. Provider adapters enforce collection
+meaning and current status; Core never guesses predicate implication. No Core
+runtime, pin, signed format, backup migration or onward delegation change is
+needed for the DevGraph current-and-future Arena selector.
+
+## Resource selection prerequisite (source-only)
+
+Core's Rust `resource_selection::review` and `can_narrow` now use the shared
+`secs.resource-selector.v1` primitive. It distinguishes exact objects from
+descendants and All, binds explicit kinds to a verified canonical service, and
+retains hierarchy guards during exact narrowing. Unknown implications are rejected;
+Core never trusts a client graph to prove ancestry. The source is pinned in the
+existing vendored-source manifest and common media vectors run on both sides.
+
+This is unsigned public selection review, not a custody operation or grant. It
+adds no browser/native command, signer capability, stored Wallet field or backup
+migration. Existing holder-grant v1 permissions still accept only All/Paths; the
+new selector cannot be inserted into them. Operation/constraint/holder/lifetime
+checks and disabled onward delegation stay unchanged. Provider effect plans and
+a separately versioned signed integration must be implemented before issuance.
+No app is rebuilt or installed and no source pin used by installed apps changes.
+
+## Correlated compound resource review
+
+Core also reuses the shared in-process EffectContract/EffectRule/RoleSelection
+types and `can_narrow_effect_rule`. Every role narrows one complete parent
+rule: A→B and C→D cannot yield A→D. The installed provider declares the full
+effect roles and cardinality; caller metadata is not trusted authority.
+
+These are unsigned Rust review helpers, not new signing/storage/transport APIs.
+The provider must resolve actual source/destination and affected resources, fence
+policy and resource versions, recheck the SAME rule before/after mutation and
+roll back on failed postconditions. Operation/holder/validity/revocation/replay
+checks remain mandatory. Database execution adapters and signed integration are
+still unimplemented here; existing v1 grants and encrypted backups are unchanged.
+
+## Scoped holder v2 candidate
+
+Core and the existing native JSON/Chrome WASM operations now accept separately
+versioned v2 grants, credentials and presentations. Complete role selectors narrow
+one parent permission; onward delegation remains disabled. Existing v1 serialized
+records, encrypted custody, backup owner checks and explicit save consent remain.
+A failed v2 verification never retries as v1. New clients must be coordinated with
+providers before offering v2; old clients refuse it. This is source integration,
+not an installed app, production migration or released package. The DevGraph
+adapter currently issues reusable read grants; writes retain the existing signed
+projection path with paired receiver checks. Generic role-specific administration
+and holder-derived write issuance remain follow-up gates.

@@ -145,12 +145,12 @@ enum Command {
     },
     ReviewHolderGrant {
         pin: secs_grant_contract::IssuerPin,
-        grant: Box<secs_grant_contract::Grant>,
+        grant: Box<crate::portable_holder_grants::Grant>,
         now: u64,
     },
     PrepareHolderGrant {
         pin: secs_grant_contract::IssuerPin,
-        grant: Box<secs_grant_contract::Grant>,
+        grant: Box<crate::portable_holder_grants::Grant>,
         now: u64,
     },
     HolderGrants {},
@@ -160,13 +160,13 @@ enum Command {
     },
     DeriveHolderCredential {
         service: String,
-        permissions: Option<Vec<secs_grant_contract::Permission>>,
+        permissions: Option<crate::portable_holder_grants::Permissions>,
         expires_at: u64,
         now: u64,
     },
     PresentHolderCredential {
         service: String,
-        credential: Box<secs_grant_contract::Credential>,
+        credential: Box<crate::portable_holder_grants::Credential>,
         call: Value,
         now: u64,
     },
@@ -286,7 +286,7 @@ struct LocalState {
     #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
     read_credentials: std::collections::BTreeMap<String, crate::read_access::SignedAccess>,
     #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
-    holder_grants: std::collections::BTreeMap<String, crate::holder_grants::StoredGrant>,
+    holder_grants: std::collections::BTreeMap<String, crate::portable_holder_grants::StoredGrant>,
 }
 struct Pending {
     token: String,
@@ -424,7 +424,7 @@ impl RecoverySession {
         match command {
             Command::VerifyServiceAccessPoint { .. } => unreachable!(),
             Command::ReviewHolderGrant { pin, grant, now } => {
-                let stored = crate::holder_grants::StoredGrant::review(
+                let stored = crate::portable_holder_grants::StoredGrant::review(
                     self.graph_wallet_v2()?,
                     pin,
                     *grant,
@@ -434,7 +434,7 @@ impl RecoverySession {
                 Ok(stored.summary())
             }
             Command::PrepareHolderGrant { pin, grant, now } => {
-                let stored = crate::holder_grants::StoredGrant::review(
+                let stored = crate::portable_holder_grants::StoredGrant::review(
                     self.graph_wallet_v2()?,
                     pin,
                     *grant,
@@ -442,14 +442,14 @@ impl RecoverySession {
                     now,
                 )?;
                 let mut local = self.local.clone();
-                if !local.holder_grants.contains_key(&stored.pin.service)
+                if !local.holder_grants.contains_key(&stored.pin().service)
                     && local.holder_grants.len() >= 128
                 {
                     return Err("grant_capacity");
                 }
                 local
                     .holder_grants
-                    .insert(stored.pin.service.clone(), stored);
+                    .insert(stored.pin().service.clone(), stored);
                 crate::holder_grants::validate_capacity(&local.holder_grants)?;
                 self.prepare(None, self.custody.clone().ok_or("wallet_locked")?, local)
             }
@@ -466,7 +466,7 @@ impl RecoverySession {
                     .holder_grants
                     .get(&service)
                     .ok_or("grant_not_saved")?;
-                secs_grant_contract::verify_grant(&g.pin, &g.grant, now)?;
+                g.verify(now)?;
                 serde_json::to_value(g).map_err(|_| "encoding_failed")
             }
             Command::DeriveHolderCredential {
@@ -523,7 +523,7 @@ impl RecoverySession {
                 let opened = wallet
                     .open_identity_section(file.as_bytes())
                     .map_err(|_| "invalid_grant_backup")?;
-                let grants = crate::holder_grants::parse_backup(wallet, &opened)?;
+                let grants = crate::portable_holder_grants::parse_backup(wallet, &opened)?;
                 let mut local = self.local.clone();
                 for (service, g) in grants {
                     match local.holder_grants.get(&service) {
@@ -1520,7 +1520,7 @@ impl RecoverySession {
         json!({"configured":self.custody.is_some(),"unlocked":self.wallet.is_some(),"revision":self.revision,
             "public_key":self.wallet.as_ref().map(OpenedWallet::public_key_hex),
             "backup_verified":self.wallet.is_some() && self.local.backup_verified,
-            "holder_grant_protocol":"secs.holder-grant.v1", "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
+            "holder_grant_protocol":"secs.holder-grant.v1", "holder_grant_protocols":["secs.holder-grant.v1","secs.holder-grant.v2"], "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
     }
     fn lock(&mut self) {
         self.presentation = None;

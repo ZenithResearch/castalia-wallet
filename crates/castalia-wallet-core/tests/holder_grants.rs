@@ -269,3 +269,206 @@ fn service_alias_requires_current_browser_trust_and_exact_provider_signature() {
     );
     assert!(presentation_context(&[trusted], &caller, &binding, 1000).is_err());
 }
+
+#[test]
+fn wallet_backup_and_derivation_preserve_independent_action_scopes() {
+    let mut session = ready();
+    let (pin, original) = grant(&mut session);
+    let issuer = SigningKey::from_bytes(&[1; 32]);
+    let mut claims = original.claims;
+    let read = Permission {
+        operation: "service.object.read".into(),
+        resource: "objects".into(),
+        scope: Scope::Paths {
+            roots: vec![vec![Node {
+                kind: "Container".into(),
+                id: "a".into(),
+            }]],
+        },
+        constraints: json!({"include_archived":false}),
+    };
+    let mut write = read.clone();
+    write.operation = "service.object.patch".into();
+    write.scope = Scope::Paths {
+        roots: vec![vec![Node {
+            kind: "Container".into(),
+            id: "b".into(),
+        }]],
+    };
+    claims.permissions = vec![read.clone(), write.clone()];
+    let root = issue_grant(&pin, claims, &issuer, 100).unwrap();
+    let prepared = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant","pin":pin,"grant":root,"now":101}),
+    );
+    commit(&mut session, prepared);
+    let backup = call(
+        &mut session,
+        json!({"operation":"export_holder_grant_backup"}),
+    );
+    let removed = call(
+        &mut session,
+        json!({"operation":"forget_holder_grant","service":pin.service}),
+    );
+    commit(&mut session, removed);
+    let restored = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant_backup","file":backup["file"]}),
+    );
+    commit(&mut session, restored);
+    let derive = |permissions: Vec<Permission>| {
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":permissions,"expires_at":300,"now":102}).to_string()
+    };
+    let credential: Credential = serde_json::from_value(
+        session
+            .invoke(&derive(vec![read.clone(), write.clone()]))
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        credential.claims.permissions,
+        vec![read.clone(), write.clone()]
+    );
+    verify_credential(&pin, &credential, 103).unwrap();
+    let mut narrower = write.clone();
+    if let Scope::Paths { roots } = &mut narrower.scope {
+        roots[0].push(Node {
+            kind: "Folder".into(),
+            id: "p".into(),
+        });
+    }
+    let credential: Credential =
+        serde_json::from_value(session.invoke(&derive(vec![narrower])).unwrap()).unwrap();
+    verify_credential(&pin, &credential, 103).unwrap();
+    let mut crossed = write.clone();
+    crossed.scope = read.scope.clone();
+    assert!(session.invoke(&derive(vec![crossed])).is_err());
+    let mut crossed = read;
+    crossed.scope = write.scope;
+    assert!(session.invoke(&derive(vec![crossed])).is_err());
+    assert!(!root.claims.onward_delegation);
+}
+
+#[test]
+fn saved_live_collection_grant_can_derive_for_an_item_created_later() {
+    let mut session = ready();
+    let (pin, original) = grant(&mut session);
+    let issuer = SigningKey::from_bytes(&[1; 32]);
+    let mut claims = original.claims;
+    claims.permissions[0].operation = "catalog.item.get".into();
+    claims.permissions[0].scope = Scope::All;
+    let root = issue_grant(&pin, claims, &issuer, 100).unwrap();
+    let prepared = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant","pin":pin,"grant":root,"now":101}),
+    );
+    commit(&mut session, prepared);
+    let backup = call(
+        &mut session,
+        json!({"operation":"export_holder_grant_backup"}),
+    );
+    let imported = call(
+        &mut session,
+        json!({"operation":"prepare_holder_grant_backup","file":backup["file"]}),
+    );
+    commit(&mut session, imported);
+    let mut narrower = root.claims.permissions.clone();
+    narrower[0].scope = Scope::Paths {
+        roots: vec![vec![Node {
+            kind: "CollectionItem".into(),
+            id: "created-later".into(),
+        }]],
+    };
+    let derived = call(
+        &mut session,
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":narrower,"expires_at":300,"now":102}),
+    );
+    let credential: Credential = serde_json::from_value(derived).unwrap();
+    verify_credential(&pin, &credential, 103).unwrap();
+    assert_eq!(credential.claims.permissions, narrower);
+    let equal = call(
+        &mut session,
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":null,"expires_at":300,"now":103}),
+    );
+    let equal: Credential = serde_json::from_value(equal).unwrap();
+    assert_eq!(equal.claims.permissions[0].scope, Scope::All);
+    assert!(!equal.grant.claims.onward_delegation);
+}
+
+#[test]
+fn v2_saved_grant_uses_same_custody_backup_and_rejects_scope_amplification() {
+    use secs_grant_contract::{
+        compound_resources::RoleSelection, resource_selector::*, scoped_grants as v2,
+    };
+    let mut s = ready();
+    let (pin, old) = grant(&mut s);
+    let issuer = SigningKey::from_bytes(&[1; 32]);
+    let selector = ResourceSelector {
+        schema: SCHEMA.into(),
+        service: pin.service.clone(),
+        kinds: vec!["Task".into()],
+        selection: Selection::All {},
+    };
+    let p = v2::Permission {
+        operation: "work.read".into(),
+        resource: "work".into(),
+        roles: vec![RoleSelection {
+            role: "target".into(),
+            selector,
+        }],
+        constraints: json!({}),
+    };
+    let mut raw = serde_json::to_value(old.claims).unwrap();
+    raw["schema"] = json!(v2::GRANT);
+    raw["permissions"] = json!([p]);
+    let g = v2::issue_grant(&pin, serde_json::from_value(raw).unwrap(), &issuer, 100).unwrap();
+    let prepared = call(
+        &mut s,
+        json!({"operation":"prepare_holder_grant","pin":pin,"grant":g,"now":101}),
+    );
+    let snapshot = commit(&mut s, prepared);
+    call(&mut s, json!({"operation":"lock"}));
+    call(
+        &mut s,
+        json!({"operation":"unlock","snapshot":snapshot,"password":"disposable grant wallet password"}),
+    );
+    let mut narrowed = p.clone();
+    narrowed.roles[0].selector.selection = Selection::Objects {
+        refs: vec![ResourceRef {
+            kind: "Task".into(),
+            id: "one".into(),
+        }],
+        within: None,
+    };
+    let c = call(
+        &mut s,
+        json!({"operation":"derive_holder_credential","service":pin.service,"permissions":[narrowed],"now":102,"expires_at":200}),
+    );
+    let c: v2::Credential = serde_json::from_value(c).unwrap();
+    v2::verify_credential(&pin, &c, 103).unwrap();
+    let e = call(
+        &mut s,
+        json!({"operation":"present_holder_credential","service":pin.service,"credential":c,"call":{"operation":"work.read","resource":"work","parameters":{}},"now":103}),
+    );
+    let proof: Proof = serde_json::from_value(e["proof"].clone()).unwrap();
+    v2::verify_presentation(&pin, &c, &e["call"], &proof, 104).unwrap();
+    let mut bad = p;
+    bad.operation = "work.write".into();
+    assert!(s.invoke(&json!({"operation":"derive_holder_credential","service":pin.service,"permissions":[bad],"now":103,"expires_at":200}).to_string()).is_err());
+    let backup = call(&mut s, json!({"operation":"export_holder_grant_backup"}));
+    let p = call(
+        &mut s,
+        json!({"operation":"forget_holder_grant","service":pin.service}),
+    );
+    commit(&mut s, p);
+    let p = call(
+        &mut s,
+        json!({"operation":"prepare_holder_grant_backup","file":backup["file"]}),
+    );
+    commit(&mut s, p);
+    assert_eq!(
+        call(&mut s, json!({"operation":"holder_grants"}))["grants"][0]["permissions"][0]["roles"]
+            [0]["role"],
+        "target"
+    );
+}

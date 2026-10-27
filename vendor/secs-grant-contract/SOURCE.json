@@ -1,12 +1,21 @@
 {
   "schema": "castalia.vendored-source.v1",
   "repository": "https://github.com/ZenithResearch/secS-magik",
-  "commit": "179722216216121ace98ae1a916512099e5add54",
+  "commit": "61e8d6c4a134be4287cc55284f472a624c378181",
   "package": "crates/secs-grant-contract",
   "files": {
     "Cargo.toml": "3899f6185d4efee1facb791a6b9fa2de0d206c2209b0bc27833ec2b2e4af9f16",
-    "src/lib.rs": "9d1bf36602a97f27b80b2cace052566a6906737b8eb8435894ef3b2f54b0d3a9",
-    "tests/holder_grants.rs": "17a8b1ad9608c392d2b3e41ab7bfd61e3012cabee92d5fca2e558feac61da49e",
-    "tests/fixtures/access-point.json": "d709009e7bbf9b2c0d7a252bc86c5e82ebb48a2753fa8d207422b6f5fba37710"
+    "src/lib.rs": "6de048ed3307e9f7b11dde1ce21dd4213ef8ddf4b61a42be1eb331ec28e6798d",
+    "tests/holder_grants.rs": "179e48f6006006382bcd4ac778e665abbdafd7ffe2e400fa93bc4ad306e1d083",
+    "tests/fixtures/access-point.json": "d709009e7bbf9b2c0d7a252bc86c5e82ebb48a2753fa8d207422b6f5fba37710",
+    "src/resource_selector.rs": "c58fc5004ada2b0ce76dffa5823b87df50702af4c82814ccbd72fcce04ba07ea",
+    "tests/resource_selectors.rs": "29fd9c05b337f3016b6670cdd3aae7d5d71d01dfb2dd118c5e0a6c433b08f68e",
+    "tests/fixtures/resource-selectors.json": "07a6fa107ba56eb29a7ef3d06db676f694940ca62a3e002486db0e483895d535",
+    "src/compound_resources.rs": "99c39eeca1296f50c6327d11e6c1a00174cd42e0682fbedc9a03c15928c83c33",
+    "tests/compound_resources.rs": "cc869e336d8dec265eed7cebaf452705b373f2a6b49eb46af738c1c1b220e429",
+    "src/scoped_grants.rs": "b0f6b1ec6f4a9d75c87bab2ca28429ab13c5f96dfccfbd5fc9c9907c8454b4cc",
+    "src/provider_snapshot.rs": "3dc57d2462fdb296898ea1a1f5b30a29550d6f193d0bc5f9d5c15246648f5dc2",
+    "tests/scoped_grants.rs": "45eda1e9ef559a8cb73f5bd6627b2d26bf401c834c1a706e939f2f22254ab784",
+    "tests/provider_snapshot.rs": "9c3c1dabf458f22f16a70a67f26946d87ecdcaf045ff8903b1f896e1d22a9983"
   }
 }

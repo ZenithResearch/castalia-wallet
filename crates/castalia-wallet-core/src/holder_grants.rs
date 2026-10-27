@@ -149,7 +149,8 @@ impl WasmWallet {
         time: &str,
     ) -> std::result::Result<String, JsValue> {
         let wallet = self.inner.as_ref().ok_or_else(|| js("wallet_locked"))?;
-        let g: Grant = contract::parse(raw.as_bytes()).map_err(js)?;
+        let g: crate::portable_holder_grants::Grant =
+            contract::parse(raw.as_bytes()).map_err(js)?;
         let caller: castalia_wallet_presentation::Caller =
             castalia_wallet_presentation::parse(caller.as_bytes(), 1024).map_err(js)?;
         caller.validate().map_err(js)?;
@@ -158,19 +159,23 @@ impl WasmWallet {
         let pin = pins
             .iter()
             .find(|p| {
-                p.issuer == g.claims.issuer
-                    && p.key_id == g.claims.key_id
-                    && p.callers.contains(&caller)
+                p.issuer == g.issuer().0 && p.key_id == g.issuer().1 && p.callers.contains(&caller)
             })
             .ok_or_else(|| js("issuer_setup_required"))?;
         let pin = IssuerPin {
             issuer: pin.issuer.clone(),
             key_id: pin.key_id.clone(),
             public_key: pin.public_key.clone(),
-            service: g.claims.service.clone(),
+            service: g.issuer().2.into(),
         };
-        let stored = StoredGrant::review(wallet, pin, g, installation, now(time).map_err(js)?)
-            .map_err(js)?;
+        let stored = crate::portable_holder_grants::StoredGrant::review(
+            wallet,
+            pin,
+            g,
+            installation,
+            now(time).map_err(js)?,
+        )
+        .map_err(js)?;
         serde_json::to_string(&json!({"stored":stored,"summary":stored.summary()}))
             .map_err(|_| js("encoding_failed"))
     }
@@ -184,8 +189,10 @@ impl WasmWallet {
         expires: &str,
     ) -> std::result::Result<String, JsValue> {
         let w = self.inner.as_ref().ok_or_else(|| js("wallet_locked"))?;
-        let stored: StoredGrant = contract::parse(stored.as_bytes()).map_err(js)?;
-        let p: Option<Vec<Permission>> = contract::parse(permissions.as_bytes()).map_err(js)?;
+        let stored: crate::portable_holder_grants::StoredGrant =
+            contract::parse(stored.as_bytes()).map_err(js)?;
+        let p: Option<crate::portable_holder_grants::Permissions> =
+            contract::parse(permissions.as_bytes()).map_err(js)?;
         let c = stored
             .derive(
                 w,
@@ -206,8 +213,10 @@ impl WasmWallet {
         time: &str,
     ) -> std::result::Result<String, JsValue> {
         let w = self.inner.as_ref().ok_or_else(|| js("wallet_locked"))?;
-        let stored: StoredGrant = contract::parse(stored.as_bytes()).map_err(js)?;
-        let c: Credential = contract::parse(credential.as_bytes()).map_err(js)?;
+        let stored: crate::portable_holder_grants::StoredGrant =
+            contract::parse(stored.as_bytes()).map_err(js)?;
+        let c: crate::portable_holder_grants::Credential =
+            contract::parse(credential.as_bytes()).map_err(js)?;
         let call: Value = contract::parse(call.as_bytes()).map_err(js)?;
         serde_json::to_string(
             &stored
@@ -219,7 +228,7 @@ impl WasmWallet {
     #[wasm_bindgen(js_name=validateHolderGrantBackup)]
     pub fn validate_holder_grant_backup(&self, raw: &str) -> std::result::Result<String, JsValue> {
         let w = self.inner.as_ref().ok_or_else(|| js("wallet_locked"))?;
-        let grants = parse_backup(w, raw).map_err(js)?;
+        let grants = crate::portable_holder_grants::parse_backup(w, raw).map_err(js)?;
         serde_json::to_string(&grants).map_err(|_| js("encoding_failed"))
     }
 }
@@ -236,29 +245,24 @@ impl WasmWallet {
         expires: &str,
     ) -> std::result::Result<String, JsValue> {
         let w = self.inner.as_ref().ok_or_else(|| js("wallet_locked"))?;
-        let g: StoredGrant = contract::parse(stored.as_bytes()).map_err(js)?;
+        let g: crate::portable_holder_grants::StoredGrant =
+            contract::parse(stored.as_bytes()).map_err(js)?;
         let start = now(time).map_err(js)?;
         let end = now(expires).map_err(js)?;
-        StoredGrant::review(w, g.pin.clone(), g.grant.clone(), installation, start).map_err(js)?;
-        if end <= start
-            || end - start > g.grant.claims.max_credential_lifetime_seconds
-            || g.grant.claims.validity.end().is_some_and(|e| end > e)
-        {
-            return Err(js("invalid_credential_lifetime"));
-        }
-        let p: Option<Vec<Permission>> = contract::parse(permissions.as_bytes()).map_err(js)?;
-        let p = p.unwrap_or_else(|| g.grant.claims.permissions.clone());
-        contract::permissions_within(&p, &g.grant.claims.permissions).map_err(js)?;
-        let mut summary = g.summary();
-        summary["permissions"] = json!(p);
-        summary["expires_at"] = json!(end);
+        let p: Option<crate::portable_holder_grants::Permissions> =
+            contract::parse(permissions.as_bytes()).map_err(js)?;
+        let summary = g
+            .review_derivation(w, p, installation, start, end)
+            .map_err(js)?;
         Ok(summary.to_string())
     }
 }
 
 /// Reserve backup envelope space so every accepted collection can be restored
 /// through the same bounded parser, rather than exporting an unreadable file.
-pub fn validate_capacity(grants: &std::collections::BTreeMap<String, StoredGrant>) -> Result<()> {
+pub fn validate_capacity<T: Serialize>(
+    grants: &std::collections::BTreeMap<String, T>,
+) -> Result<()> {
     if grants.len() > 128
         || serde_json::to_vec(grants)
             .map_err(|_| "encoding_failed")?

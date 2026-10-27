@@ -4,6 +4,26 @@
 
 ### Added
 
+- Dual native/Chrome custody for versioned scoped holder grants — keep existing v1 backups and signatures while supporting complete selector-role narrowing through the same encrypted Wallet store.
+
+
+### Added
+
+- Reuse complete compound-resource rule narrowing in Core review — keep source/destination roles correlated without adding signing, storage or execution authority.
+
+### Added
+
+- Reuse the secS resource-selector primitive for public Core selection review and conservative narrowing — retain exact object/hierarchy distinctions without changing custody, signed v1 permissions or stored grants.
+
+### Added
+
+- Qualify saved live-collection grants through encrypted backup/restore and equal or narrower same-Wallet derivation — future resource coverage reuses existing Core scopes without migrating fixed grants or enabling delegation.
+
+### Added
+
+- Exercise independently scoped holder-grant actions through encrypted backup/restore and same-holder derivation — ensure app rule editors cannot mix another rule’s scope into a saved credential. Signed formats and Core behavior are unchanged.
+
+
 - Add Core 0.4.1 public service-access-point verification and browser consent routing — a verified service can reuse canonical authority through multiple access points while preserving site-specific consent, custody, and all existing grant/backup bytes.
 
 - Add Wallet Core 0.4 reusable provider grants with the shared secS verifier, encrypted reviewed storage and grant backups. The same Wallet can derive equal or narrower finite credentials; onward delegation remains disabled. Existing formats retain their bytes. The new populated local-state snapshot requires the new Core, and live qualification is still pending.
