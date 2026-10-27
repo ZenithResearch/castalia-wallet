@@ -17,3 +17,17 @@ pub fn review(raw: &str, verified_service: &str) -> Result<ResourceSelector> {
 pub fn can_narrow(child: &str, parent: &str, verified_service: &str) -> Result<bool> {
     review(child, verified_service)?.within(&review(parent, verified_service)?)
 }
+
+// Typed, unsigned compound-resource review. The caller supplies its installed
+// operation contract; these records are not a signing or execution request.
+pub use secs_grant_contract::compound_resources::{
+    EffectContract, EffectRule, ResolvedRole, RoleContract, RoleSelection,
+};
+
+pub fn can_narrow_effect_rule(
+    child: &EffectRule,
+    parent: &EffectRule,
+    installed_contract: &EffectContract,
+) -> Result<bool> {
+    child.within(parent, installed_contract)
+}

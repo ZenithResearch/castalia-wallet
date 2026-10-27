@@ -1,15 +1,17 @@
 {
   "schema": "castalia.vendored-source.v1",
   "repository": "https://github.com/ZenithResearch/secS-magik",
-  "commit": "37aed0cf45c9c64dc39ee0ce10b8e48f55efd44e",
+  "commit": "37e7ec1aadee80c22e66c41efd6fd6dd05764d7f",
   "package": "crates/secs-grant-contract",
   "files": {
     "Cargo.toml": "3899f6185d4efee1facb791a6b9fa2de0d206c2209b0bc27833ec2b2e4af9f16",
-    "src/lib.rs": "9a5e32fba2332824f8278a85a222d2e99423bd7c14bbdd0785e1e29af996eae9",
+    "src/lib.rs": "d45eede1acd04812ee7dd9a5bf56da06f4473aef263a3cfd79ae449533384c4d",
     "tests/holder_grants.rs": "179e48f6006006382bcd4ac778e665abbdafd7ffe2e400fa93bc4ad306e1d083",
     "tests/fixtures/access-point.json": "d709009e7bbf9b2c0d7a252bc86c5e82ebb48a2753fa8d207422b6f5fba37710",
     "src/resource_selector.rs": "c58fc5004ada2b0ce76dffa5823b87df50702af4c82814ccbd72fcce04ba07ea",
     "tests/resource_selectors.rs": "29fd9c05b337f3016b6670cdd3aae7d5d71d01dfb2dd118c5e0a6c433b08f68e",
-    "tests/fixtures/resource-selectors.json": "07a6fa107ba56eb29a7ef3d06db676f694940ca62a3e002486db0e483895d535"
+    "tests/fixtures/resource-selectors.json": "07a6fa107ba56eb29a7ef3d06db676f694940ca62a3e002486db0e483895d535",
+    "src/compound_resources.rs": "243a13289df936ad5828976f865e9c29eff7a2957e2e908f98e2c82f624e6144",
+    "tests/compound_resources.rs": "cc869e336d8dec265eed7cebaf452705b373f2a6b49eb46af738c1c1b220e429"
   }
 }

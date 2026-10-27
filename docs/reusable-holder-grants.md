@@ -103,3 +103,17 @@ new selector cannot be inserted into them. Operation/constraint/holder/lifetime
 checks and disabled onward delegation stay unchanged. Provider effect plans and
 a separately versioned signed integration must be implemented before issuance.
 No app is rebuilt or installed and no source pin used by installed apps changes.
+
+## Correlated compound resource review
+
+Core also reuses the shared in-process EffectContract/EffectRule/RoleSelection
+types and `can_narrow_effect_rule`. Every role narrows one complete parent
+rule: A→B and C→D cannot yield A→D. The installed provider declares the full
+effect roles and cardinality; caller metadata is not trusted authority.
+
+These are unsigned Rust review helpers, not new signing/storage/transport APIs.
+The provider must resolve actual source/destination and affected resources, fence
+policy and resource versions, recheck the SAME rule before/after mutation and
+roll back on failed postconditions. Operation/holder/validity/revocation/replay
+checks remain mandatory. Database execution adapters and signed integration are
+still unimplemented here; existing v1 grants and encrypted backups are unchanged.

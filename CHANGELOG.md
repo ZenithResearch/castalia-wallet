@@ -4,6 +4,10 @@
 
 ### Added
 
+- Reuse complete compound-resource rule narrowing in Core review — keep source/destination roles correlated without adding signing, storage or execution authority.
+
+### Added
+
 - Reuse the secS resource-selector primitive for public Core selection review and conservative narrowing — retain exact object/hierarchy distinctions without changing custody, signed v1 permissions or stored grants.
 
 ### Added

@@ -35,3 +35,29 @@ fn core_and_receiver_share_media_selection_vectors() {
         );
     }
 }
+
+#[test]
+fn core_narrows_complete_compound_pairs_without_combining_parents() {
+    use castalia_wallet_core::resource_selection::{
+        EffectContract, EffectRule, RoleContract, RoleSelection, can_narrow_effect_rule,
+    };
+    let c = EffectContract {
+        service: "service-a".into(),
+        operation: "media:move.v1".into(),
+        roles: ["source", "destination"]
+            .iter()
+            .map(|name| RoleContract {
+                name: (*name).into(),
+                kinds: vec!["media:Folder".into()],
+                minimum: 1,
+                maximum: 1,
+            })
+            .collect(),
+    };
+    let rule = |from: &str, to: &str| {
+        EffectRule{service:"service-a".into(),operation:"media:move.v1".into(),roles:[("source",from),("destination",to)].iter().map(|(role,id)|RoleSelection{role:(*role).into(),selector:review(&json!({"schema":"secs.resource-selector.v1","service":"service-a","kinds":["media:Folder"],"selection":{"mode":"objects","refs":[{"kind":"media:Folder","id":id}]}}).to_string(),"service-a").unwrap()}).collect()}
+    };
+    assert!(can_narrow_effect_rule(&rule("a", "b"), &rule("a", "b"), &c).unwrap());
+    assert!(!can_narrow_effect_rule(&rule("a", "d"), &rule("a", "b"), &c).unwrap());
+    assert!(!can_narrow_effect_rule(&rule("a", "d"), &rule("c", "d"), &c).unwrap());
+}
