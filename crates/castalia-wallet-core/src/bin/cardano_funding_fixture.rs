@@ -1,7 +1,7 @@
 //! Opt-in local fixture process: no listener, key import, vault access or production consent.
 use castalia_wallet_core::{
     CardanoFundingNetworkV1,
-    funding_fixture::{FixtureProfile, FundingFixtureSession},
+    funding_fixture::{FixtureProfile, FixtureReviewContext, FundingFixtureSession},
 };
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -27,10 +27,14 @@ enum Command {
     Inspect {
         #[serde(rename = "transactionHex")]
         transaction_hex: String,
+        #[serde(default, rename = "reviewContext")]
+        review_context: Option<FixtureReviewContext>,
     },
     Prepare {
         #[serde(rename = "transactionHex")]
         transaction_hex: String,
+        #[serde(default, rename = "reviewContext")]
+        review_context: Option<FixtureReviewContext>,
         #[serde(rename = "ownerSignature")]
         owner_signature: String,
     },
@@ -76,16 +80,29 @@ fn execute(
                 .map_err(|e| e.to_string())?;
             Ok(json!({"updated":true}))
         }
-        Command::Inspect { transaction_hex } => {
-            serde_json::to_value(s.inspect(&transaction_hex).map_err(|e| e.to_string())?)
+        Command::Inspect {
+            transaction_hex,
+            review_context,
+        } => {
+            let inspected = if let Some(context) = review_context {
+                s.inspect_with_context(&transaction_hex, &context)
+            } else {
+                s.inspect(&transaction_hex)
+            };
+            serde_json::to_value(inspected.map_err(|e| e.to_string())?)
                 .map_err(|_| "cannot encode inspection".into())
         }
         Command::Prepare {
             transaction_hex,
+            review_context,
             owner_signature,
         } => serde_json::to_value(
-            s.prepare(&transaction_hex, &owner_signature)
-                .map_err(|e| e.to_string())?,
+            if let Some(context) = review_context {
+                s.prepare_with_context(&transaction_hex, &context, &owner_signature)
+            } else {
+                s.prepare(&transaction_hex, &owner_signature)
+            }
+            .map_err(|e| e.to_string())?,
         )
         .map_err(|_| "cannot encode preparation".into()),
         Command::Approve { handle } => {
@@ -124,12 +141,12 @@ fn main() {
     let mut writer = stdout.lock();
     loop {
         let mut line = Vec::new();
-        let read = (&mut reader).take(131073).read_until(b'\n', &mut line);
+        let read = (&mut reader).take(262145).read_until(b'\n', &mut line);
         let Ok(count) = read else { break };
         if count == 0 {
             break;
         }
-        if count > 131072 || line.last() != Some(&b'\n') {
+        if count > 262144 || line.last() != Some(&b'\n') {
             let _ = writeln!(
                 writer,
                 "{}",

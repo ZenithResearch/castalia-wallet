@@ -66,6 +66,7 @@ fn profile() -> FixtureProfile {
         backend: "scalus-1.4.1".into(),
         execution_profile_digest: "11".repeat(32),
         allowed_script_hashes: vec![script_hash()],
+        allowed_scripts: vec![],
     }
 }
 fn signature(owner: &SigningKey, domain: &str, statement: &Value) -> String {
@@ -465,7 +466,7 @@ fn native_transport_rejects_import_commands_and_closes_on_oversized_framing() {
         json!({"command":"importWallet","seed":"forbidden"})
     )
     .unwrap();
-    input.write_all(&vec![b'x'; 131074]).unwrap();
+    input.write_all(&vec![b'x'; 262146]).unwrap();
     drop(input);
     let output = child.wait_with_output().unwrap();
     assert!(output.status.success());

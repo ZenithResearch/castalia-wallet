@@ -1,5 +1,6 @@
 //! Opt-in disposable synthetic fixture custody. Never a production permission/consent API.
 mod cbor;
+mod v2;
 use crate::{CardanoFundingAccountV1, CardanoFundingNetworkV1, OpenedWallet};
 use blake2::{
     Blake2bVar,
@@ -15,11 +16,13 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     time::{Duration, Instant},
 };
+pub use v2::{FixtureAllowedScript, FixtureReviewContext, FixtureReviewUtxo};
 use zeroize::Zeroizing;
 
 pub const PROFILE_DOMAIN: &str = "castalia/cardano-fixture-profile/v1\0";
 pub const CONTEXT_DOMAIN: &str = "castalia/cardano-fixture-context/v1\0";
 pub const ADMISSION_DOMAIN: &str = "castalia/cardano-fixture-admission/v1\0";
+pub const ADMISSION_DOMAIN_V2: &str = "castalia/cardano-fixture-admission/v2\0";
 const STATE_TOKEN: &str = "544541504f545f53544154455f5631";
 const MAX_TX: usize = 32768;
 const MAX_PENDING: usize = 8;
@@ -40,7 +43,10 @@ pub struct FixtureProfile {
     pub schema: String,
     pub backend: String,
     pub execution_profile_digest: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub allowed_script_hashes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub allowed_scripts: Vec<FixtureAllowedScript>,
 }
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -55,8 +61,11 @@ pub struct FixtureReview {
     pub kind: String,
     pub fund_script_hash: String,
     pub state_asset_name: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub redeemer_data_hex: String,
     pub purpose: Option<String>,
+    #[serde(flatten)]
+    pub extension: BTreeMap<String, JsonValue>,
 }
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -187,19 +196,43 @@ impl FundingFixtureSession {
     }
     pub fn profile_statement(&self, profile: &FixtureProfile) -> FixtureResult<JsonValue> {
         self.active()?;
-        if profile.schema != "castalia.cardano-fixture-execution-profile.v1"
+        let admitted = if profile.schema == "castalia.cardano-fixture-execution-profile.v1" {
+            profile.allowed_scripts.is_empty()
+                && !profile.allowed_script_hashes.is_empty()
+                && profile.allowed_script_hashes.len() <= 16
+                && profile
+                    .allowed_script_hashes
+                    .iter()
+                    .all(|h| lower_hex(h, 28))
+                && profile
+                    .allowed_script_hashes
+                    .windows(2)
+                    .all(|p| p[0] < p[1])
+        } else if profile.schema == "castalia.cardano-fixture-execution-profile.v2" {
+            profile.allowed_script_hashes.is_empty()
+                && !profile.allowed_scripts.is_empty()
+                && profile.allowed_scripts.len() <= 16
+                && profile.allowed_scripts.iter().all(|s| {
+                    lower_hex(&s.hash, 28)
+                        && match s.role.as_str() {
+                            "teapot" => s.creator_key_hash.is_none(),
+                            "marsh" => s
+                                .creator_key_hash
+                                .as_ref()
+                                .is_some_and(|k| lower_hex(k, 28)),
+                            _ => false,
+                        }
+                })
+                && profile
+                    .allowed_scripts
+                    .windows(2)
+                    .all(|p| p[0].hash < p[1].hash)
+        } else {
+            false
+        };
+        if !admitted
             || profile.backend != "scalus-1.4.1"
             || !lower_hex(&profile.execution_profile_digest, 32)
-            || profile.allowed_script_hashes.is_empty()
-            || profile.allowed_script_hashes.len() > 16
-            || !profile
-                .allowed_script_hashes
-                .iter()
-                .all(|h| lower_hex(h, 28))
-            || !profile
-                .allowed_script_hashes
-                .windows(2)
-                .all(|p| p[0] < p[1])
         {
             return Err(FixtureError("invalid synthetic execution profile"));
         }
@@ -262,6 +295,20 @@ impl FundingFixtureSession {
         Ok(())
     }
     pub fn inspect(&self, transaction_hex: &str) -> FixtureResult<FixtureInspection> {
+        self.inspect_internal(transaction_hex, None)
+    }
+    pub fn inspect_with_context(
+        &self,
+        transaction_hex: &str,
+        review_context: &FixtureReviewContext,
+    ) -> FixtureResult<FixtureInspection> {
+        self.inspect_internal(transaction_hex, Some(review_context))
+    }
+    fn inspect_internal(
+        &self,
+        transaction_hex: &str,
+        review_context: Option<&FixtureReviewContext>,
+    ) -> FixtureResult<FixtureInspection> {
         self.active()?;
         let profile = self
             .profile
@@ -280,9 +327,24 @@ impl FundingFixtureSession {
         }
         let bytes =
             hex::decode(transaction_hex).map_err(|_| FixtureError("invalid transaction hex"))?;
-        let (body_hash, review) =
-            inspect_envelope(&bytes, profile, self.info.account.payment_key_hash())?;
-        let statement = json!({"schema":"castalia.cardano-fixture-admission.v1","sessionId":self.info.session_id,"epoch":self.info.epoch,"profileDigest":self.profile_digest,"contextGeneration":context.generation,"contextDigest":context.digest,"paymentKeyHash":self.info.account.payment_key_hash(),"transactionBodyHash":hex::encode(body_hash),"transactionEnvelopeHash":sha(&bytes),"reviewHash":sha(&canonical(&review)?)});
+        let is_v2 = profile.schema == "castalia.cardano-fixture-execution-profile.v2";
+        let (body_hash, review) = if is_v2 {
+            v2::inspect(
+                &bytes,
+                profile,
+                self.info.account.payment_key_hash(),
+                review_context.ok_or(FixtureError("v2 review context required"))?,
+            )?
+        } else {
+            if review_context.is_some() {
+                return Err(FixtureError("v1 review context forbidden"));
+            }
+            inspect_envelope(&bytes, profile, self.info.account.payment_key_hash())?
+        };
+        let mut statement = json!({"schema":if is_v2 {"castalia.cardano-fixture-admission.v2"} else {"castalia.cardano-fixture-admission.v1"},"sessionId":self.info.session_id,"epoch":self.info.epoch,"profileDigest":self.profile_digest,"contextGeneration":context.generation,"contextDigest":context.digest,"paymentKeyHash":self.info.account.payment_key_hash(),"transactionBodyHash":hex::encode(body_hash),"transactionEnvelopeHash":sha(&bytes),"reviewHash":sha(&canonical(&review)?)});
+        if let Some(evidence) = review_context {
+            statement["reviewContextHash"] = json!(sha(&canonical(evidence)?));
+        }
         Ok(FixtureInspection { statement, review })
     }
     pub fn prepare(
@@ -290,13 +352,37 @@ impl FundingFixtureSession {
         transaction_hex: &str,
         owner_signature: &str,
     ) -> FixtureResult<FixturePreparation> {
+        self.prepare_internal(transaction_hex, None, owner_signature)
+    }
+    pub fn prepare_with_context(
+        &mut self,
+        transaction_hex: &str,
+        review_context: &FixtureReviewContext,
+        owner_signature: &str,
+    ) -> FixtureResult<FixturePreparation> {
+        self.prepare_internal(transaction_hex, Some(review_context), owner_signature)
+    }
+    fn prepare_internal(
+        &mut self,
+        transaction_hex: &str,
+        review_context: Option<&FixtureReviewContext>,
+        owner_signature: &str,
+    ) -> FixtureResult<FixturePreparation> {
         if self.pending.len() >= MAX_PENDING {
             return Err(FixtureError("too many pending preparations"));
         }
-        let inspected = self.inspect(transaction_hex)?;
+        let inspected = self.inspect_internal(transaction_hex, review_context)?;
         // This signature is an explicitly trusted SYNTHETIC verifier capability, not an end-user assertion.
         // Its issuer must independently verify script_data_hash, action semantics and resolved context.
-        self.verify(ADMISSION_DOMAIN, &inspected.statement, owner_signature)?;
+        self.verify(
+            if review_context.is_some() {
+                ADMISSION_DOMAIN_V2
+            } else {
+                ADMISSION_DOMAIN
+            },
+            &inspected.statement,
+            owner_signature,
+        )?;
         let admission_id = sha(&canonical(&inspected.statement)?);
         if self.used_admissions.len() >= 64 || !self.used_admissions.insert(admission_id) {
             return Err(FixtureError("reused or exhausted admission capability"));
@@ -563,6 +649,7 @@ fn inspect_envelope(
             state_asset_name: STATE_TOKEN.into(),
             redeemer_data_hex: hex::encode(&raw[data.start..data.end]),
             purpose,
+            extension: BTreeMap::new(),
         },
     ))
 }

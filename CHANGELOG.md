@@ -4,6 +4,7 @@
 
 ### Added
 
+- Extend disposable native funding fixtures with versioned Marsh and proposal review — bind authentic resolved state, exact request revisions and independent payer roles without widening the original approval profile.
 - Add explicit testnet Cardano account descriptors and raw-Shelley-genesis hash semantics — reuse the existing payment derivation without changing saved Wallet formats or confusing network context with membership.
 - Add native-only disposable funding fixture custody with bounded CBOR admission and one-use approvals — qualify real shared-core payment witnesses without importing saved wallets or exposing a production raw signer.
 

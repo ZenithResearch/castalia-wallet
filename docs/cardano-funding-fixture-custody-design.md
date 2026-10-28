@@ -226,3 +226,121 @@ private recovery format was changed. Rust formatting and diff checks passed.
 The final locked feature-enabled core regression suite passed all 79 tests,
 including the 13 fixture tests, after the float-alias fix. No commit, real-key
 operation or deployment is performed.
+
+## Version two: typed fund roles and authenticated resolved review
+
+The opt-in fixture adds a separately versioned execution profile and admission
+transcript. The original execution-profile v1 and its admission v1 remain
+restricted to their original Teapot bootstrap/control/direct-payout actions;
+they cannot reinterpret new request or Marsh constructors. Account and network
+v1 descriptors are unchanged. Fresh sessions have no persisted profile migration.
+
+Execution-profile v2 replaces `allowedScriptHashes` with sorted unique
+`allowedScripts`: entries have `hash` and `role` (`teapot` or `marsh`). A Marsh
+entry additionally requires `creatorKeyHash`; a Teapot entry forbids it. The
+trusted owner must derive that creator binding by applying the exact qualified
+Marsh template to its seed, creator and fixed Teapot parameters, then comparing
+the resulting script. A caller's script/creator labels are not qualification.
+The native profile signature attests this narrowly documented synthetic binding;
+Rust does not infer an immutable creator from the Marsh receiver datum.
+
+V2 `inspect` and `prepare` additionally require a `reviewContext` object:
+
+~~~json
+{
+  "schema": "castalia.cardano-fixture-review-context.v1",
+  "utxos": [
+    {"txHash": "<64 lowercase hex>", "outputIndex": 0, "utxoCborHex": "<original UTxO pair CBOR>"}
+  ]
+}
+~~~
+
+It has at most three entries and at most 32,768 total decoded CBOR bytes, sorted
+by transaction hash and numeric output index. The original transaction has its
+separate 32,768-byte bound. Native line framing is now bounded at 262,144 bytes
+including newline so both hex payloads fit; oversize or incomplete frames close
+the process. No root/import/recovery commands are added.
+
+The owner independently resolves each entry from the actual validating ledger
+snapshot. Rust checks the exact pair reference against the supplied reference
+and the original body's normal/reference input sets, rejects duplicates and
+unrelated entries, and authenticates the exact protocol NFT at its enterprise
+script address before decoding inline role data. The full independently resolved
+snapshot remains the owner's context digest; the bounded subset is separately
+committed. It supplies exactly the necessary current fund/request evidence and,
+when needed, a genuine selected normal key-input payer. A collateral or reference
+input cannot establish normal payer participation.
+
+Required role coverage:
+
+| Action | Required resolved review evidence |
+| --- | --- |
+| Teapot bootstrap | None; new state is inspected from original output bytes |
+| Request creation | Authentic initialized fund reference |
+| Request revision | Authentic initialized fund reference and consumed request |
+| Linked payout | Authentic consumed fund state and selected consumed request |
+| Teapot control/direct payout | Authentic consumed fund state |
+| Marsh bootstrap | Authentic initialized Teapot reference |
+| Marsh reset/release | Authentic consumed Marsh state |
+
+A selected input-payer role needs its actual normal key input in the remaining
+slot. Controller, current recovery member and request-author labels derive only
+from the relevant authenticated state/request role. For Marsh, controller derives
+only from the qualified immutable profile creator binding. The creator can sign
+without owning any normal payment input while another wallet funds fees. An
+extra required signer or witness alone establishes no participation role.
+
+The v2 review has `schema` (`castalia.cardano-fixture-review.v2`), `kind`,
+`fundRole`, `fundScriptHash`, `stateAssetName`, `stateDatumHex`, `redeemers`,
+`purpose`, `request` and `participation`. Redeemers are sorted by ledger tag
+(spend before mint) then numeric index, and preserve each original Data slice.
+The state datum is the genuine current input/reference state or the inspected
+initial state at bootstrap. A request carries exact `assetName`, `authorKeyHash`,
+canonical decimal `revision`, original inline `datumHex`, `inputReference`
+(or null) and continuation/created `outputIndex` (or null). Its exact bounded
+amounts, destination/datum and UTF-8 purpose derive from those same bytes.
+Linked review reads the consumed request rather than accepting caller prose.
+Raw CBOR review is fixture evidence, not a production financial display.
+
+V2 supports only the agreed constructor families. Linked payout alone may mix
+identical spend Action4 redeemers with exactly one matching MintRetire2; its
+selected input reference and request burn agree. Other mixed/unlisted families
+reject. Request creation inspects the minted output; author-only revision
+inspects both the authentic prior anchor and its same-token next revision.
+The trusted owner's exact compiled phase-two/value/script-data commitment checks
+remain mandatory; structural native review is not independent ledger validation.
+
+Profile/context statement domains remain v1 and bind the explicit v2 profile.
+The new admission schema/domain are `castalia.cardano-fixture-admission.v2` and
+`castalia/cardano-fixture-admission/v2\0`. Its fields are the v1 admission fields
+plus `reviewContextHash`, SHA-256 of RFC8785 JCS of the exact bounded subset.
+Rust recomputes that hash, the original body/envelope hashes and the derived
+review hash before verifying the owner capability. Substituted/missing evidence,
+changed terms, stale context, wrong profile/domain or reused preparation cannot
+obtain a witness. Original body bytes are never reconstructed for signing.
+
+### V2 verification checkpoint
+
+The complete locked feature-enabled core regression command
+`cargo test --locked -p castalia-wallet-core --features funding-fixtures`
+passed all 86 tests with no warnings. This includes the unchanged 13 v1 fixture
+cases and seven new v2 capability tests. The new structural tests demonstrate
+signed creation/revision/linked review, exact request terms, missing/substituted/
+duplicate context rejection, mixed-retirement rejection, creator participation
+without a normal payment input, and actual normal-payer evidence rather than
+an extra signer assertion. They use explicit placeholder script bytes and do
+not themselves prove compiled execution.
+
+Separate cross-repository integration uses the fixed Aiken blueprint and actual
+fresh shared-core-derived native witnesses. The independently validating backend
+accepted eight compiled transactions covering Teapot bootstrap, Marsh bootstrap/
+reset/release, request creation/revision/linked payout and two-quorum controller
+recovery. Marsh creator and its paying wallet were distinct: the creator had no
+normal key input. Request authors likewise used a separate sponsor. Native and
+backend reviews/admission statements matched exactly for every participant;
+missing/wrong evidence, absent receipts and reused handles denied witnesses.
+Those are synthetic-ledger qualification results, not public-network submission,
+production Wallet consent, confirmations or a proof that every maximum-sized
+source candidate fits a ledger transaction. The producer and this consumer
+remain subject to independent final source review before their source pin is
+advanced.
