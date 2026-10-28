@@ -9,6 +9,15 @@ publish = false
 [lib]
 crate-type = ["rlib", "cdylib"]
 
+[features]
+default = []
+funding-fixtures = []
+
+[[bin]]
+name = "castalia-cardano-funding-fixture"
+path = "src/bin/cardano_funding_fixture.rs"
+required-features = ["funding-fixtures"]
+
 [dependencies]
 secs-grant-contract = { path = "../../vendor/secs-grant-contract" }
 castalia-wallet-presentation = { path = "../castalia-wallet-presentation" }
