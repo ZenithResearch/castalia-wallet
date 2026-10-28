@@ -1,5 +1,5 @@
 [workspace]
 # Opt-in service holder and native source keep independent locks and workspace ownership.
 exclude = ["vendor/secs-grant-contract", "crates/castalia-wallet-service-holder", "vendor/secS-magik-7e32f13", "vendor/secS-magik-7e32f13/core", "vendor/secS-magik-7e32f13/server", "vendor/secS-magik-7e32f13/permissions", "vendor/secS-magik-7e32f13/crates/secs-service-call-contract"]
-members = ["crates/castalia-wallet-cli", "crates/castalia-wallet-private-files", "crates/castalia-wallet-presentation", "crates/castalia-wallet-core", "crates/castalia-wallet-native"]
+members = ["crates/castalia-wallet-cli", "crates/castalia-wallet-private-files", "crates/castalia-wallet-presentation", "crates/castalia-wallet-core", "crates/castalia-wallet-native", "crates/castalia-session-agent"]
 resolver = "2"

@@ -132,6 +132,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
 
 [[package]]
+name = "castalia-session-agent"
+version = "0.1.0"
+dependencies = [
+ "castalia-wallet-core",
+ "castalia-wallet-private-files",
+ "ed25519-dalek",
+ "getrandom 0.2.17",
+ "hex",
+ "secs-grant-contract",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+]
+
+[[package]]
 name = "castalia-wallet-cli"
 version = "0.1.0"
 dependencies = [

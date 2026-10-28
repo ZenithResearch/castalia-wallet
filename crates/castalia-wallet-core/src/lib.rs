@@ -729,3 +729,4 @@ impl Default for WasmRecoverySession {
 pub mod holder_grants;
 pub mod portable_holder_grants;
 pub mod scoped_holder_grants;
+pub mod session_signer;
