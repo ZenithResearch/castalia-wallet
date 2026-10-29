@@ -48,7 +48,9 @@ Chrome advertises `holder_grant_v1`. Its document-bound `readAccess` operations
 are `save_grant`, `use_grant` and `present_grant`. Saving and opening a new
 connection require a top-level gesture and Wallet approval. Unknown origins cannot
 read grant state. Handles are scoped to origin/tab/document/custody epoch and are
-cancelled by lock, navigation or trust changes. Only the exact extension-owned
+cancelled by lock, document replacement, path/query navigation or trust changes.
+Changing only the fragment of the same document retains the connection without
+changing its expiry. Only the exact extension-owned
 Wallet page may list, back up or restore grants. Page code receives a request
 presentation, not the encrypted database, a signing key or an enumeration API.
 
