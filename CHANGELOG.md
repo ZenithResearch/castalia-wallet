@@ -5,6 +5,10 @@
 ### Added
 - Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.
 
+- Extend disposable native funding fixtures with versioned Marsh and proposal review — bind authentic resolved state, exact request revisions and independent payer roles without widening the original approval profile.
+- Add explicit testnet Cardano account descriptors and raw-Shelley-genesis hash semantics — reuse the existing payment derivation without changing saved Wallet formats or confusing network context with membership.
+- Add native-only disposable funding fixture custody with bounded CBOR admission and one-use approvals — qualify real shared-core payment witnesses without importing saved wallets or exposing a production raw signer.
+
 - Dual native/Chrome custody for versioned scoped holder grants — keep existing v1 backups and signatures while supporting complete selector-role narrowing through the same encrypted Wallet store.
 
 

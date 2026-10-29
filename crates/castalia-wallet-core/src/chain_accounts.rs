@@ -50,20 +50,8 @@ pub struct ChainAccountDescriptor {
 
 pub(crate) fn derive_chain_accounts(root: &[u8; 32], owner: &str) -> Result<String> {
     let account_index = 0;
-    let cardano_signing_key = SigningKey::from_bytes(&derived_chain_seed(
-        root,
-        CARDANO_KEY_DOMAIN,
-        account_index,
-        0,
-    ));
-    let cardano_public = cardano_signing_key.verifying_key().to_bytes();
+    let (cardano_public, payment_hash) = cardano_payment_public(root)?;
     let cardano_public_hex = hex::encode(cardano_public);
-    let mut payment_hash = [0_u8; 28];
-    let mut hasher = Blake2bVar::new(payment_hash.len()).map_err(closed)?;
-    blake2::digest::Update::update(&mut hasher, &cardano_public);
-    hasher
-        .finalize_variable(&mut payment_hash)
-        .map_err(closed)?;
     let mut cardano_address_bytes = Vec::with_capacity(29);
     cardano_address_bytes.push(0x61);
     cardano_address_bytes.extend_from_slice(&payment_hash);
@@ -160,6 +148,20 @@ pub(crate) fn derive_chain_accounts(root: &[u8; 32], owner: &str) -> Result<Stri
     String::from_utf8(jcs_to_vec(&section)?).map_err(closed)
 }
 
+/// Public material only; the derived payment key never leaves this module.
+pub(crate) fn cardano_payment_public(root: &[u8; 32]) -> Result<([u8; 32], [u8; 28])> {
+    let seed = Zeroizing::new(derived_chain_seed(root, CARDANO_KEY_DOMAIN, 0, 0));
+    let signing_key = SigningKey::from_bytes(&seed);
+    let public = signing_key.verifying_key().to_bytes();
+    let mut payment_hash = [0_u8; 28];
+    let mut hasher = Blake2bVar::new(payment_hash.len()).map_err(closed)?;
+    blake2::digest::Update::update(&mut hasher, &public);
+    hasher
+        .finalize_variable(&mut payment_hash)
+        .map_err(closed)?;
+    Ok((public, payment_hash))
+}
+
 fn derived_chain_seed(root: &[u8; 32], domain: &str, account_index: u32, attempt: u32) -> [u8; 32] {
     let mut hasher = blake3::Hasher::new_derive_key(domain);
     hasher.update(root);
@@ -236,4 +238,19 @@ mod tests {
                 .all(|account| account.get("privateKey").is_none())
         );
     }
+}
+
+/// Crate-private and opt-in: only the fresh fixture session may request this witness.
+#[cfg(all(feature = "funding-fixtures", not(target_arch = "wasm32")))]
+pub(crate) fn cardano_payment_fixture_witness(
+    root: &[u8; 32],
+    body_hash: &[u8; 32],
+) -> ([u8; 32], [u8; 64]) {
+    use ed25519_dalek::Signer;
+    let seed = Zeroizing::new(derived_chain_seed(root, CARDANO_KEY_DOMAIN, 0, 0));
+    let key = SigningKey::from_bytes(&seed);
+    (
+        key.verifying_key().to_bytes(),
+        key.sign(body_hash).to_bytes(),
+    )
 }

@@ -36,6 +36,8 @@ pub fn wallet_core_version() -> String {
     env!("CARGO_PKG_VERSION").to_owned()
 }
 
+mod cardano_account;
+pub use cardano_account::{CardanoFundingAccountV1, CardanoFundingNetworkV1};
 mod chain_accounts;
 mod membership_presentation_v2;
 pub use chain_accounts::*;
@@ -730,3 +732,8 @@ pub mod holder_grants;
 pub mod portable_holder_grants;
 pub mod scoped_holder_grants;
 pub mod session_signer;
+
+#[cfg(all(feature = "funding-fixtures", target_arch = "wasm32"))]
+compile_error!("funding-fixtures is a native-only synthetic test interface");
+#[cfg(all(feature = "funding-fixtures", not(target_arch = "wasm32")))]
+pub mod funding_fixture;
