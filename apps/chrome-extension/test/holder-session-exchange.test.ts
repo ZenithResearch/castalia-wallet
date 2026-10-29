@@ -19,7 +19,8 @@ function fixture(attack=''){
   review:(_stored,challenge)=>{reviews++;assert.deepEqual(challenge,c);return{schema:'castalia.holder-session-review.v1'}},
   approve:(_stored,challenge)=>{approvals++;assert.deepEqual(challenge,c);return{schema:'secs.holder-session-authorization.v1',challenge:c,parent_grant:parent}},
   verify:()=>({schema:'castalia.holder-session-credential-verified.v1',credential_digest:'0'.repeat(64),service:pin.service,session_public_key:c.session_public_key,session_installation_id:c.session_installation_id,expires_at:c.expires_at}),
-  fetchImpl:async(url,options:any)=>{
+  fetchImpl:async function(this:unknown,url,options:any){
+   assert.equal(this,undefined,'native worker fetch must not receive the dependency object as its receiver');
    const body=options.body?JSON.parse(options.body):undefined;calls.push({url:String(url),options,body});
    assert.equal(options.credentials,'omit');assert.equal(options.redirect,'error');assert.equal(options.cache,'no-store');assert.equal(options.referrerPolicy,'no-referrer');assert.ok(options.signal);
    let result:any=caps;

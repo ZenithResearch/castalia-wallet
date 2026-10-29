@@ -180,8 +180,8 @@ export function holderGrantStore(pins:()=>Promise<unknown>) {
  })
 }
 
-/** Candidate stays unadvertised until the matched producer/receiver is qualified. */
-export const HOLDER_SESSION_EXCHANGE_QUALIFIED=false
+/** Qualified bridge; each issuer must independently enable the matched receiver. */
+export const HOLDER_SESSION_EXCHANGE_QUALIFIED=true
 export function holderSessionExchangeAvailable(){return HOLDER_SESSION_EXCHANGE_QUALIFIED&&['reviewHolderSessionAuthorization','approveHolderSessionAuthorization','verifyHolderSessionCredential'].every(name=>typeof (core as any)[name]==='function')}
 export function holderSessionExchange(pins:()=>Promise<unknown>,grants:ReturnType<typeof holderGrantStore>) {
  const typed=core as any
