@@ -1,5 +1,7 @@
 //! Platform-neutral custody session. The host owns persistence; a candidate is
 //! installed only after the host's atomic compare-and-swap has completed.
+#[cfg(test)]
+mod holder_session_tests;
 use crate::{
     OpenedWallet, create_wallet, import_wallet,
     portable::{self, Trust},
@@ -156,6 +158,32 @@ enum Command {
     HolderGrants {},
     HolderGrant {
         service: String,
+        now: u64,
+    },
+    HolderSessionCapabilities {},
+    HolderSessionParentReference {
+        service: String,
+        now: u64,
+    },
+    BuildHolderSessionPrepare {
+        service: String,
+        request_id: String,
+        session_public_key: String,
+        session_installation_id: String,
+        context: secs_grant_contract::holder_sessions::Context,
+        permissions: Option<Vec<secs_grant_contract::scoped_grants::Permission>>,
+        requested_ttl_seconds: u64,
+        now: u64,
+    },
+    PrepareHolderSessionAuthorization {
+        service: String,
+        challenge: Box<secs_grant_contract::holder_sessions::Challenge>,
+        context: secs_grant_contract::holder_sessions::Context,
+        now: u64,
+    },
+    ApproveHolderSessionAuthorization {
+        token: String,
+        session_signature: String,
         now: u64,
     },
     DeriveHolderCredential {
@@ -315,6 +343,7 @@ pub struct RecoverySession {
     graph_access_request: Option<(String, crate::access_request::PreparedAccessRequest)>,
     operator_access: Option<(String, crate::access_request::PreparedAccessRequest)>,
     resource_owner: Option<(String, crate::resource_owner::PreparedOwnerClaim)>,
+    holder_session: Option<(String, crate::holder_sessions::PreparedHolderSession)>,
     read_approval: Option<crate::read_access::Challenge>,
     credential_approval: Option<(
         crate::read_access::Challenge,
@@ -329,6 +358,7 @@ impl RecoverySession {
     pub fn invoke(&mut self, raw: &str) -> Result<Value> {
         if raw.is_empty() || raw.len() > MAX * 3 {
             self.presentation = None;
+            self.holder_session = None;
             return Err("request_too_large");
         }
         // A malformed invocation cannot leave an earlier signing preview live.
@@ -339,9 +369,22 @@ impl RecoverySession {
             Ok(command) => command,
             Err(error) => {
                 self.presentation = None;
+                self.holder_session = None;
                 return Err(error);
             }
         };
+        if matches!(&command, Command::HolderSessionCapabilities {}) {
+            return Ok(
+                json!({"schema":"castalia.holder-session-capabilities.v1","protocol":"secs.holder-session.v1",
+                "parent_grant_schemas":["secs.holder-grant.v2"],"agent_protocol":"castalia.holder-session-agent-command.v1"}),
+            );
+        }
+        if !matches!(
+            &command,
+            Command::State {} | Command::ApproveHolderSessionAuthorization { .. }
+        ) {
+            self.holder_session = None;
+        }
         // Public destination authentication neither unlocks custody nor changes
         // a pending consent or encrypted snapshot.
         if let Command::VerifyServiceAccessPoint {
@@ -423,6 +466,90 @@ impl RecoverySession {
         }
         match command {
             Command::VerifyServiceAccessPoint { .. } => unreachable!(),
+            Command::HolderSessionCapabilities {} => unreachable!(),
+            Command::HolderSessionParentReference { service, now } => {
+                let g = self.holder_session_parent(&service, now)?;
+                Ok(
+                    json!({"schema":"castalia.holder-session-parent-reference.v1","issuer_pin":g.pin,
+                    "service":service,"parent_grant_id":g.grant.claims.grant_id,
+                    "parent_grant_digest":secs_grant_contract::digest(&g.grant)?,"parent_revision":g.grant.claims.revision,
+                    "holder_public_key":g.grant.claims.holder_public_key,"installation_id":self.local.installation_id,
+                    "validity":g.grant.claims.validity,"max_credential_lifetime_seconds":g.grant.claims.max_credential_lifetime_seconds}),
+                )
+            }
+            Command::BuildHolderSessionPrepare {
+                service,
+                request_id,
+                session_public_key,
+                session_installation_id,
+                context,
+                permissions,
+                requested_ttl_seconds,
+                now,
+            } => {
+                let g = self.holder_session_parent(&service, now)?;
+                if !(1..=3600).contains(&requested_ttl_seconds) {
+                    return Err("invalid_session_lifetime");
+                }
+                if let Some(selected) = &permissions {
+                    secs_grant_contract::scoped_grants::permissions_within(
+                        selected,
+                        &g.grant.claims.permissions,
+                    )?;
+                }
+                let body = json!({"schema":"secs.holder-session-prepare.v1","request_id":request_id,
+                    "parent_grant":g.grant,"installation_id":self.local.installation_id,
+                    "session_public_key":session_public_key,"session_installation_id":session_installation_id,
+                    "origin":context.origin,"audience":context.audience,"permissions":permissions,
+                    "requested_ttl_seconds":requested_ttl_seconds.min(g.grant.claims.max_credential_lifetime_seconds)});
+                secs_grant_contract::canonical(&body)?;
+                Ok(json!({"schema":"castalia.holder-session-private-prepare.v1","body":body}))
+            }
+            Command::PrepareHolderSessionAuthorization {
+                service,
+                challenge,
+                context,
+                now,
+            } => {
+                self.holder_session_parent(&service, now)?;
+                let stored = self
+                    .local
+                    .holder_grants
+                    .get(&service)
+                    .ok_or("grant_not_saved")?
+                    .clone();
+                let prepared = crate::holder_sessions::PreparedHolderSession::prepare(
+                    self.graph_wallet_v2()?,
+                    stored,
+                    *challenge,
+                    context,
+                    &self.local.installation_id,
+                    now,
+                )?;
+                let token = installation_id();
+                let summary = prepared.summary();
+                self.holder_session = Some((token.clone(), prepared));
+                Ok(json!({"token":token,"summary":summary}))
+            }
+            Command::ApproveHolderSessionAuthorization {
+                token,
+                session_signature,
+                now,
+            } => {
+                let (expected, prepared) = self
+                    .holder_session
+                    .take()
+                    .ok_or("holder_session_approval_unavailable")?;
+                if expected != token {
+                    return Err("holder_session_context_changed");
+                }
+                serde_json::to_value(prepared.approve(
+                    self.graph_wallet_v2()?,
+                    session_signature,
+                    now,
+                )?)
+                .map_err(|_| "encoding_failed")
+            }
             Command::ReviewHolderGrant { pin, grant, now } => {
                 let stored = crate::portable_holder_grants::StoredGrant::review(
                     self.graph_wallet_v2()?,
@@ -1522,7 +1649,37 @@ impl RecoverySession {
             "backup_verified":self.wallet.is_some() && self.local.backup_verified,
             "holder_grant_protocol":"secs.holder-grant.v1", "holder_grant_protocols":["secs.holder-grant.v1","secs.holder-grant.v2"], "resource_owner_protocol":"zenith.resource-owner.v1", "operator_access_protocol":"castalia.operator-access.v1", "graph_access_protocol":"castalia.graph-access.v2", "backup_eligible":self.wallet.is_some() && (self.local.backup_verified || self.local.legacy_confirmed), "membership_active":self.wallet.is_some() && self.local.active_membership.is_some()})
     }
+    fn holder_session_parent(
+        &self,
+        service: &str,
+        now: u64,
+    ) -> Result<&crate::scoped_holder_grants::StoredGrant> {
+        let wallet = self.graph_wallet_v2()?;
+        let g = match self
+            .local
+            .holder_grants
+            .get(service)
+            .ok_or("grant_not_saved")?
+        {
+            crate::portable_holder_grants::StoredGrant::V2(g) => g,
+            crate::portable_holder_grants::StoredGrant::V1(_) => {
+                return Err("holder_session_parent_unsupported");
+            }
+        };
+        if g.pin.service != service || g.grant.claims.service != service {
+            return Err("holder_session_service_changed");
+        }
+        crate::scoped_holder_grants::StoredGrant::review(
+            wallet,
+            g.pin.clone(),
+            g.grant.clone(),
+            &self.local.installation_id,
+            now,
+        )?;
+        Ok(g)
+    }
     fn lock(&mut self) {
+        self.holder_session = None;
         self.presentation = None;
         self.presentation_trust = None;
         self.resource_owner = None;
