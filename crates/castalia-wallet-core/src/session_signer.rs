@@ -7,6 +7,8 @@ use ed25519_dalek::{Signer, SigningKey, VerifyingKey};
 use rand_core::{OsRng, RngCore};
 use secs_grant_contract::{IssuerPin, Result, scoped_grants as contract};
 use serde_json::{Value, json};
+mod holder;
+pub use holder::HolderSessionKey;
 
 const SAFE: u64 = 9_007_199_254_740_991;
 
