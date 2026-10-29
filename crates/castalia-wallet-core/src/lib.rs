@@ -729,6 +729,9 @@ impl Default for WasmRecoverySession {
 }
 
 pub mod holder_grants;
+#[cfg(test)]
+mod holder_session_tests;
+pub mod holder_sessions;
 pub mod portable_holder_grants;
 pub mod scoped_holder_grants;
 pub mod session_signer;

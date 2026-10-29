@@ -1,4 +1,4 @@
-import { forwardReadAccess } from './read-access-content.js'
+import { forwardReadAccess,installReadDocumentLifecycle } from './read-access-content.js'
 import { forwardCredentialPresentation } from './credential-presentation-content.js'
 import { forwardFilesKey } from './files-key-content.js'
 import { forwardRegistration } from './registration-content.js'
@@ -87,6 +87,7 @@ declare const chrome: any;
 // === Wave 3/4: Actual runtime bridge — forward normalized requests to service worker ===
 
 if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.runtime?.sendMessage) {
+  installReadDocumentLifecycle(chrome,window)
   injectPageProvider(document, chrome.runtime.getURL('dist/provider.js'))
   chrome.runtime.onMessage.addListener((message: any, sender: any) => {
     if (sender?.id === chrome.runtime.id && message?.type === 'CASTALIA_READ_ACCESS_INVALIDATED')

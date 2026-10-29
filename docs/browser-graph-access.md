@@ -17,8 +17,11 @@ permissions and validity before any read proof is available.
 `approve_graph_v2` allows a request without community membership when no profile
 was selected. The receiver still determines eligibility and enforces the grant.
 The legacy `approve` path keeps its membership check. Handles cannot cross those
-paths, documents, tabs, custody epochs or origins. Navigation, lock, custody or
-trust changes invalidate them. Credentials and handles are memory-only; signing
+paths, documents, tabs, custody epochs or origins. Reloading or leaving the
+document, changing its path or query, lock, custody or trust changes invalidate
+them. Fragment-only navigation within the same Chrome document keeps the current
+connection and its original absolute expiry; it cannot renew access. Credentials
+and handles are memory-only; signing
 keys remain inside encrypted Wallet custody. Request consent never grants access.
 
 Starting with Chrome extension 0.0.2, `read_setup_status_v1` lets a connected site

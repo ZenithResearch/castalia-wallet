@@ -50,7 +50,15 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
     },
   });
   const active = new Set<{ context: ReadContext; cancel(): void }>();
+  // Chrome document IDs, not a fragment used for navigation within that
+  // document, define the read connection. Paths and queries remain boundaries.
+  const documents = new Map<number, { id: string; url: string; fragmentLoading: boolean }>();
+  const sameDocumentUrl = (left: unknown, right: unknown) =>
+    typeof left === "string" && typeof right === "string" &&
+    left.split("#", 1)[0] === right.split("#", 1)[0];
   const invalidate = (tabId?: number) => {
+    if (tabId === undefined) documents.clear();
+    else documents.delete(tabId);
     for (const doc of controller.invalidate(tabId)) {
       void chrome.tabs
         .sendMessage(
@@ -65,11 +73,32 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
   };
   deps.onChange(() => invalidate());
   chrome.tabs.onUpdated.addListener((id: number, c: any) => {
-    if (c.url !== undefined || c.status === "loading") invalidate(id);
+    const document = documents.get(id);
+    // Chrome may report a fragment URL and loading in separate events. Keep
+    // that transition until complete; pagehide and document-ID replacement
+    // independently close the old document, including during this transition.
+    const fragmentChange = document && typeof c.url === "string" &&
+      c.url !== document.url && sameDocumentUrl(c.url, document.url);
+    const pendingFragment = document?.fragmentLoading &&
+      (c.url === undefined || c.url === document.url);
+    if ((c.status === "loading" && !fragmentChange && !pendingFragment) || (c.url !== undefined &&
+        (!document || !sameDocumentUrl(c.url, document.url)))) invalidate(id);
+    else if (document) {
+      if (typeof c.url === "string") document.url = c.url;
+      if (fragmentChange) document.fragmentLoading = true;
+      if (c.status === "complete") document.fragmentLoading = false;
+    }
   });
   chrome.tabs.onRemoved.addListener((id: number) => invalidate(id));
   chrome.runtime.onMessage.addListener(
     (message: any, sender: any, respond: (value: any) => void) => {
+      if (message?.type === 'CASTALIA_READ_DOCUMENT_CLOSED') {
+        const tabId=sender?.tab?.id;
+        if (Object.keys(message).length===1&&sender?.id===chrome.runtime.id&&sender.frameId===0&&
+            Number.isInteger(tabId)&&typeof sender.documentId==='string'&&
+            documents.get(tabId)?.id===sender.documentId) invalidate(tabId);
+        return false;
+      }
       if (
         ![
           "GET_READ_ACCESS_CONFIRMATION",
@@ -117,7 +146,10 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
       tabId,
       current: () => live,
       verify: async () => {
-        if (!live || (await chrome.tabs.get(tabId))?.url !== documentUrl)
+        const tab = await chrome.tabs.get(tabId);
+        const document = documents.get(tabId);
+        if (!live || document?.id !== context.documentId ||
+            (tab?.status === "loading" && !document.fragmentLoading) || !sameDocumentUrl(tab?.url, documentUrl))
           throw new Error("read_context_changed");
       },
     };
@@ -149,7 +181,7 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
         !Number.isInteger(tabId) ||
         typeof context.documentId !== "string" ||
         (sender.documentLifecycle && sender.documentLifecycle !== "active") ||
-        documentUrl !== sender.tab.url
+        !sameDocumentUrl(documentUrl, sender.tab.url)
       )
         throw new Error("invalid_document");
       const u = new URL(documentUrl);
@@ -166,6 +198,13 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
       finish({ ok: false, error: "invalid_document" });
       return;
     }
+    const previous = documents.get(tabId);
+    const sameDocument = previous?.id === context.documentId &&
+      sameDocumentUrl(previous.url, documentUrl);
+    if (previous && !sameDocument) invalidate(tabId);
+    documents.set(tabId, { id: context.documentId,
+      url: sameDocument ? previous.url : documentUrl,
+      fragmentLoading: sameDocument && previous.fragmentLoading === true });
     active.add(owner);
     timer = setTimeout(() => owner.cancel(), 125000);
     port.onDisconnect.addListener(() => owner.cancel());

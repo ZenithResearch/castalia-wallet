@@ -19,7 +19,7 @@ const issuer = createPrivateKey({ key: Buffer.from('302e020100300506032b65700422
 const issuerPublic = createPublicKey(issuer).export({ format: 'der', type: 'spki' }).subarray(-32).toString('hex')
 const canonical = (value: any): string => value === null || typeof value !== 'object' ? JSON.stringify(value) : Array.isArray(value) ? `[${value.map(canonical).join(',')}]` : `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical(value[k])}`).join(',')}}`
 const hash = (v: unknown) => createHash('sha256').update(canonical(v)).digest('hex')
-const body = `<!doctype html><button id="select">Select Wallet</button><button id="advance">Continue</button><button id="request">Send request</button><button id="read">Read</button><script type="module">
+const body = `<!doctype html><button id="select">Select Wallet</button><button id="advance">Continue</button><button id="request">Send request</button><button id="read">Read</button><a href="#topology" id="topology">Topology</a><script type="module">
 import {WalletReadClient} from '/assets/credential-v2/read-access.mjs';
 window.client=new WalletReadClient();await client.initialize();window.ready=true;
 function run(f){window.result=null;Promise.resolve().then(f).then(v=>window.result={ok:true,value:v},e=>window.result={ok:false,error:e.code??e.message});}
@@ -78,6 +78,7 @@ await context.route(origin + '/**', async route => {
 async function result(page: Page) { await page.waitForFunction(() => (window as any).result !== null); return page.evaluate(() => (window as any).result) }
 try {
  const worker = context.serviceWorkers()[0] ?? await context.waitForEvent('serviceworker'), id = new URL(worker.url()).host
+ await worker.evaluate(()=>{const c=(globalThis as any).chrome;(globalThis as any).navigationTrace=[];c.tabs.onUpdated.addListener((id:any,change:any)=>{(globalThis as any).navigationTrace.push({id,change})})})
  const custody = await context.newPage(); await custody.goto(`chrome-extension://${id}/src/sidepanel.html`)
  await custody.getByLabel('Passphrase').fill('disposable graph test password')
  await custody.getByRole('button', { name: 'Create wallet', exact: true }).click(); await custody.getByText('Wallet ready', { exact: true }).waitFor()
@@ -106,6 +107,13 @@ try {
  assert.equal(await page.evaluate(() => (window as any).client.stage), 'ready')
  await page.locator('#read').click(); const read = await result(page); assert.equal(read.ok, true, read.error); assert.equal(read.value.total, 1)
  assert.equal(enrollments, 1); assert.equal(reads, 1)
+ const accessId=await page.evaluate(() => (window as any).client.accessId)
+ const expiry=await page.evaluate(() => (window as any).client.expiresAt)
+ await page.locator('#topology').click()
+ await page.locator('#read').click();const afterNavigation=await result(page);if(!afterNavigation.ok)console.error(await worker.evaluate(()=>(globalThis as any).navigationTrace));assert.equal(afterNavigation.ok,true,afterNavigation.error)
+ assert.equal(await page.evaluate(() => (window as any).client.accessId),accessId)
+ assert.equal(await page.evaluate(() => (window as any).client.expiresAt),expiry,'changing views must not extend access')
+ assert.equal(enrollments,1);assert.equal(reads,2)
  const openPages = context.pages().length
  await page.reload(); await page.waitForFunction(() => (window as any).ready && (window as any).castaliaWallet?.readAccess)
  await page.locator('#select').click(); assert.equal((await result(page)).ok, true)
@@ -113,9 +121,9 @@ try {
  assert.equal(context.pages().length, openPages, 'returning setup opens no trust or site consent window')
  assert.equal((await advance('read')).ok, true)
  await page.locator('#read').click(); assert.equal((await result(page)).ok, true)
- assert.equal(enrollments, 2); assert.equal(reads, 2)
+ assert.equal(enrollments, 2); assert.equal(reads, 3)
  await custody.getByText('Recovery', { exact: true }).click(); await custody.getByRole('button', { name: 'Lock wallet', exact: true }).click(); await custody.getByText('Wallet locked', { exact: true }).waitFor()
  await page.locator('#read').click(); assert.equal((await result(page)).ok, false)
  assert.equal((await verifyExtensionPackageDigest(root, `${root}.contents.sha256`)).digest, before.digest)
- console.log(JSON.stringify({ qualification: 'Loaded public Chrome package + actual DevGraph client + synthetic issuer/receiver', package_digest: before.digest, request_consent: true, membership_optional: true, no_grant_no_read: true, issuer_signature_checked: true, scoped_read: true, returning_setup_without_consent_windows: true, lock_denies: true, enrollments, reads }))
+ console.log(JSON.stringify({ qualification: 'Loaded public Chrome package + actual DevGraph client + synthetic issuer/receiver', package_digest: before.digest, request_consent: true, membership_optional: true, no_grant_no_read: true, issuer_signature_checked: true, scoped_read: true, fragment_navigation_keeps_original_expiry: true, returning_setup_without_consent_windows: true, lock_denies: true, enrollments, reads }))
 } finally { await context.close(); await rm(directory, { recursive: true, force: true }) }

@@ -1,4 +1,5 @@
-import { holderGrantStore } from "./custody-runtime.js"
+import { holderGrantStore,holderSessionExchange,holderSessionExchangeAvailable,HOLDER_SESSION_EXCHANGE_QUALIFIED } from "./custody-runtime.js"
+import { HOLDER_SESSION_EXCHANGE_CAPABILITY } from '@castalia-wallet/provider-types'
 import { isWalletIdentityPage } from './wallet-identities-store.js'
 import { walletIdentities } from './custody-runtime.js'
 import { installReadAccessRuntime } from './read-access-runtime.js'
@@ -417,8 +418,10 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     sign: bytes => durableSigningIdentity().signBytes(bytes), legacyCredential: () => zenithMembershipState.get(),
   })
   const grantsStore=holderGrantStore(()=>providerProfilesRuntime.pins());
+  const sessions=HOLDER_SESSION_EXCHANGE_QUALIFIED?holderSessionExchange(()=>providerProfilesRuntime.pins(),grantsStore):undefined;
   installReadAccessRuntime(chrome, {
     holderGrants:grantsStore,
+    holderSessions:sessions,
     run: <T>(f:()=>Promise<T>)=>custodyOperations.run(f), epoch:custodyEpoch, onChange:subscribeCustodyChanges,
     state:async()=>{const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null},
     installation:async()=>{
@@ -777,7 +780,7 @@ chrome.runtime.onMessage.addListener((
   (async () => {
     try {
       if (message.method === 'castalia.wallet.getCapabilities') {
-        sendResponse({ id: message.id, ok: true, result: NEUTRAL_CAPABILITIES }); return
+        sendResponse({ id: message.id, ok: true, result: holderSessionExchangeAvailable()?[...NEUTRAL_CAPABILITIES,HOLDER_SESSION_EXCHANGE_CAPABILITY]:NEUTRAL_CAPABILITIES }); return
       }
       if (message.method === 'castalia.wallet.isAvailable') {
         sendResponse({ id: message.id, ok: true, result: true })

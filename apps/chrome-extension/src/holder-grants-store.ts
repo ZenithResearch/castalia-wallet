@@ -59,6 +59,7 @@ export function createHolderGrantsStore(d: D) {
             return { credential, stored: prepared.stored, expires_at: credential.claims.expires_at };
         },
         present(stored: unknown, credential: unknown, call: unknown) { return d.present(stored, credential, call); },
+        async assertRevision(revision: number) { if ((await load()).revision !== revision) throw Error('grant_storage_changed'); },
         async exportBackup() { const saved = (await d.storage.get(key()))[key()]; if (!saved)
             throw Error('grant_not_saved'); return saved.ciphertext as string; },
         async reviewBackup(file: string) { const incoming = JSON.parse(d.validateBackup(d.open(file))), saved = await load(); return { revision: saved.revision, grants: Object.values(incoming).map((g: any) => g.grant.claims) }; },
