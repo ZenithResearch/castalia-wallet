@@ -23,11 +23,13 @@ PRIVATE_FILES_SHA256 = {
 # Compared with Core 0.3.0: only the Core version/dependency and local
 # secs-grant-contract lock entry change. This revision also authenticates route
 # bindings; native custody/holder exports stay unchanged. Registry bytes are unchanged.
-GENERIC_LOCK_SHA256 = 'd49dd46cabe9d5afd00f2bbed3a8e297eb2b6d8c330ed05f0e905ae265e9d762'
+# The finite session helper adds one workspace member and a locked local package;
+# all registry versions and immutable standalone holder exports remain pinned.
+GENERIC_LOCK_SHA256 = '22018d39753aee9f93f6b6e05ca4d4f87dd4b236b124d77091695ea5f9aea37f'
 GENERIC_GUARD_SHA256 = '1bbbb3fad42cf2b8e5bc237ca2a4b02131208cccfa17e81cd34645ff28abbc4b'
 PACKAGE = 'crates/castalia-wallet-service-holder'
 VENDOR = 'vendor/secS-magik-7e32f13'
-GENERIC_MEMBERS = ['crates/castalia-wallet-cli', 'crates/castalia-wallet-private-files', 'crates/castalia-wallet-presentation', 'crates/castalia-wallet-core', 'crates/castalia-wallet-native']
+GENERIC_MEMBERS = ['crates/castalia-wallet-cli', 'crates/castalia-wallet-private-files', 'crates/castalia-wallet-presentation', 'crates/castalia-wallet-core', 'crates/castalia-wallet-native', 'crates/castalia-session-agent']
 EXCLUSIONS = [PACKAGE, VENDOR, VENDOR + '/core', VENDOR + '/server', VENDOR + '/permissions', VENDOR + '/crates/secs-service-call-contract']
 
 # Replaced only after reviewed Native Stage B is committed and exported by actual git archive.
@@ -38,7 +40,7 @@ STAGE_B_FS = STAGE_B_VENDOR + '/vendor/castalia-wallet-private-files-9cc8140'
 STAGE_B_FS_SOURCE_SHA256 = '0f6f7fa87424c99dbca1718d5d391563d5958f812a232e7449d61f77508c4434'
 HOLDER_REGISTRY_SHA256 = '214e310642b7c3f0dc641f57a62a85eee5ab499a15d576fdb322131ddddfc4f0'
 # The new contract keeps its own workspace; existing members/exclusions remain.
-GENERIC_MANIFEST_SHA256 = '4347d4ee5723fab595fac76301d19404b3e3bb91e0a71acae9242c5606492b06'
+GENERIC_MANIFEST_SHA256 = '2a586de313690e4ec699aeccca7735d6ffa81f2e329baafb4a450005706d921d'
 
 # All five historical exports remain immutable and independently checked.
 BOOTSTRAP_COMMIT = 'afeb6e60f5e3b062e503e545c8d6417c0c3ca9e7'

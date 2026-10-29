@@ -45,7 +45,7 @@ enum Command {
     },
     InstallGrant {
         session_handle: String,
-        grant: c::Grant,
+        grant: Box<c::Grant>,
         reviewed_expiry: u64,
         reviewed_permissions: Vec<c::Permission>,
     },
@@ -183,7 +183,7 @@ impl Agent {
                 self.sessions
                     .get_mut(&session_handle)
                     .ok_or("session_unavailable")?
-                    .install_grant(grant, reviewed_expiry, &reviewed_permissions, current)?;
+                    .install_grant(*grant, reviewed_expiry, &reviewed_permissions, current)?;
                 Ok(json!({"installed":true,"expires_at":reviewed_expiry}))
             }
             Command::PresentCall {
