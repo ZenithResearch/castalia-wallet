@@ -1,9 +1,11 @@
 # Finite application sessions
 
-Status: browser candidate under qualification. The production bridge is guarded
-by `HOLDER_SESSION_EXCHANGE_QUALIFIED=false`. The new capability is not advertised
-or installed. The server must separately enable and qualify the matching issuer,
-current-parent verifier, replay protection and application profile.
+Status: the browser bridge advertises `holder_session_exchange_v1` when the
+installed typed Core supports it. Qualification covers the exact packaged
+extension, actual browser temporary keys and a disposable native-backed HTTPS
+issuer/receiver. The server must independently enable its matching issuer,
+current-parent verifier, replay protection and application profile. Advertising
+the bridge does not enable a server or change existing grants.
 
 Ordinary holder-grant v1/v2 derivation keeps its existing same-holder key rule.
 This additive exchange is a distinct issuer decision: a v2 grant holder approves
@@ -90,3 +92,13 @@ minimal scope and receiver checks remain necessary; this is not an XSS or
 production-custody certification. Cross-language vectors, full Wallet tests,
 disposable actual-extension tests and matched receiver tests are required before
 enabling the candidate. A source test is not an installed user approval.
+
+`scripts/smoke-extension-holder-session.mts` checks the packaged bridge using
+disposable Wallet custody and a canonical DevGraph test receiver. It exercises
+one approval per session, exact scoped reads after Wallet lock, unchanged expiry
+after fragment navigation, client and receiver hard expiry, recovery after a lost
+committed reply, replay rejection and current-parent revocation. Pass the exact
+package, DevGraph source, Python environment and reviewed native authority paths
+through the explicit environment inputs at its entry point. It never imports an
+installed host profile or personal Wallet. Test TLS trust is limited to its
+random certificate's SPKI; no global certificate verification bypass is used.

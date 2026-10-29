@@ -15,6 +15,7 @@
     "build": "npm run build --workspace @castalia-wallet/chrome-extension",
     "smoke:dregg-membership": "npm run build --workspace @castalia-wallet/dregg-adapter && node scripts/smoke-dregg-membership.mjs",
     "smoke:extension-custody": "tsx scripts/smoke-extension-custody.mts",
+    "smoke:extension-holder-session": "tsx scripts/smoke-extension-holder-session.mts",
     "package:production-extension": "node scripts/package-production-extension.mjs",
     "package:browser-acceptance-extension": "node scripts/package-browser-acceptance-extension.mjs",
     "inspect:production-extension": "node scripts/inspect-production-extension.mjs",

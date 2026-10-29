@@ -47,7 +47,10 @@ export function createHolderSessionExchange(d:Dependencies){
     const u=new URL(origin);if(u.protocol!=='https:'||u.origin!==origin)fail();
     const encoded=body===undefined?undefined:JSON.stringify(body);
     if(encoded!==undefined&&new TextEncoder().encode(encoded).length>LIMIT)fail();
-    const response=await d.fetchImpl(origin+prefix+BASE+path,{method:body===undefined?'GET':'POST',
+    // WorkerGlobalScope.fetch rejects a foreign receiver. Invoke the transport
+    // as a function rather than a method on the dependency container.
+    const fetchImpl=d.fetchImpl;
+    const response=await fetchImpl(origin+prefix+BASE+path,{method:body===undefined?'GET':'POST',
       headers:body===undefined?{}:{'Content-Type':'application/json'},body:encoded,
       credentials:'omit',redirect:'error',cache:'no-store',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(10000)});
     if(!response.ok||response.redirected||(response.url&&response.url!==origin+prefix+BASE+path))fail();
