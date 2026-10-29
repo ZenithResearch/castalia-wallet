@@ -46,7 +46,7 @@ async function grantFixture() {
   ports.push(port);chrome.runtime.onConnect.emit(port);port.onMessage.emit(payload);return replies;
  };
  const accept=()=>{const confirmation=windows.at(-1)!;for(const type of ['GET_READ_ACCESS_CONFIRMATION','RESOLVE_READ_ACCESS_CONFIRMATION'])chrome.runtime.onMessage.emit({type,requestId:new URL(confirmation).searchParams.get('request'),approved:true},{id:chrome.runtime.id,url:confirmation},()=>{});};
- return{base,expires,open,accept,flush,notifications,presentations:()=>presentations,advance:(seconds:number)=>{now+=seconds*1000;},navigate:(next:string,status?:string)=>{url=next;chrome.tabs.onUpdated.emit(1,{url,...(status?{status}:{})});},lock:()=>{epoch++;changes.emit();},close:()=>chrome.tabs.onRemoved.emit(1),cleanup:()=>{ports.forEach(p=>p.disconnect());Date.now=realNow;}};
+ return{base,expires,open,accept,flush,notifications,presentations:()=>presentations,advance:(seconds:number)=>{now+=seconds*1000;},navigate:(next:string,status?:string)=>{url=next;chrome.tabs.onUpdated.emit(1,{url,...(status?{status}:{})});},status:(status:string)=>chrome.tabs.onUpdated.emit(1,{status}),leave:(documentId='document',frameId=0,id=chrome.runtime.id)=>chrome.runtime.onMessage.emit({type:'CASTALIA_READ_DOCUMENT_CLOSED'},{id,frameId,documentId,tab:{id:1}},()=>{}),lock:()=>{epoch++;changes.emit();},close:()=>chrome.tabs.onRemoved.emit(1),cleanup:()=>{ports.forEach(p=>p.disconnect());Date.now=realNow;}};
 }
 
 test('a fragment change during approval and subsequent reads retains the same document and fixed expiry',async()=>{
@@ -64,6 +64,29 @@ test('a fragment change during approval and subsequent reads retains the same do
   f.advance(1);f.navigate(f.base+'#topology');
   const expired=f.open({operation:'present_grant',accessId,call:{fixture:true}});await f.flush();assert.equal(expired[0]?.ok,false);
   assert.equal(f.presentations(),4,'using the connection or changing views must never move its expiry');
+ }finally{f.cleanup();}
+});
+
+test('URL-first fragment events retain access but a real page departure closes it',async()=>{
+ const f=await grantFixture();try{
+  const approved=f.open({operation:'use_grant',service:'graph'});await f.flush();f.accept();await f.flush();const accessId=approved[0].result.accessId;
+  f.navigate(f.base+'#topology');f.status('loading');f.status('complete');
+  const read=f.open({operation:'present_grant',accessId,call:{fixture:true}});await f.flush();assert.equal(read[0]?.ok,true);
+  f.leave();const departed=f.open({operation:'present_grant',accessId,call:{fixture:true}});await f.flush();assert.equal(departed[0]?.ok,false);
+ }finally{f.cleanup();}
+});
+test('another extension, frame or document cannot invalidate the current document',async()=>{
+ const f=await grantFixture();try{
+  const approved=f.open({operation:'use_grant',service:'graph'});await f.flush();f.accept();await f.flush();const accessId=approved[0].result.accessId;
+  f.leave('other');f.leave('document',1);f.leave('document',0,'another-extension');
+  const read=f.open({operation:'present_grant',accessId,call:{fixture:true}});await f.flush();assert.equal(read[0]?.ok,true);assert.equal(f.notifications.length,0);
+ }finally{f.cleanup();}
+});
+test('a real reload after a completed fragment transition still closes access immediately',async()=>{
+ const f=await grantFixture();try{
+  const approved=f.open({operation:'use_grant',service:'graph'});await f.flush();f.accept();await f.flush();const accessId=approved[0].result.accessId;
+  f.navigate(f.base+'#topology');f.status('loading');f.status('complete');f.status('loading');
+  const read=f.open({operation:'present_grant',accessId,call:{fixture:true}});await f.flush();assert.equal(read[0]?.ok,false);assert.equal(f.presentations(),0);
  }finally{f.cleanup();}
 });
 

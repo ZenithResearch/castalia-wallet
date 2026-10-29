@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { forwardReadAccess } from '../src/read-access-content.js'
+import { forwardReadAccess,installReadDocumentLifecycle } from '../src/read-access-content.js'
 import { createCastaliaWalletProvider } from '../src/provider.js'
 import { NEUTRAL_CAPABILITIES } from '../src/provider-profiles-runtime.js'
 
-for (const operation of ['approve', 'approve_graph_v2', 'request']) {
+for (const operation of ['approve', 'approve_graph_v2', 'request', 'open_holder_session']) {
  test(operation + ' refuses background consent before opening a port', () => {
   const replies: unknown[] = [], page: any = {}; page.top = page
   forwardReadAccess({ runtime: { connect: () => { throw Error('must not connect') } } }, { operation }, r => replies.push(r), page, false)
@@ -16,6 +16,12 @@ test('subframes cannot disclose even the read identity', () => {
  forwardReadAccess({ runtime: { connect: () => { throw Error('must not connect') } } }, { operation: 'identity' }, r => replies.push(r), page, true)
  assert.deepEqual(replies, [{ ok: false, error: 'approval_required' }])
 })
+test('top-level pagehide reports closure without a page-selected document identity',()=>{
+ const sent:unknown[]=[];let leave:(()=>void)|undefined;const page:any={addEventListener:(name:string,f:()=>void)=>{assert.equal(name,'pagehide');leave=f}};page.top=page;
+ installReadDocumentLifecycle({runtime:{sendMessage:(value:unknown)=>{sent.push(value);return Promise.resolve()}}},page);leave!();
+ assert.deepEqual(sent,[{type:'CASTALIA_READ_DOCUMENT_CLOSED'}]);
+ const frame:any={top:{},addEventListener:()=>{throw Error('subframe must not install lifecycle')}};installReadDocumentLifecycle({},frame);
+});
 test('the public facade advertises and dispatches the generic graph contract', async () => {
  const calls: unknown[] = []
  const provider = createCastaliaWalletProvider(async input => { calls.push(input); return input.method.endsWith('getCapabilities') ? NEUTRAL_CAPABILITIES : {} })

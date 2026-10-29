@@ -49,6 +49,14 @@ void (async () => {
       document.querySelector('details')!.open=true;
       approve.textContent=summary.save?'Save grant and connect':'Use saved grant';
     }
+    if(summary.kind==='holder_session'){
+      document.getElementById('heading')!.textContent='Start temporary session?';
+      document.getElementById('explanation')!.textContent='This page will hold a temporary proof key and credential for the exact operations below until the fixed expiry. The session can continue while Wallet is locked. Using it cannot extend its expiry, change the saved grant or create another session. Your reusable grant and long-term key stay in Wallet.';
+      document.getElementById('expiry-label')!.textContent='Session ends';
+      document.getElementById('details-label')!.textContent='Exact permissions for this session';
+      document.querySelector('details')!.open=true;
+      approve.textContent='Start temporary session';
+    }
     if (summary.membershipIncluded) {
       document.getElementById('membership-disclosure')!.hidden = false;
       document.getElementById('membership-disclosure')!.textContent = 'An active membership proof from your selected Wallet profile will accompany this request.';

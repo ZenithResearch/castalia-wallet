@@ -14,6 +14,7 @@ export type ReadHandle = {
   dispose(): void;
 };
 type State = { memberKey: string; approvedOrigins: ReadonlySet<string> };
+type PreparedHolderSession = { challenge: Record<string, any>; summary: Record<string, any>; [key: string]: unknown };
 type Dependencies = {
   run<T>(f: () => Promise<T>): Promise<T>;
   state(): Promise<State | null>;
@@ -36,6 +37,14 @@ type Dependencies = {
   randomId(): string;
   now(): number;
   holderGrants?: ReturnType<typeof import("./holder-grants-store.js").createHolderGrantsStore>;
+  // Installed only with the qualified typed Core and direct issuer adapter.
+  // Neither this opaque preparation nor its reusable parent enters page results.
+  holderSessions?: {
+    prepare(request: { service: string; origin: string; installation: string;
+      sessionPublicKey: string; sessionInstallationId: string; ttlSeconds: number;
+      permissions: unknown[] | null; binding?: unknown }): Promise<PreparedHolderSession>;
+    activate(prepared: PreparedHolderSession, sessionSignature: string): Promise<{ credential: Record<string, any> }>;
+  };
   setupStatus?(profile: unknown, origin: string): Promise<unknown>;
 };
 type Entry = {
@@ -57,6 +66,14 @@ const object = (v: unknown): v is Record<string, any> =>
 export function createReadAccessController(deps: Dependencies) {
   const entries = new Map<string, Entry>();
   const grants = new Map<string, {context:ReadContext;epoch:number;expires:number;stored:unknown;credential:unknown}>();
+  const sessions = new Map<string, { context: ReadContext; epoch: number;
+    prepared: PreparedHolderSession; opening: boolean }>();
+  const sameValue = (a: unknown, b: unknown): boolean => {
+    const stable = (v: any): string => v === null || typeof v !== 'object'
+      ? JSON.stringify(v) : Array.isArray(v) ? '[' + v.map(stable).join(',') + ']'
+      : '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + stable(v[k])).join(',') + '}';
+    return stable(a) === stable(b);
+  };
   const forget = (id: string) => {
     const e = entries.get(id);
     if (e) {
@@ -75,6 +92,9 @@ export function createReadAccessController(deps: Dependencies) {
         forget(id);
       }
     for(const [id,e] of grants)if(tabId===undefined||e.context.tabId===tabId){affected.set(e.context.documentId,e.context);grants.delete(id)}
+    for (const [id, e] of sessions) if (tabId === undefined || e.context.tabId === tabId) {
+      affected.set(e.context.documentId, e.context); sessions.delete(id);
+    }
     return [...affected.values()];
   };
   async function state(context: ReadContext, epoch: number) {
@@ -98,6 +118,8 @@ export function createReadAccessController(deps: Dependencies) {
     )
       throw new Error("invalid_read_request");
     const fields: Record<string, string[]> = {
+      prepare_holder_session: ['operation','service','session_public_key','session_installation_id','requested_ttl_seconds','permissions','service_access_point'],
+      open_holder_session: ['operation','preparationId','challenge','session_signature'],
       save_grant:["operation","service","grant","permissions"],
       use_grant:["operation","service","permissions"],
       present_grant:["operation","accessId","call"],
@@ -119,6 +141,60 @@ export function createReadAccessController(deps: Dependencies) {
       throw new Error("invalid_read_request");
     for (const [id, e] of entries) if (e.expires <= deps.now()) forget(id);
     for(const [id,e]of grants)if(e.expires<=deps.now())grants.delete(id);
+    for (const [id,e] of sessions) if (e.prepared.challenge.review_deadline <= deps.now()) sessions.delete(id);
+    if (input.operation === 'prepare_holder_session') {
+      if (!deps.holderSessions) throw Error('holder_session_unavailable');
+      if (typeof input.service !== 'string' || !input.service || input.service.length > 256 ||
+        typeof input.session_public_key !== 'string' || !/^[a-f0-9]{64}$/.test(input.session_public_key) ||
+        typeof input.session_installation_id !== 'string' || !/^[a-f0-9]{32}$/.test(input.session_installation_id) ||
+        !Number.isSafeInteger(input.requested_ttl_seconds) || input.requested_ttl_seconds < 1 || input.requested_ttl_seconds > 3600 ||
+        (input.permissions !== undefined && !Array.isArray(input.permissions))) throw Error('invalid_read_request');
+      if (sessions.size >= 128) throw Error('read_capacity');
+      const epoch = deps.epoch();
+      return deps.run(async () => {
+        await state(context, epoch);
+        const prepared = structuredClone(await deps.holderSessions!.prepare({service:input.service,
+          origin:context.origin,installation:await deps.installation(),sessionPublicKey:input.session_public_key,
+          sessionInstallationId:input.session_installation_id,ttlSeconds:input.requested_ttl_seconds,permissions:input.permissions ?? null,binding:input.service_access_point}));
+        await state(context, epoch);
+        const c = prepared.challenge;
+        if (!object(c) || c.schema !== 'secs.holder-session-challenge.v1' ||
+          !Number.isSafeInteger(c.review_deadline) || !Number.isSafeInteger(c.expires_at) ||
+          c.review_deadline <= deps.now() || c.review_deadline > c.expires_at) throw Error('invalid_holder_session');
+        const preparationId = deps.randomId();
+        if (sessions.size >= 128) throw Error('read_capacity');
+        sessions.set(preparationId, {context,epoch,prepared,opening:false});
+        return {schema:'castalia.holder-session-prepared.v1',preparationId,challenge:structuredClone(c)};
+      });
+    }
+    if (input.operation === 'open_holder_session') {
+      if (!deps.holderSessions) throw Error('holder_session_unavailable');
+      const e = typeof input.preparationId === 'string' ? sessions.get(input.preparationId) : undefined;
+      if (!e || e.context.tabId !== context.tabId || e.context.documentId !== context.documentId ||
+        e.context.origin !== context.origin) throw Error('holder_session_preparation_required');
+      if (e.opening) throw Error('approval_pending');
+      if (!object(input.challenge) || !sameValue(input.challenge,e.prepared.challenge) ||
+        typeof input.session_signature !== 'string' || !/^[a-f0-9]{128}$/.test(input.session_signature)) throw Error('invalid_holder_session');
+      e.opening = true;
+      try {
+        await deps.run(() => state(context,e.epoch));
+        const c=e.prepared.challenge;
+        if (!await deps.confirm({...structuredClone(e.prepared.summary),kind:'holder_session',origin:context.origin,
+          receiver:c.service,expires_at:c.expires_at,approval_expires_at:c.review_deadline},context)) throw Error('approval_denied');
+        return await deps.run(async () => {
+          await state(context,e.epoch);
+          if (sessions.get(input.preparationId) !== e) throw Error('read_context_changed');
+          if (deps.now() >= c.review_deadline) throw Error('read_approval_expired');
+          // Consume before signing/dispatch. A lost result must use the original
+          // session key and issuer status path, never a second authorization.
+          sessions.delete(input.preparationId);
+          const result=await deps.holderSessions!.activate(e.prepared,input.session_signature);
+          await context.verify?.();if(!context.current())throw Error('read_context_changed');
+          if (!object(result.credential) || result.credential.claims?.schema !== 'secs.holder-session-credential.v1') throw Error('invalid_holder_session');
+          return {schema:'castalia.holder-session-opened.v1',credential:structuredClone(result.credential)};
+        });
+      } finally { sessions.delete(input.preparationId); }
+    }
     if(input.operation==='save_grant'||input.operation==='use_grant'){
       if(!deps.holderGrants||typeof input.service!=='string'||input.service.length>256||!input.service||input.operation==='save_grant'&&!object(input.grant)||input.permissions!==undefined&&!Array.isArray(input.permissions))throw Error('invalid_read_request');
       if(entries.size+grants.size>=128)throw Error('read_capacity');

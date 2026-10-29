@@ -1,4 +1,5 @@
 import { createHolderGrantsStore } from "./holder-grants-store.js"
+import { createHolderSessionExchange } from './holder-session-exchange.js'
 import { createWalletIdentitiesStore } from './wallet-identities-store.js'
 import { initSync, WasmWallet, servicePresentationContext } from './generated/castalia-wallet-core/bindings.js'
 import { CASTALIA_WALLET_CORE_WASM } from './generated/castalia-wallet-core/wasm-bytes.js'
@@ -176,5 +177,35 @@ export function holderGrantStore(pins:()=>Promise<unknown>) {
  reviewDerivation:(stored,permissions,installation,expires)=>JSON.parse((core as any).reviewHolderDerivation(JSON.stringify(stored),JSON.stringify(permissions),installation,String(Math.floor(Date.now()/1000)),String(expires))),
  derive:(stored,permissions,installation,expires)=>JSON.parse((core as any).deriveHolderCredential(JSON.stringify(stored),JSON.stringify(permissions),installation,String(Math.floor(Date.now()/1000)),String(expires))),
  present:(stored,credential,call)=>JSON.parse((core as any).presentHolderCredential(JSON.stringify(stored),JSON.stringify(credential),JSON.stringify(call),String(Math.floor(Date.now()/1000)))),
+ })
+}
+
+/** Candidate stays unadvertised until the matched producer/receiver is qualified. */
+export const HOLDER_SESSION_EXCHANGE_QUALIFIED=false
+export function holderSessionExchangeAvailable(){return HOLDER_SESSION_EXCHANGE_QUALIFIED&&['reviewHolderSessionAuthorization','approveHolderSessionAuthorization','verifyHolderSessionCredential'].every(name=>typeof (core as any)[name]==='function')}
+export function holderSessionExchange(pins:()=>Promise<unknown>,grants:ReturnType<typeof holderGrantStore>) {
+ const typed=core as any
+ if(!['reviewHolderSessionAuthorization','approveHolderSessionAuthorization','verifyHolderSessionCredential'].every(name=>typeof typed[name]==='function'))return undefined
+ const invoke=(f:()=>string)=>{try{return JSON.parse(f())}catch(error){
+  const code=typeof error==='string'?error:error instanceof Error?error.message:''
+  const allowed=['wallet_locked','issuer_setup_required','invalid_holder_session','invalid_clock','grant_storage_changed']
+  throw Error(allowed.includes(code)?code:'holder_session_failed')
+ }}
+ return createHolderSessionExchange({grants,now:()=>Math.floor(Date.now()/1000),fetchImpl:fetch,
+  randomId:()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join(''),
+  audience:async(pin:any,origin,audience)=>{
+   const trusted=await pins()
+   return Array.isArray(trusted)&&trusted.some(p=>p.issuer===pin.issuer&&p.key_id===pin.key_id&&p.public_key===pin.public_key&&p.audience===audience&&p.callers?.some((c:any)=>c.kind==='browser'&&c.id===origin))
+  },
+  route:async(binding:any,pin:any,origin,now)=>{
+   if(binding===undefined)return '' // Only the fixed root protocol on an approved HTTPS profile.
+   const trusted=await pins()
+   invoke(()=>servicePresentationContext(JSON.stringify(trusted),JSON.stringify({kind:'browser',id:origin}),JSON.stringify(binding),String(now)))
+   if(binding.claims?.service!==pin.service||binding.claims?.issuer!==pin.issuer||binding.claims?.key_id!==pin.key_id||binding.claims?.origin!==origin)throw Error('invalid_holder_session')
+   return binding.claims.prefix
+  },
+  review:(stored,challenge,origin,audience,installation,now)=>invoke(()=>typed.reviewHolderSessionAuthorization(JSON.stringify(stored),JSON.stringify(challenge),origin,audience,installation,String(now))),
+  approve:(stored,challenge,signature,origin,audience,installation,now)=>invoke(()=>typed.approveHolderSessionAuthorization(JSON.stringify(stored),JSON.stringify(challenge),signature,origin,audience,installation,String(now))),
+  verify:(pin,credential,challenge,now)=>invoke(()=>typed.verifyHolderSessionCredential(JSON.stringify(pin),JSON.stringify(credential),JSON.stringify(challenge),String(now))),
  })
 }

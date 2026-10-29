@@ -74,21 +74,31 @@ export function installReadAccessRuntime(chrome: any, deps: any) {
   deps.onChange(() => invalidate());
   chrome.tabs.onUpdated.addListener((id: number, c: any) => {
     const document = documents.get(id);
-    // Chrome also emits loading/complete for a fragment link. Only an actual
-    // changed fragment is exempt; a reload with the same URL still closes it.
+    // Chrome may report a fragment URL and loading in separate events. Keep
+    // that transition until complete; pagehide and document-ID replacement
+    // independently close the old document, including during this transition.
     const fragmentChange = document && typeof c.url === "string" &&
       c.url !== document.url && sameDocumentUrl(c.url, document.url);
-    if ((c.status === "loading" && !fragmentChange) || (c.url !== undefined &&
+    const pendingFragment = document?.fragmentLoading &&
+      (c.url === undefined || c.url === document.url);
+    if ((c.status === "loading" && !fragmentChange && !pendingFragment) || (c.url !== undefined &&
         (!document || !sameDocumentUrl(c.url, document.url)))) invalidate(id);
     else if (document) {
       if (typeof c.url === "string") document.url = c.url;
-      if (c.status === "loading") document.fragmentLoading = true;
+      if (fragmentChange) document.fragmentLoading = true;
       if (c.status === "complete") document.fragmentLoading = false;
     }
   });
   chrome.tabs.onRemoved.addListener((id: number) => invalidate(id));
   chrome.runtime.onMessage.addListener(
     (message: any, sender: any, respond: (value: any) => void) => {
+      if (message?.type === 'CASTALIA_READ_DOCUMENT_CLOSED') {
+        const tabId=sender?.tab?.id;
+        if (Object.keys(message).length===1&&sender?.id===chrome.runtime.id&&sender.frameId===0&&
+            Number.isInteger(tabId)&&typeof sender.documentId==='string'&&
+            documents.get(tabId)?.id===sender.documentId) invalidate(tabId);
+        return false;
+      }
       if (
         ![
           "GET_READ_ACCESS_CONFIRMATION",
