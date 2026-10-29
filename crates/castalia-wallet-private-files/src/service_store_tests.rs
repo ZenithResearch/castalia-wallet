@@ -7,6 +7,54 @@ fn root() -> (tempfile::TempDir, ServiceRoot) {
     let root = ServiceRoot::open(&path).unwrap();
     (temp, root)
 }
+
+// A parallel process_exclusive() can fork while another test owns a lease.
+// Even its CLOEXEC descriptor retains that OFD's lock until the child execs.
+// Use only after this test drops its own leases; live-reader denial assertions
+// must still exercise the production nonblocking call directly.
+fn after_inherited_locks_close<T>(mut operation: impl FnMut() -> Result<T>) -> Result<T> {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    loop {
+        match operation() {
+            Err(error)
+                if error.kind() == std::io::ErrorKind::WouldBlock
+                    && std::time::Instant::now() < deadline =>
+            {
+                std::thread::sleep(std::time::Duration::from_millis(1));
+            }
+            result => return result,
+        }
+    }
+}
+
+#[test]
+fn inherited_lock_wait_retries_only_busy_and_is_bounded() {
+    let mut attempts = 0;
+    let result = after_inherited_locks_close(|| {
+        attempts += 1;
+        if attempts == 1 {
+            Err(std::io::ErrorKind::WouldBlock.into())
+        } else {
+            Ok(7)
+        }
+    });
+    assert_eq!(result.unwrap(), 7);
+    assert_eq!(attempts, 2);
+    attempts = 0;
+    let error = after_inherited_locks_close::<()>(|| {
+        attempts += 1;
+        Err(std::io::ErrorKind::PermissionDenied.into())
+    })
+    .unwrap_err();
+    assert_eq!(error.kind(), std::io::ErrorKind::PermissionDenied);
+    assert_eq!(attempts, 1);
+    let started = std::time::Instant::now();
+    let error = after_inherited_locks_close::<()>(|| Err(std::io::ErrorKind::WouldBlock.into()))
+        .unwrap_err();
+    assert_eq!(error.kind(), std::io::ErrorKind::WouldBlock);
+    assert!(started.elapsed() >= std::time::Duration::from_secs(1));
+}
+
 #[test]
 fn independent_roots_share_readers_epoch_and_busy_writer() {
     let (temp, a) = root();
@@ -22,12 +70,12 @@ fn independent_roots_share_readers_epoch_and_busy_writer() {
     drop(x);
     assert!(a.lock_exclusive().is_err());
     drop(y);
-    let mut ex = a.lock_exclusive().unwrap();
+    let mut ex = after_inherited_locks_close(|| a.lock_exclusive()).unwrap();
     let old = ex.epoch().unwrap();
     ex.invalidate(false).unwrap();
     assert!(ex.epoch().unwrap() > old);
     drop(ex);
-    assert!(b.lock_exclusive().is_ok());
+    after_inherited_locks_close(|| b.lock_exclusive()).unwrap();
 }
 #[test]
 fn immutable_state_and_pointer_publication_are_bounded() {
@@ -67,7 +115,7 @@ fn missing_current_abandon_retains_lock_and_requires_separate_initialize() {
     l.abandon_incomplete().unwrap();
     assert_eq!(id, l.lock_identity());
     drop(l);
-    let new = r.initialize().unwrap();
+    let new = after_inherited_locks_close(|| r.initialize()).unwrap();
     assert_eq!(id, new.lock_identity());
 }
 
@@ -138,25 +186,7 @@ fn lost_initial_ack_has_current_and_partial_init_never_implicitly_recreates() {
         }
         drop(l);
         if !has_current {
-            // Another parallel test can fork while this lease is live. Its
-            // CLOEXEC copy retains the OFD lock until exec closes it. Busy is
-            // valid during that interval; every other error still fails now.
-            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
-            loop {
-                match r.initialize() {
-                    Ok(lease) => {
-                        drop(lease);
-                        break;
-                    }
-                    Err(error)
-                        if error.kind() == std::io::ErrorKind::WouldBlock
-                            && std::time::Instant::now() < deadline =>
-                    {
-                        std::thread::sleep(std::time::Duration::from_millis(1));
-                    }
-                    Err(error) => panic!("reinitialize after {step}: {error:?}"),
-                }
-            }
+            drop(after_inherited_locks_close(|| r.initialize()).unwrap());
         }
     }
 }
@@ -192,7 +222,7 @@ fn registry_epoch_poison_is_shared_and_reconcile_invalidates_same_current() {
     assert!(l.poisoned().unwrap());
     drop(l);
     let other = ServiceRoot::open(&temp.path().canonicalize().unwrap()).unwrap();
-    let mut l = other.lock_exclusive().unwrap();
+    let mut l = after_inherited_locks_close(|| other.lock_exclusive()).unwrap();
     assert!(l.poisoned().unwrap());
     l.invalidate(false).unwrap();
     assert!(!l.poisoned().unwrap());
@@ -243,7 +273,7 @@ fn partial_files_cleanup_is_bounded_and_committed_pointer_is_never_abandoned() {
     l.publish_revision(1).unwrap();
     l.abandon_incomplete().unwrap();
     drop(l);
-    let mut l = r.initialize().unwrap();
+    let mut l = after_inherited_locks_close(|| r.initialize()).unwrap();
     l.publish_clock(b"{}", false).unwrap();
     l.publish_current(b"invalid", false).unwrap();
     assert!(l.abandon_incomplete().is_err());
