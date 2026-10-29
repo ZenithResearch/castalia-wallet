@@ -149,3 +149,43 @@ temporary keys and disposable parents to exercise possession, installation,
 proofs, status and close. Those tests do not qualify any production parent,
 installed application, HTTP receiver or live permissions. Consumer/source pins
 and receiver qualification remain required before activation.
+
+
+## Portable native application custody
+
+The additive C ABI in `crates/castalia-wallet-native/include/CastaliaWallet.h`
+provides the same temporary-key engine on iPhone/iPad without launching a helper:
+
+- `castalia_holder_session_abi_version()` returns 1. Existing root ABI stays 1.
+- `castalia_holder_session_new(profile_bytes, length)` returns an opaque custody
+  handle, or 0. The closed profile is exactly
+  `castalia.holder-session-agent-profile.v1` with provider pin, context and
+  maximum session seconds. Native application configuration must independently
+  validate the provider/context before creating custody; token self-claims are
+  not configuration.
+- `castalia_holder_session_invoke(custody, command_bytes, length)` accepts only
+  the existing holder-session-agent v1 closed command envelope and returns an
+  opaque result handle, or 0 for invalid handle/pointer/size/capacity. Decode the
+  existing correlated `castalia.holder-session-agent-result.v1` JSON directly;
+  it is not nested inside the root RecoverySession result envelope.
+- `castalia_result_length/copy/free` read/dispose that result, as for root calls.
+- `castalia_holder_session_free(custody)` destroys all of its temporary keys and
+  original outcomes. Reusing a freed handle cannot recover a key. It does not
+  revoke the issuer's parent or confirm server-side revocation.
+
+Root RecoverySession handles and application custody handles have separate,
+noninterchangeable registries and monotonic IDs. Root lock/free never locks an
+application key. The app must free application custody on explicit disconnect,
+app/process exit and terminal session loss; no key or handle is persisted.
+Fresh business calls/status use fresh command IDs and proof nonces; an exact
+command retry returns its original result, not a newly signed proof. There are
+at most 16 custody handles, 8 temporary keys per custody, 256 original successful
+command outcomes per custody and 32 outstanding shared C result handles. Profile
+and command limits are 65,536 and 131,072 bytes. Errors never echo input material.
+
+The macOS `castalia-holder-session-agent` now delegates to the same portable
+Core engine. Its file admission, framing, fixed clock, JSON wire and owner-free
+scope remain unchanged. There is no new seed import/export, raw signer, arbitrary
+key operation or root-Wallet command in either adapter. The iOS in-process handle
+is a custody/API boundary, not a separate OS process or hardware isolation claim.
+The issuer must still verify current parent/revision/revocation/replay on reads.

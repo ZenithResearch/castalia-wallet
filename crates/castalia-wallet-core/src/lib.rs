@@ -729,6 +729,7 @@ impl Default for WasmRecoverySession {
 }
 
 pub mod holder_grants;
+pub mod holder_session_custody;
 #[cfg(test)]
 mod holder_session_tests;
 pub mod holder_sessions;
