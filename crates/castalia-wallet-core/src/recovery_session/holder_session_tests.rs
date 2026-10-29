@@ -98,3 +98,23 @@ fn saved_parent_cannot_be_selected_under_another_canonical_service() {
         assert!(s.invoke(&command.to_string()).is_err(), "{command}");
     }
 }
+
+#[test]
+fn native_holder_session_result_goldens_match_except_random_review_token() {
+    let golden: Value = serde_json::from_str(include_str!(
+        "../../../../docs/contracts/holder-session-core-v1.json"
+    ))
+    .unwrap();
+    let mut s = ready();
+    let v = vector();
+    let reference = s.invoke(r#"{"operation":"holder_session_parent_reference","service":"service:example","now":101}"#).unwrap();
+    assert_eq!(reference, golden["parent_reference"]);
+    let body = s.invoke(&json!({"operation":"build_holder_session_prepare","service":"service:example","request_id":"44".repeat(16),"session_public_key":v["challenge"]["session_public_key"],"session_installation_id":"77".repeat(16),"context":v["context"],"permissions":null,"requested_ttl_seconds":300,"now":101}).to_string()).unwrap();
+    assert_eq!(body, golden["private_prepare"]);
+    let mut review = prepare(&mut s);
+    let actual_token = review["token"].clone();
+    review["token"] = golden["review"]["token"].clone();
+    assert_eq!(review, golden["review"]);
+    let approval = s.invoke(&json!({"operation":"approve_holder_session_authorization","token":actual_token,"session_signature":v["authorization"]["session_signature"],"now":102}).to_string()).unwrap();
+    assert_eq!(approval, golden["private_authorization"]);
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "castalia.holder-session-core-fixtures.v1",
+  "classification": "public synthetic fixture; not a production grant",
+  "secs_revision": "8a62adb137bd9f6efbbe937ff80352c86ad6b1cf",
+  "review_token_normalization": "Only the random token is normalized to 32 lowercase d characters. All other result fields are exact.",
+  "parent_reference": {
+    "schema": "castalia.holder-session-parent-reference.v1",
+    "issuer_pin": {
+      "issuer": "provider:example",
+      "key_id": "key:one",
+      "public_key": "70df9e2279adbec6d12bf2921184c9222eb24ed852005bf640139f52e59cd9ae",
+      "service": "service:example"
+    },
+    "service": "service:example",
+    "parent_grant_id": "11111111111111111111111111111111",
+    "parent_grant_digest": "cbd2368f4a1579a9b2d12178b4c7061849bcb0a32c243df6655d4d0d4b67c51d",
+    "parent_revision": "2222222222222222222222222222222222222222222222222222222222222222",
+    "holder_public_key": "f95c6a5dff031fac7b1a6a54b6610caeb83b39f7e8a66be16ff5faa4a511ed2d",
+    "installation_id": "66666666666666666666666666666666",
+    "validity": {
+      "mode": "dated",
+      "not_after": 1000,
+      "not_before": 90,
+      "schema": "castalia.grant-validity.v1"
+    },
+    "max_credential_lifetime_seconds": 300
+  },
+  "private_prepare": {
+    "schema": "castalia.holder-session-private-prepare.v1",
+    "body": {
+      "schema": "secs.holder-session-prepare.v1",
+      "request_id": "44444444444444444444444444444444",
+      "parent_grant": {
+        "claims": {
+          "grant_id": "11111111111111111111111111111111",
+          "holder_public_key": "f95c6a5dff031fac7b1a6a54b6610caeb83b39f7e8a66be16ff5faa4a511ed2d",
+          "installation_id": null,
+          "issuer": "provider:example",
+          "key_id": "key:one",
+          "max_credential_lifetime_seconds": 300,
+          "onward_delegation": false,
+          "permissions": [
+            {
+              "constraints": {
+                "archived": false
+              },
+              "operation": "work.get",
+              "resource": "example:work",
+              "roles": [
+                {
+                  "role": "target",
+                  "selector": {
+                    "kinds": [
+                      "Task"
+                    ],
+                    "schema": "secs.resource-selector.v1",
+                    "selection": {
+                      "mode": "objects",
+                      "refs": [
+                        {
+                          "id": "example",
+                          "kind": "Task"
+                        }
+                      ]
+                    },
+                    "service": "service:example"
+                  }
+                }
+              ]
+            }
+          ],
+          "revision": "2222222222222222222222222222222222222222222222222222222222222222",
+          "schema": "secs.holder-grant.v2",
+          "service": "service:example",
+          "validity": {
+            "mode": "dated",
+            "not_after": 1000,
+            "not_before": 90,
+            "schema": "castalia.grant-validity.v1"
+          }
+        },
+        "signature": "a3de3962c39f396bf4b63d4dd80d6da46c84b7f7dafa8a10e5bdb17eaf4469e6b60634e1bce5e5e7aabb0dceb4a29361771a6a2bce915c5548389463d222e70f"
+      },
+      "installation_id": "66666666666666666666666666666666",
+      "session_public_key": "3f0dda81e6abbcc5f17c359df8517177769d2dfff3d4ce942e7ce9a82dfb0db2",
+      "session_installation_id": "77777777777777777777777777777777",
+      "origin": "https://graph.example",
+      "audience": "example",
+      "permissions": null,
+      "requested_ttl_seconds": 300
+    }
+  },
+  "review": {
+    "token": "dddddddddddddddddddddddddddddddd",
+    "summary": {
+      "schema": "castalia.holder-session-review.v1",
+      "issuer_pin": {
+        "issuer": "provider:example",
+        "key_id": "key:one",
+        "public_key": "70df9e2279adbec6d12bf2921184c9222eb24ed852005bf640139f52e59cd9ae",
+        "service": "service:example"
+      },
+      "parent_grant_id": "11111111111111111111111111111111",
+      "parent_grant_digest": "cbd2368f4a1579a9b2d12178b4c7061849bcb0a32c243df6655d4d0d4b67c51d",
+      "parent_revision": "2222222222222222222222222222222222222222222222222222222222222222",
+      "holder_public_key": "f95c6a5dff031fac7b1a6a54b6610caeb83b39f7e8a66be16ff5faa4a511ed2d",
+      "installation_id": "66666666666666666666666666666666",
+      "session_public_key": "3f0dda81e6abbcc5f17c359df8517177769d2dfff3d4ce942e7ce9a82dfb0db2",
+      "session_installation_id": "77777777777777777777777777777777",
+      "origin": "https://graph.example",
+      "audience": "example",
+      "permissions": [
+        {
+          "constraints": {
+            "archived": false
+          },
+          "operation": "work.get",
+          "resource": "example:work",
+          "roles": [
+            {
+              "role": "target",
+              "selector": {
+                "kinds": [
+                  "Task"
+                ],
+                "schema": "secs.resource-selector.v1",
+                "selection": {
+                  "mode": "objects",
+                  "refs": [
+                    {
+                      "id": "example",
+                      "kind": "Task"
+                    }
+                  ]
+                },
+                "service": "service:example"
+              }
+            }
+          ]
+        }
+      ],
+      "expires_at": 400,
+      "review_deadline": 220,
+      "not_before": 100,
+      "review_digest_sha256": "80a724c1c1b99e6484fda03ffa5cd5055a8d0c83b822d78091d37ac36d71b4c4",
+      "hard_expiry": true,
+      "onward_delegation": false
+    }
+  },
+  "private_authorization": {
+    "challenge": {
+      "audience": "example",
+      "challenge_id": "33333333333333333333333333333333",
+      "expires_at": 400,
+      "holder_public_key": "f95c6a5dff031fac7b1a6a54b6610caeb83b39f7e8a66be16ff5faa4a511ed2d",
+      "installation_id": "66666666666666666666666666666666",
+      "issued_at": 100,
+      "issuer": "provider:example",
+      "key_id": "key:one",
+      "nonce": "5555555555555555555555555555555555555555555555555555555555555555",
+      "origin": "https://graph.example",
+      "parent_grant_digest": "cbd2368f4a1579a9b2d12178b4c7061849bcb0a32c243df6655d4d0d4b67c51d",
+      "parent_grant_id": "11111111111111111111111111111111",
+      "parent_revision": "2222222222222222222222222222222222222222222222222222222222222222",
+      "permissions": [
+        {
+          "constraints": {
+            "archived": false
+          },
+          "operation": "work.get",
+          "resource": "example:work",
+          "roles": [
+            {
+              "role": "target",
+              "selector": {
+                "kinds": [
+                  "Task"
+                ],
+                "schema": "secs.resource-selector.v1",
+                "selection": {
+                  "mode": "objects",
+                  "refs": [
+                    {
+                      "id": "example",
+                      "kind": "Task"
+                    }
+                  ]
+                },
+                "service": "service:example"
+              }
+            }
+          ]
+        }
+      ],
+      "request_id": "44444444444444444444444444444444",
+      "review_deadline": 220,
+      "schema": "secs.holder-session-challenge.v1",
+      "service": "service:example",
+      "session_installation_id": "77777777777777777777777777777777",
+      "session_public_key": "3f0dda81e6abbcc5f17c359df8517177769d2dfff3d4ce942e7ce9a82dfb0db2"
+    },
+    "holder_signature": "92a703c7aeb3ab4e36c5c1d9b41feb3b5567412672dba151410151310c5b5ffe5e896345d11989dec5adc0f0acbcb1700e3ed1012a97e4b80c04099ebb63fa04",
+    "parent_grant": {
+      "claims": {
+        "grant_id": "11111111111111111111111111111111",
+        "holder_public_key": "f95c6a5dff031fac7b1a6a54b6610caeb83b39f7e8a66be16ff5faa4a511ed2d",
+        "installation_id": null,
+        "issuer": "provider:example",
+        "key_id": "key:one",
+        "max_credential_lifetime_seconds": 300,
+        "onward_delegation": false,
+        "permissions": [
+          {
+            "constraints": {
+              "archived": false
+            },
+            "operation": "work.get",
+            "resource": "example:work",
+            "roles": [
+              {
+                "role": "target",
+                "selector": {
+                  "kinds": [
+                    "Task"
+                  ],
+                  "schema": "secs.resource-selector.v1",
+                  "selection": {
+                    "mode": "objects",
+                    "refs": [
+                      {
+                        "id": "example",
+                        "kind": "Task"
+                      }
+                    ]
+                  },
+                  "service": "service:example"
+                }
+              }
+            ]
+          }
+        ],
+        "revision": "2222222222222222222222222222222222222222222222222222222222222222",
+        "schema": "secs.holder-grant.v2",
+        "service": "service:example",
+        "validity": {
+          "mode": "dated",
+          "not_after": 1000,
+          "not_before": 90,
+          "schema": "castalia.grant-validity.v1"
+        }
+      },
+      "signature": "a3de3962c39f396bf4b63d4dd80d6da46c84b7f7dafa8a10e5bdb17eaf4469e6b60634e1bce5e5e7aabb0dceb4a29361771a6a2bce915c5548389463d222e70f"
+    },
+    "schema": "secs.holder-session-authorization.v1",
+    "session_signature": "aca17b3d3d86812c9f9ab927ac8e50196e1eabd45851094436ea681340da092fb03d5a4bea287a704ff996739a6ae00cd83b1d872f1e28a029f65b260ad7d30c"
+  }
+}
