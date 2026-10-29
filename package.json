@@ -22,7 +22,8 @@
     "validate:extension-package": "node scripts/validate-extension-package.mjs",
     "validate:extension-manifest": "node scripts/validate-extension-package.mjs",
     "smoke:extension-registration": "tsx scripts/smoke-extension-registration.mts",
-    "smoke:extension-files": "tsx scripts/smoke-extension-files.mts"
+    "smoke:extension-files": "tsx scripts/smoke-extension-files.mts",
+    "smoke:extension-custody-lifecycle": "tsx scripts/smoke-extension-custody-lifecycle.mts"
   },
   "devDependencies": {
     "@types/node": "^20.17.0",
