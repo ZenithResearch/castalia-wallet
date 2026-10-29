@@ -1,3 +1,4 @@
+import { installCustodyPanelRuntime } from './custody-panel-state.js'
 import { holderGrantStore,holderSessionExchange,holderSessionExchangeAvailable,HOLDER_SESSION_EXCHANGE_QUALIFIED } from "./custody-runtime.js"
 import { HOLDER_SESSION_EXCHANGE_CAPABILITY } from '@castalia-wallet/provider-types'
 import { isWalletIdentityPage } from './wallet-identities-store.js'
@@ -419,6 +420,13 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
   })
   const grantsStore=holderGrantStore(()=>providerProfilesRuntime.pins());
   const sessions=HOLDER_SESSION_EXCHANGE_QUALIFIED?holderSessionExchange(()=>providerProfilesRuntime.pins(),grantsStore):undefined;
+  installCustodyPanelRuntime(chrome, {
+    snapshot:()=>custodyOperations.run(async()=>{
+      const state=await custodyState.getState()
+      return {state,chainAccounts:state.unlocked?durableChainAccounts():[]}
+    }),
+    subscribe:subscribeCustodyChanges,
+  })
   installReadAccessRuntime(chrome, {
     holderGrants:grantsStore,
     holderSessions:sessions,

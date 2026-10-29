@@ -1,3 +1,4 @@
+import { observeCustodyPanel } from './custody-panel-state.js'
 import { readWalletImportFile } from './import-file.js'
 import { copyPublicMemberKey, publicMemberKeyForDisplay } from './member-key-display.js'
 
@@ -18,6 +19,7 @@ const root = document.getElementById('app')!
 let state: WalletState = { setupComplete: false, unlocked: false, publicKey: null }
 let chainAccounts: ChainAccount[] = []
 let pendingImport: string | null = null
+let custodyAvailable = false
 
 function send<T>(message: unknown): Promise<T> {
   return new Promise((resolve, reject) => chrome.runtime.sendMessage(message, (response: any) => {
@@ -29,12 +31,14 @@ function send<T>(message: unknown): Promise<T> {
   }))
 }
 
-async function refresh() {
-  const response = await send<{ state: WalletState; chainAccounts: ChainAccount[] }>({ type: 'CUSTODY_GET_STATE' })
-  state = response.state
-  chainAccounts = response.chainAccounts
-  render()
-}
+const custodyPanel=observeCustodyPanel(chrome.runtime,{
+  snapshot(value){state=value.state;chainAccounts=value.chainAccounts;custodyAvailable=true;render()},
+  unavailable(){state={...state,unlocked:false};chainAccounts=[];custodyAvailable=false;render()},
+})
+async function refresh(){custodyPanel.refresh()}
+window.addEventListener('focus',()=>void refresh())
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void refresh()})
+window.addEventListener('pagehide',()=>custodyPanel.dispose(),{once:true})
 
 function accountName(networkId: string): string {
   if (networkId === 'cardano:mainnet') return 'Cardano · Preview'
@@ -45,20 +49,21 @@ function accountName(networkId: string): string {
 }
 
 function render() {
-  const title = !state.setupComplete ? 'Create wallet' : state.unlocked ? 'Wallet ready' : 'Wallet locked'
+  const title = !custodyAvailable ? 'Check Wallet' : !state.setupComplete ? 'Create wallet' : state.unlocked ? 'Wallet ready' : 'Wallet locked'
   const publicMemberKey = publicMemberKeyForDisplay(state)
   root.innerHTML = `
     <section class="wallet">
       <main class="wallet-main">
         <section><p class="eyebrow">Castalia</p><h1 class="state-title">${title}</h1>
-          <p class="state-copy">Encrypted Dregg-hybrid identity custody. One recovery seed restores both Ed25519 and ML-DSA-65 keys. Reload locks this wallet without erasing its identity.</p>
+          <p class="state-copy">Encrypted Dregg-hybrid identity custody. One recovery seed restores both Ed25519 and ML-DSA-65 keys. Reload or background suspension locks this wallet without erasing its identity.</p>
         </section>
-        ${!state.setupComplete ? `
+        ${!custodyAvailable ? '<p class="state-copy" role="status">Wallet status is unavailable. Check Wallet to read its current lock state.</p><button id="check-wallet" class="primary-action">Check Wallet</button>' : ''}
+        ${custodyAvailable && !state.setupComplete ? `
           <form id="create-form" class="advanced-content">
             <label>Passphrase<input id="create-passphrase" type="password" autocomplete="new-password" required /></label>
             <button class="primary-action">Create wallet</button>
           </form>` : ''}
-        ${state.setupComplete && !state.unlocked ? `
+        ${custodyAvailable && state.setupComplete && !state.unlocked ? `
           <form id="unlock-form" class="advanced-content">
             <label>Passphrase<input id="unlock-passphrase" type="password" autocomplete="current-password" required /></label>
             <button class="primary-action">Unlock</button>
@@ -97,6 +102,7 @@ function passphrase(id: string): string {
 }
 
 function wire() {
+  document.getElementById('check-wallet')?.addEventListener('click',()=>void refresh())
   document.getElementById('copy-public-member-key')?.addEventListener('click', async () => {
     const field = document.getElementById('public-member-key') as HTMLInputElement | null
     const status = document.getElementById('copy-public-member-key-status')
