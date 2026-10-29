@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Package the reconciled public Wallet source as extension 0.0.5; preserve existing custody, recovery and runtime trust profiles.
+
 ### Added
 - Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.
 
