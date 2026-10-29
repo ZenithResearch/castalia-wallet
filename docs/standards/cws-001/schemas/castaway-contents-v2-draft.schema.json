@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/castaway-contents-v2-draft.schema.json",
+  "title": "Proposed data-only typed sections; values require a pinned publication schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "ownerMemberKey",
+    "entries"
+  ],
+  "properties": {
+    "schema": {
+      "const": "castalia.castaway-contents.v2-draft"
+    },
+    "version": {
+      "const": 2
+    },
+    "ownerMemberKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "entries": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/entry"
+      }
+    }
+  }
+}

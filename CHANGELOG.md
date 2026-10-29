@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.
 
 - Dual native/Chrome custody for versioned scoped holder grants — keep existing v1 backups and signatures while supporting complete selector-role narrowing through the same encrypted Wallet store.
 

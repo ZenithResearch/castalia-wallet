@@ -1,0 +1,64 @@
+{
+  "schema": "castalia.schema-publication.v1-draft",
+  "version": 1,
+  "profileId": "https://example.org/castalia/example-connection/profile",
+  "profileVersion": "1.0.0",
+  "publisher": "https://example.org",
+  "title": "Fictitious connection schema package",
+  "parts": [
+    {
+      "partId": "account",
+      "storage": "castaway",
+      "contentClass": "data",
+      "valueSchema": {
+        "id": "https://example.org/castalia/example-connection/schemas/account-v1.schema.json",
+        "path": "schemas/account-v1.schema.json",
+        "sha256": "f0499b4e1377f27736e20cf960af6e03483f72154eef6d41cacd04c4ac36a2d6"
+      },
+      "requiredForRecovery": false
+    },
+    {
+      "partId": "recovery",
+      "storage": "recovery",
+      "contentClass": "authority",
+      "valueSchema": {
+        "id": "https://example.org/castalia/example-connection/schemas/recovery-v1.schema.json",
+        "path": "schemas/recovery-v1.schema.json",
+        "sha256": "e0294112cd7290e8e199e3d7a2ab0427c5d4c072aca25898f4c8e82b979ad57b"
+      },
+      "requiredForRecovery": true
+    },
+    {
+      "partId": "session",
+      "storage": "device-local",
+      "contentClass": "session",
+      "valueSchema": {
+        "id": "https://example.org/castalia/example-connection/schemas/session-v1.schema.json",
+        "path": "schemas/session-v1.schema.json",
+        "sha256": "6cad918967bccb9a59b83e794e6660ee92fa5439e0081bf0834ec00b5163fda5"
+      },
+      "requiredForRecovery": false
+    }
+  ],
+  "operations": [
+    {
+      "operationId": "org.example.connection.read-account",
+      "effect": "read",
+      "requestSchema": {
+        "id": "https://example.org/castalia/example-connection/schemas/request-v1.schema.json",
+        "path": "schemas/request-v1.schema.json",
+        "sha256": "ddee14de3c56d68fcafdbbf19c502c1fdd0cc053844294fa6abdc19482dce30e"
+      },
+      "resultSchema": {
+        "id": "https://example.org/castalia/example-connection/schemas/result-v1.schema.json",
+        "path": "schemas/result-v1.schema.json",
+        "sha256": "b54fbfee1312e9a6d7b162284c341db9d827acf34bf51247a698d8cb80ba8581"
+      },
+      "requiresApproval": true
+    }
+  ],
+  "requires": [
+    "castalia.castaway-contents.v2-draft",
+    "castalia.wallet-secrets.v2-draft"
+  ]
+}

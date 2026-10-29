@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/castalia/example-connection/schemas/result-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "userId"
+  ],
+  "properties": {
+    "schema": {
+      "const": "org.example.connection-read-result.v1"
+    },
+    "userId": {
+      "type": "string",
+      "maxLength": 128
+    }
+  }
+}

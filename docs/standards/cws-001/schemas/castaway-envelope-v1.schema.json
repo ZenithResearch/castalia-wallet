@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/castaway-envelope-v1.schema.json",
+  "title": "Implemented Castaway v1 encrypted data envelope \u2014 structural companion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contentsSchema",
+    "ownerPublicKey",
+    "exportedAt",
+    "kdf",
+    "aead",
+    "ciphertext"
+  ],
+  "properties": {
+    "schema": {
+      "const": "castalia.castaway.v1"
+    },
+    "contentsSchema": {
+      "const": "castalia.castaway-contents.v1"
+    },
+    "ownerPublicKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "exportedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "kdf": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/kdf"
+    },
+    "aead": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/aead"
+    },
+    "ciphertext": {
+      "$ref": "https://raw.githubusercontent.com/ZenithResearch/castalia-wallet/main/docs/standards/cws-001/schemas/common.schema.json#/$defs/ciphertext"
+    }
+  }
+}
