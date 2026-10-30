@@ -30,7 +30,7 @@ function render(state:any){
     const view=accessRecoveryPresentation(state);$('status').textContent=view.status;$('access-heading').textContent=view.heading;
     $('access').hidden=false;$('prepare-grant').hidden=!state.grantDescriptor||state.stage==='access_review';$('send-original').hidden=state.result?.status!=='unknown';$('request-access').hidden=!state.descriptor||state.stage==='access_review';$('confirm-request').hidden=state.stage!=='access_review';
     $('request-access').classList.toggle('secondary',view.primary==='check_approved');
-    $('request-access').textContent=state.stage==='access_pending'?'Check original request':'Request access';
+    $('request-access').textContent=state.stage==='access_pending'?'Check original request':'Send access request';
     $('confirm-request').textContent=state.checking?'Check request status':'Send access request';
     $('access-details').hidden=state.stage!=='access_review';$('access-details').textContent=state.summary?JSON.stringify(state.summary.details,null,2):'';
     $('access-status').textContent=view.detail;
@@ -46,7 +46,7 @@ function render(state:any){
 $('forget-saved').onclick=()=>void host?.reviewForget();
 $('forget-confirm').onclick=()=>void host?.forget();
 $('forget-cancel').onclick=()=>void host?.cancelForget();
-$('unlock').addEventListener('submit',event=>{event.preventDefault();const input=$('passphrase') as HTMLInputElement;const value=input.value;input.value='';void host?.unlock(value);});
+$('unlock').addEventListener('submit',event=>{event.preventDefault();const input=$('passphrase') as HTMLInputElement;const value=input.value;input.value='';void host?.unlock(value,(event as SubmitEvent).submitter?.id==='unlock-access');});
 $('trust').onclick=()=>void host?.trust();
 $('choose-duration').onclick=()=>void host?.chooseLifetime(Number(($('duration') as HTMLSelectElement).value));
 $('refresh-approved').onclick=()=>void host?.prepareGrant();

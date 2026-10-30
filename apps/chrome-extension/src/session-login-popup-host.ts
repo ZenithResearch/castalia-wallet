@@ -1,3 +1,4 @@
+import {prepareLoginReview,sendGeneralAccessRequest} from './session-login-flow.js';
 import { createProviderProfileStore, parseProviderProfile, providerProfileBytes } from '@castalia-wallet/provider-types';
 import { CUSTODY_STORAGE_KEY } from './state/custody-state.js';
 import { SESSION_LOGIN_LAUNCHES, SESSION_LOGIN_INVALIDATION } from './session-login-broker.js';
@@ -22,7 +23,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
   if(!entry||entry.windowId!==own.id||entry.loginId!==id||entry.deadlineMs<=Date.now())throw loginFailure('session_login_expired','request');
   const claim=await chrome.runtime.sendMessage({type:'SESSION_LOGIN_CLAIM',loginId:id});
   if(!claim?.ok)throw Object.assign(new Error('session_login_context_changed'),claim?.error);
-  let disposed=false,approving=false,ownTrust=false,ownGrant=false,request:any=null,completion:any=null;
+  let disposed=false,approving=false,ownTrust=false,ownGrant=false,request:any=null,completion:any=null,accessHelp=false;
   let readyResolve:()=>void;const connected=new Promise<void>(r=>{readyResolve=r;});
   const port=chrome.tabs.connect(entry.tabId,{name:'castalia-session-login-v1',documentId:entry.documentId,frameId:0});
   const privateWorker=makeWorker();const jobs=new Map<string,{resolve(v:any):void;reject(e:any):void;timer:any}>();
@@ -172,7 +173,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
   };
   const prepare=async(ttlSeconds?:number)=>{
     onState({stage:'preparing'});
-    try{const result=await command('prepare',{request,ttlSeconds});if(result.options){onState({stage:'lifetime',options:result.options,grantDescriptor:request.grant_acquisition,canForget:true});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
+    try{const result=await prepareLoginReview(command,request,ttlSeconds,accessHelp);if(result.options){onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:true,savedGrantAvailable:true});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
     catch(error){
       const e=loginError(error,'challenge');
       if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:e.code!=='grant_not_saved',error:e.code==='grant_not_saved'?undefined:e});
@@ -181,7 +182,8 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
   };
   return {
     origin:entry.origin,profile:candidate,
-    async unlock(passphrase:string){
+    async unlock(passphrase:string,checkSavedAccess=false){
+      accessHelp=checkSavedAccess;
       onState({stage:'unlocking'});
       try{await command('unlock',passphrase);if(!await trusted())onState({stage:'provider',profile:candidate});else await prepare();}
       catch(error){onState({stage:'unlock',error:loginError(error,'unlock')});}
@@ -200,7 +202,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
     async chooseLifetime(seconds:number){await prepare(seconds);},
     async requestAccess(sendOriginal=false){
       onState({stage:'preparing'});
-      try{const value=await command('prepareAccess',sendOriginal);onState({stage:'access_review',...value,descriptor:request.access_request});}
+      try{const result=await sendGeneralAccessRequest(command,criticalCommand,sendOriginal);onState({stage:'access_pending',result,descriptor:request.access_request,grantDescriptor:request.grant_acquisition});}
       catch(error){onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:loginError(error,'access')});}
     },
     async confirmRequest(){
@@ -237,7 +239,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
     },
     async saveGrant(){
       onState({stage:'opening'});
-      try{await criticalCommand('saveGrant');await prepare();}
+      try{await criticalCommand('saveGrant');accessHelp=false;await prepare();}
       catch(error){dispose(error);onState({stage:'failed',error:loginError(error,'save_grant')});}
     },
     cancel(){dispose(loginFailure('session_login_cancelled','consent'));onState({stage:'closed'});},

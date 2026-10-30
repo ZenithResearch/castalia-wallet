@@ -27,15 +27,16 @@ hard expiry before authorizing the issuer exchange. Only the verified finite
 credential returns to the page. This existing profile is read-only and disables
 onward delegation. More general operations require a separately versioned review.
 
-Wallet defaults to 900 seconds, clamped to the caller's requested upper bound,
+Wallet prepares the longest duration already allowed by the caller's upper bound,
 verified issuer capabilities, signed parent maximum, remaining parent validity
 and the existing 3600-second transport bound. Version 0.0.9 reads the canonical
 `castalia.grant-validity.v1` modes: `dated` has a required integer `not_after`;
 `until_revoked` has no `not_after` field. An unbounded parent never makes the child
 unbounded. Unknown fields/modes, future starts and malformed expiry values fail
-closed; an expired dated parent cannot open a session. The human can choose a shorter or
-longer available duration before the challenge is created. Current policy is
-rechecked before preparation; the final exact expiry is reviewed separately.
+closed; an expired dated parent cannot open a session. The popup skips the separate duration chooser. Current policy is rechecked
+before preparation; the final exact permissions and expiry still require the
+Wallet-owned Allow this session action. No new ceiling or indefinite session is
+introduced.
 
 ## Additive provider transport
 
@@ -173,3 +174,26 @@ steps. Neither forgetting nor viewing recovery sends a replacement access reques
 issues a grant, changes server policy or signs a session. If confirmation's reply
 is lost, refresh or reopen Wallet to inspect actual local state; do not assume the
 write was undone or automatically repeat it.
+
+## One-button general resource request
+
+Send access request is one explicit action inside Wallet: prepare the existing
+null-intent request, then sign and submit it under the existing critical permit.
+The service origin/binding is already visible in this Wallet-owned window. There
+is no preset or permission form; the owner chooses the actual permissions. This
+does not obtain, save or delegate a grant. Closing before this action sends no
+request. A failed unsigned preparation cannot sign, and an uncertain submitted
+result does not retry automatically. Check original request uses the retained ID
+and status action; sending that original again remains an explicit recovery action.
+
+Browser reloads use the original finite credential and key, not another Wallet
+ceremony. The matched DevGraph monitor can reconcile temporary status failures
+without replacing custody or extending expiry. First-time trust and approved
+grant acquisition/saving remain distinct consent decisions.
+
+Saved access help on the unlock form is optional recovery for changed assignments.
+Check saved access unlocks into the existing pre-child access/forget controls. It
+prepares no child challenge, so an approved parent can be obtained and saved before
+the browser is bound to a session challenge. Saving that parent then resumes the
+normal final consent. This does not inspect canonical parent status before holder
+proof or remove the existing enrollment/forget guards.
