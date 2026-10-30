@@ -175,7 +175,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
     try{const result=await command('prepare',{request,ttlSeconds});if(result.options){onState({stage:'lifetime',options:result.options,grantDescriptor:request.grant_acquisition});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
     catch(error){
       const e=loginError(error,'challenge');
-      if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)?undefined:e});
+      if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:e.code==='grant_not_saved'?undefined:e});
       else {dispose(error);onState({stage:'failed',error:e});}
     }
   };
@@ -201,12 +201,12 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
     async requestAccess(sendOriginal=false){
       onState({stage:'preparing'});
       try{const value=await command('prepareAccess',sendOriginal);onState({stage:'access_review',...value,descriptor:request.access_request});}
-      catch(error){onState({stage:'access_required',descriptor:request.access_request,error:loginError(error,'access')});}
+      catch(error){onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:loginError(error,'access')});}
     },
     async confirmRequest(){
       onState({stage:'preparing'});
       try{const result=await criticalCommand('approveAccess');onState({stage:'access_pending',result,descriptor:request.access_request,grantDescriptor:request.grant_acquisition});}
-      catch(error){onState({stage:'access_pending',descriptor:request.access_request,error:loginError(error,'access')});}
+      catch(error){onState({stage:'access_pending',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:loginError(error,'access')});}
     },
     async acknowledgeEnrollment(){acknowledgeUncertain=true;await this.prepareGrant();},
     async prepareGrant(){

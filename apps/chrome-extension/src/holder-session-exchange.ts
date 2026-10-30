@@ -84,11 +84,17 @@ export function createHolderSessionExchange(d:Dependencies){
   return{
     async options(request:Request){
       const {stored,capabilities}=await eligible(request);
-      const parent=stored.grant.claims;
+      const parent=stored.grant.claims,validity=parent.validity,now=d.now();
+      // Core has verified the signed grant. Read its canonical tagged validity,
+      // whose until_revoked form intentionally has no not_after property.
+      const dated=validity?.mode==='dated';
       if(!Number.isSafeInteger(parent.max_credential_lifetime_seconds)||parent.max_credential_lifetime_seconds<1||parent.max_credential_lifetime_seconds>3600||
-        parent.validity?.not_after!==null&&!Number.isSafeInteger(parent.validity?.not_after))fail();
+        !shape(validity,dated?['schema','mode','not_before','not_after']:['schema','mode','not_before'])||
+        validity.schema!=='castalia.grant-validity.v1'||!['dated','until_revoked'].includes(validity.mode)||
+        !Number.isSafeInteger(validity.not_before)||validity.not_before<0||validity.not_before>now||
+        dated&&(!Number.isSafeInteger(validity.not_after)||validity.not_after<0))fail();
       const maximum=Math.min(request.ttlSeconds,capabilities.max_ttl_seconds,parent.max_credential_lifetime_seconds,
-        parent.validity.not_after===null?3600:parent.validity.not_after-d.now());
+        dated?validity.not_after-now:3600);
       if(!Number.isSafeInteger(maximum)||maximum<1)throw Error('read_approval_expired');
       return {maximum_ttl_seconds:maximum,default_ttl_seconds:Math.min(900,maximum)};
     },
