@@ -30,8 +30,43 @@ const native={holder_sha256:createHash('sha256').update(await readFile(holder)).
 const fixtureSetup=`from pathlib import Path
 from devgraph.auth.holder_grants import HolderGrantHost
 from devgraph.auth.monitor_read import MemberMonitorReadEnrollment
-from devgraph.auth.monitor_read import MemberAccessPolicyV2
 from devgraph.auth.delegated_contract import canonical_json
+from tests.native_read import holder_session_fixture
+# This monitor fixture explicitly approves its one synthetic Arena before native
+# issuance. Keep the canonical validators, signatures and scope checks unchanged.
+from devgraph.auth.arena_access import ArenaAccessDraft, ArenaMemberPolicy, compile_arena_read
+from devgraph.auth.arena_activation import ArenaMonitorReadEnrollment
+class MonitorFixtureDraft:
+    @staticmethod
+    def model_validate(raw):
+        assert raw['receiver'] == 'https://fixture.invalid'
+        raw=dict(raw, schema='devgraph.access-draft.v6',read_grants=[*raw['read_grants'],{'scope':'devgraph.arena.read','arena_ids':['fixture-arena']}])
+        raw['validity']={'schema':'castalia.grant-validity.v1','mode':'dated','not_before':raw.pop('not_before'),'not_after':raw.pop('not_after')}
+        return ArenaAccessDraft.model_validate(raw)
+class MonitorFixtureRegistry:
+    @staticmethod
+    def model_validate(raw):
+        return ArenaMemberPolicy.model_validate(dict(raw,schema='devgraph.member-access-policy.v5'))
+class MonitorFixtureEnrollment(MemberMonitorReadEnrollment):
+    _decode_enrollment_ceiling=ArenaMonitorReadEnrollment._decode_enrollment_ceiling
+    _decode_grants=ArenaMonitorReadEnrollment._decode_grants
+    _policy_for=ArenaMonitorReadEnrollment._policy_for
+    def _details(self,policy):
+        return dict(super()._details(policy),schema='devgraph.native-read-scope.v5')
+    def _result(self,credential,manifest):
+        return dict(super()._result(credential,manifest),schema='devgraph.native-read-result.v5')
+holder_session_fixture.AccessDraftV2=MonitorFixtureDraft
+holder_session_fixture.MemberAccessPolicyV2=MonitorFixtureRegistry
+holder_session_fixture.MemberMonitorReadEnrollment=MonitorFixtureEnrollment
+holder_session_fixture.compile_monitor_read=compile_arena_read
+from devgraph.arenas import ArenaMutations
+from tests.model.test_arena_runtime import add_arena
+OriginalStorage=holder_session_fixture.MemoryGraphStorage
+class MonitorFixtureStorage(OriginalStorage):
+    def __init__(self):
+        super().__init__()
+        add_arena(ArenaMutations(self),'fixture-arena')
+holder_session_fixture.MemoryGraphStorage=MonitorFixtureStorage
 original_invoke=HolderGrantHost.invoke
 def invoke(self, operation, **fields):
     if operation == 'issue_v2':
@@ -46,7 +81,7 @@ def initialize(self, **kwargs):
     if not path.exists():
         path.write_bytes(canonical_json(kwargs['members']()))
         path.chmod(0o600)
-    kwargs['members']=lambda: MemberAccessPolicyV2.model_validate_json(path.read_bytes())
+    kwargs['members']=lambda: ArenaMemberPolicy.model_validate_json(path.read_bytes())
     original_init(self, **kwargs)
 MemberMonitorReadEnrollment.__init__=initialize
 `;
@@ -320,8 +355,11 @@ raise SystemExit(holder_session_fixture.main())
   assert.deepEqual(await refreshInspector.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),forgotten,'forgotten state unchanged until explicit save');
   await refreshPopup.getByRole('button',{name:'Save grant in Wallet',exact:true}).click();
 
-  await clickClosingApproval(refreshPopup,'Allow this session',refreshedPage);await refreshedPage.waitForFunction(()=>(window as any).stage==='ready');
+  await clickClosingApproval(refreshPopup,'Allow this session',refreshedPage);
+  try{await refreshedPage.waitForFunction(()=>(window as any).stage==='ready');}catch(error){console.error(JSON.stringify({fixture_stage:'updated_parent_session',state:await refreshedPage.evaluate(()=>({stage:(window as any).stage,error:(window as any).result?.error})),requests:requests.slice(-10)}));throw error;}
   await refreshedPage.locator('#read').click();await refreshedPage.waitForFunction(()=>(window as any).result!==null);assert.equal((await refreshedPage.evaluate(()=>(window as any).result)).ok,true);
+  const monitor=await refreshedPage.evaluate(()=>(window as any).actual.read('/monitor/topology/v1'));
+  assert.ok(JSON.stringify(monitor).includes('allowed-1'),'current monitor projection contains permitted Work');assert.ok(!JSON.stringify(monitor).includes('Task/hidden'),'monitor does not disclose ungranted Work');
   assert.equal(accessActions,0,'existing approval refresh creates no access request');
   assert.equal(grantIssues,1);assert.equal((await readFile(metadata.parent,'utf8')).includes(parent.claims.grant_id),true,'original issued parent retained');
   await refreshedPage.locator('#logout').click();await refreshedPage.waitForFunction(()=>(window as any).stage==='choose'&&(window as any).result?.ok===true);
@@ -403,7 +441,7 @@ raise SystemExit(holder_session_fixture.main())
   await page.locator('#status').click();value=await result();assert.equal(value.value.state,'revoked');assert.equal(value.value.credential,null)
   assert.equal((await verifyExtensionPackageDigest(extension,`${extension}.contents.sha256`)).digest,packageBefore.digest)
   assert.deepEqual(sourcePin(receiver),receiverBefore);assert.deepEqual(sourcePin(consumer),consumerBefore);
-  console.log(JSON.stringify({native,fixture_configuration_overrides:['native-signed until_revoked parent validity with not_after absent; disposable member registry stored as model-validated JSON for real assignment-epoch transition','synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_sends_nothing:true,general_resource_request:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,automatic_bounded_lifetime:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true,canonical_until_revoked:true,locked_wallet_same_parent_reopen:true,assignment_epoch_refresh:true,local_state_preserved_until_explicit_save:true,old_parent_removed_only_after_explicit_forget:true,refresh_without_access_request:true,final_dispatch_fence_known_not_sent:true,post_dispatch_loss_still_unknown:true,wallet_owned_forget_confirmation:true,forget_lost_reply_copy_honest:true,popup_forget_then_current_grant:true,forget_preserves_other_data_and_journals:true}))
+  console.log(JSON.stringify({native,fixture_configuration_overrides:['versioned Arena draft/policy/enrollment using canonical validators; one explicit synthetic Arena and its real storage record before native signing','native-signed until_revoked parent validity with not_after absent; disposable member registry stored as model-validated JSON for real assignment-epoch transition','synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_sends_nothing:true,general_resource_request:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,automatic_bounded_lifetime:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true,canonical_until_revoked:true,locked_wallet_same_parent_reopen:true,assignment_epoch_refresh:true,local_state_preserved_until_explicit_save:true,old_parent_removed_only_after_explicit_forget:true,refresh_without_access_request:true,monitor_projection_after_recovery:true,final_dispatch_fence_known_not_sent:true,post_dispatch_loss_still_unknown:true,wallet_owned_forget_confirmation:true,forget_lost_reply_copy_honest:true,popup_forget_then_current_grant:true,forget_preserves_other_data_and_journals:true}))
 } finally {
   await context?.close(); agent?.destroy(); edge.closeAllConnections(); await new Promise<void>(accept => edge.close(() => accept()))
   if (server?.pid && server.exitCode === null) { server.kill('SIGTERM'); await Promise.race([new Promise(r => server!.once('exit', r)), new Promise(r => { const t = setTimeout(() => { server!.kill('SIGKILL'); r(null) }, 3000); t.unref() })]) }
