@@ -1,5 +1,6 @@
 import type { ReadAccessProvider } from './read-access.js'
 export * from './read-access.js'
+export * from './session-login.js'
 import type { ProviderProfilesProvider } from './provider-profiles.js'
 import type { CredentialPresentationProvider } from './credential-presentation.js'
 export * from './credential-presentation.js'

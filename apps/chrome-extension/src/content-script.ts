@@ -1,4 +1,5 @@
 import { forwardReadAccess,installReadDocumentLifecycle } from './read-access-content.js'
+import { createSessionLoginContent } from './session-login-content.js'
 import { forwardCredentialPresentation } from './credential-presentation-content.js'
 import { forwardFilesKey } from './files-key-content.js'
 import { forwardRegistration } from './registration-content.js'
@@ -87,6 +88,7 @@ declare const chrome: any;
 // === Wave 3/4: Actual runtime bridge — forward normalized requests to service worker ===
 
 if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.runtime?.sendMessage) {
+  const sessionLogin=createSessionLoginContent(chrome,window)
   installReadDocumentLifecycle(chrome,window)
   injectPageProvider(document, chrome.runtime.getURL('dist/provider.js'))
   chrome.runtime.onMessage.addListener((message: any, sender: any) => {
@@ -106,6 +108,9 @@ if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.ru
 
   if (normalized.method === 'castalia.wallet.readAccess') {
     const reply = (response: unknown) => window.postMessage({ type: CASTALIA_WALLET_RESPONSE, id: normalized.id, ...(response as object) }, window.location.origin)
+    if(['open_session_login','complete_session_login','cancel_session_login'].includes(String((normalized.payload as any)?.operation))){
+      void sessionLogin.handle(normalized.payload,reply,navigator.userActivation?.isActive===true);return
+    }
     forwardReadAccess(chrome, normalized.payload, reply, window, navigator.userActivation?.isActive === true)
     return
   }

@@ -33,11 +33,13 @@ import type {
 test('service-worker custody queue keeps import clearing and replacement mutation FIFO', async () => {
   const queue = createCustodyOperationQueue()
   const events: string[] = []
+  let started!:()=>void
+  const importStarted=new Promise<void>(resolve=>{started=resolve})
   let releaseClear!: () => void
   const clearBlocked = new Promise<void>((resolve) => { releaseClear = resolve })
 
   const importOperation = queue.run(async () => {
-    events.push('import:clear:start')
+    events.push('import:clear:start');started()
     await clearBlocked
     events.push('import:clear:done')
     events.push('import:mutation')
@@ -46,7 +48,7 @@ test('service-worker custody queue keeps import clearing and replacement mutatio
     events.push('create:mutation')
   })
 
-  await Promise.resolve()
+  await importStarted
   assert.deepEqual(events, ['import:clear:start'])
   releaseClear()
   await Promise.all([importOperation, laterCreate])

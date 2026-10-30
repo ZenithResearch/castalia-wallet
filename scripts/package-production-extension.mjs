@@ -41,6 +41,7 @@ await cp(join(extensionRoot, 'icons'), join(outputRoot, 'icons'), { recursive: t
 // Only ship the self-contained production entry bundles, never raw tsc modules.
 await mkdir(join(outputRoot, 'dist'), { recursive: true })
 for (const file of [
+  'session-login.js', 'session-login-worker.js',
   'holder-grants.js', 'wallet-identities.js', 'read-access-confirmation.js', 'service-worker.js', 'content-script.js', 'provider.js', 'onboarding.js',
   'provider-settings.js', 'credential-presentation-confirmation.js', 'confirmation.js', 'registration-confirmation.js', 'files-key-confirmation.js', 'popup.js',
 ]) {
@@ -49,6 +50,7 @@ for (const file of [
 
 await mkdir(join(outputRoot, 'src'), { recursive: true })
 for (const file of [
+  'session-login.html', 'session-login.css',
   'holder-grants.html', 'wallet-identities.html', 'provider-settings.html', 'provider-settings.css',
   'read-access-confirmation.html', 'confirmation.css',
   'credential-presentation-confirmation.html',

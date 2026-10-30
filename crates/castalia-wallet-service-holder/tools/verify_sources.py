@@ -15,7 +15,7 @@ PRIVATE_FILES_SHA256 = {
     'src/lib.rs': '56a29e496705bab57cbaafa03df727c11be417f8a34763faae8e5011ee53f968',
     'src/service_store.rs': '55a89a0642024b50bd021d5e4602f6cd2d4bc10f69e51f2ff3397dd7fc5edb4e',
     # Root fixture only: bounded WouldBlock wait after concurrent fork. Production pins above are unchanged.
-    'src/service_store_tests.rs': '437ddda92fabfa83b3d1a2a50ea1bdb9bec29b1235c861c789b527018ef437de',
+    'src/service_store_tests.rs': 'db8d76dc501c8ac7311e411dcff283823cca64f5b872fe0440628e4bc80916bc',
 }
 # Reviewed shared Web/native Core 0.4.1 reusable-grant/access-point closure.
 # Portable source gates and cross-client fixtures pass; standalone holder/native exports are unchanged.

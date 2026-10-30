@@ -48,6 +48,8 @@ async function bundle() {
 
   await build({...common,format:'iife',entryPoints:[join(extensionDir,'src/wallet-identities.ts')],outfile:join(distDir,'wallet-identities.js')});
   await build({...common,format:'iife',entryPoints:[join(extensionDir,'src/holder-grants.ts')],outfile:join(distDir,'holder-grants.js')});
+  await build({...common,format:'iife',entryPoints:[join(extensionDir,'src/session-login.ts')],outfile:join(distDir,'session-login.js')});
+  await build({...common,format:'esm',entryPoints:[join(extensionDir,'src/session-login-worker.ts')],outfile:join(distDir,'session-login-worker.js')});
 
   // Bundle Content Script as IIFE (required for MV3 content scripts)
   await build({
