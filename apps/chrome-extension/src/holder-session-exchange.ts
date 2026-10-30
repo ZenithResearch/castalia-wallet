@@ -29,7 +29,7 @@ function parseUnchecked(text:string):any {
   const value=JSON.parse(text,(_key,v)=>{if(typeof v==='number'&&!Number.isSafeInteger(v))fail();return v;});
   if(!plain(value))fail();return value;
 }
-function parse(text:string):any {try{return parseUnchecked(text);}catch{fail();}}
+export function parseWalletTransportObject(text:string):any {try{return parseUnchecked(text);}catch{fail();}}
 
 type Request={service:string;origin:string;installation:string;sessionPublicKey:string;sessionInstallationId:string;ttlSeconds:number;permissions:unknown[]|null;binding?:unknown};
 type Dependencies={
@@ -58,10 +58,9 @@ export function createHolderSessionExchange(d:Dependencies){
     const decoder=new TextDecoder('utf-8',{fatal:true});let size=0,text='';
     try{while(true){const part=await reader!.read();if(part.done)break;size+=part.value.byteLength;if(size>LIMIT)fail();text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();}
     finally{await reader!.cancel().catch(()=>{});}
-    return parse(text);
+    return parseWalletTransportObject(text);
   }
-  return{
-    async prepare(request:Request){
+  async function eligible(request:Request){
       const saved=await d.grants.prepare(undefined,request.service,request.origin,request.installation,request.permissions);
       const stored=saved.stored;
       if(stored?.grant?.claims?.schema!=='secs.holder-grant.v2')throw Error('holder_session_parent_unsupported');
@@ -80,6 +79,21 @@ export function createHolderSessionExchange(d:Dependencies){
         capabilities.challenge_path!==prefix+BASE+'/challenges'||capabilities.exchange_path!==prefix+BASE+'/exchange'||capabilities.status_path!==prefix+BASE+'/status'||
         !shape(pin,['issuer','key_id','public_key','service'])||!['issuer','key_id','public_key','service'].every(k=>pin[k]===stored.pin[k]))fail();
       if(!await d.audience(pin,request.origin,capabilities.audience))throw Error('issuer_setup_required');
+      return {saved,stored,prefix,capabilities};
+  }
+  return{
+    async options(request:Request){
+      const {stored,capabilities}=await eligible(request);
+      const parent=stored.grant.claims;
+      if(!Number.isSafeInteger(parent.max_credential_lifetime_seconds)||parent.max_credential_lifetime_seconds<1||parent.max_credential_lifetime_seconds>3600||
+        parent.validity?.not_after!==null&&!Number.isSafeInteger(parent.validity?.not_after))fail();
+      const maximum=Math.min(request.ttlSeconds,capabilities.max_ttl_seconds,parent.max_credential_lifetime_seconds,
+        parent.validity.not_after===null?3600:parent.validity.not_after-d.now());
+      if(!Number.isSafeInteger(maximum)||maximum<1)throw Error('read_approval_expired');
+      return {maximum_ttl_seconds:maximum,default_ttl_seconds:Math.min(900,maximum)};
+    },
+    async prepare(request:Request){
+      const {saved,stored,prefix,capabilities}=await eligible(request);
       const requestId=d.randomId();if(!/^[a-f0-9]{32}$/.test(requestId))fail();
       const result=await call(request.origin,prefix,'/challenges',{schema:'secs.holder-session-prepare.v1',request_id:requestId,
         parent_grant:stored.grant,installation_id:request.installation,session_public_key:request.sessionPublicKey,

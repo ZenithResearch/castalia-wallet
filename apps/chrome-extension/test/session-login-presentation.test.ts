@@ -1,0 +1,4 @@
+import assert from 'node:assert/strict';import test from 'node:test';
+import{permissionPresentation}from'../src/session-login-presentation.js';
+test('read labels do not hide resource restrictions, selectors or unknown guards',()=>{const permission={operation:'devgraph.work.get',resource:'service-resource',constraints:{archived:false},roles:[{selector:{selection:{mode:'objects',refs:[{id:'exact-id'}]},ancestry_guard:'must-remain'}}],future_guard:{x:1}};const view=permissionPresentation(permission);assert.equal(view.label,'Read · devgraph · work');const shown=JSON.parse(view.restrictions);const{operation,...restrictions}=permission;assert.deepEqual(shown,restrictions);assert.ok(view.restrictions.includes('must-remain'));});
+test('an unknown operation is displayed verbatim rather than relabelled as read',()=>{assert.equal(permissionPresentation({operation:'other.write'}).label,'Operation: other.write');});

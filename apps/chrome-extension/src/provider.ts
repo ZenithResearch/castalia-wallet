@@ -105,7 +105,7 @@ type PageResponseEnvelope = {
   id: string
   ok: boolean
   result?: unknown
-  error?: string | { code: string, dispatched: boolean }
+  error?: string | { code: string, dispatched: boolean, stage?: string }
 }
 
 const DEFAULT_PAGE_MESSAGE_TIMEOUT_MS = 15_000
@@ -115,7 +115,7 @@ export function createPageMessageTransport(
   timeoutMs = DEFAULT_PAGE_MESSAGE_TIMEOUT_MS,
 ): CastaliaWalletTransport {
   return (request) => new Promise((resolve, reject) => {
-    const requestTimeoutMs = ['castalia.wallet.readAccess','castalia.wallet.requestConnection','castalia.wallet.proposeProviderProfile','castalia.wallet.requestMembership','castalia.wallet.openMembershipFlow','castalia.wallet.requestRegistrationV2','castalia.wallet.presentCredential','castalia.wallet.requestRegistration','castalia.wallet.wrapFilesKey','castalia.wallet.unwrapFilesKey','castalia.wallet.requestFilesServiceAuthentication'].includes(request.method) ? 125_000 : timeoutMs
+    const requestTimeoutMs = request.method==='castalia.wallet.readAccess'&&(request.payload as any)?.operation==='open_session_login' ? 305_000 : ['castalia.wallet.readAccess','castalia.wallet.requestConnection','castalia.wallet.proposeProviderProfile','castalia.wallet.requestMembership','castalia.wallet.openMembershipFlow','castalia.wallet.requestRegistrationV2','castalia.wallet.presentCredential','castalia.wallet.requestRegistration','castalia.wallet.wrapFilesKey','castalia.wallet.unwrapFilesKey','castalia.wallet.requestFilesServiceAuthentication'].includes(request.method) ? 125_000 : timeoutMs
     const timeout = pageWindow.setTimeout(() => {
       pageWindow.removeEventListener('message', onMessage)
       const error = new Error('Castalia Wallet request timed out')
@@ -131,7 +131,7 @@ export function createPageMessageTransport(
       if (!event.data.ok) {
         const detail = event.data.error
         const error = new Error(typeof detail === 'string' ? detail : detail?.code ?? 'Castalia Wallet request failed')
-        if (detail && typeof detail === 'object') Object.assign(error, { code: detail.code, dispatched: detail.dispatched })
+        if (detail && typeof detail === 'object') Object.assign(error, { code: detail.code, dispatched: detail.dispatched, ...(detail.stage?{stage:detail.stage}:{}) })
         reject(error)
         return
       }

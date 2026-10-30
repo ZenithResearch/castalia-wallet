@@ -8,6 +8,7 @@ export const HOLDER_GRANT_CAPABILITY = "holder_grant_v1" as const;
 /** Candidate: advertise only with a qualified session exchange implementation. */
 export const HOLDER_SESSION_EXCHANGE_CAPABILITY = "holder_session_exchange_v1" as const;
 export type ReadAccessRequest =
+  | import('./session-login.js').SessionLoginRequest
   | { operation: "prepare_holder_session"; service: string; session_public_key: string; session_installation_id: string; requested_ttl_seconds: number; permissions?: unknown[]; service_access_point?: unknown }
   | { operation: "open_holder_session"; preparationId: string; challenge: unknown; session_signature: string }
   | { operation: "save_grant"; service: string; grant: unknown; permissions?: unknown[] }

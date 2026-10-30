@@ -1,6 +1,11 @@
 import { installCustodyPanelRuntime } from './custody-panel-state.js'
+import { installSessionLoginLauncher, verifyLoginOwner, SESSION_LOGIN_INVALIDATION, SESSION_LOGIN_QUALIFIED } from './session-login-broker.js'
+import {saveLoginGrants} from './session-login-storage.js'
+import {createCustodyOperationQueue} from './custody-operation-queue.js'
+import {installSessionLoginCritical} from './session-login-critical.js'
+export {createCustodyOperationQueue} from './custody-operation-queue.js'
 import { holderGrantStore,holderSessionExchange,holderSessionExchangeAvailable,HOLDER_SESSION_EXCHANGE_QUALIFIED } from "./custody-runtime.js"
-import { HOLDER_SESSION_EXCHANGE_CAPABILITY } from '@castalia-wallet/provider-types'
+import { HOLDER_SESSION_EXCHANGE_CAPABILITY, SESSION_LOGIN_CAPABILITY } from '@castalia-wallet/provider-types'
 import { isWalletIdentityPage } from './wallet-identities-store.js'
 import { walletIdentities } from './custody-runtime.js'
 import { installReadAccessRuntime } from './read-access-runtime.js'
@@ -289,18 +294,10 @@ async function getCurrentExtensionStateForProvider(): Promise<ExtensionWalletSta
   }
 }
 
-export function createCustodyOperationQueue() {
-  let tail: Promise<void> = Promise.resolve()
-  return {
-    run<T>(operation: () => Promise<T>): Promise<T> {
-      const result = tail.then(operation, operation)
-      tail = result.then(() => undefined, () => undefined)
-      return result
-    },
-  }
-}
-
 const custodyOperations = createCustodyOperationQueue()
+// Explicit human lock/revoke/import is distinct from a background-worker restart.
+// This non-authority revision invalidates popup-owned private signer snapshots.
+const invalidateLoginSigners=()=>chrome.storage.local.set({[SESSION_LOGIN_INVALIDATION]:crypto.randomUUID()})
 
 // Enforce per-session reset on every SW start / extension reload (core of Option B safety)
 async function enforceSessionReset(): Promise<void> {
@@ -411,6 +408,8 @@ export function isExactMembershipFlowSender(
 }
 
 if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
+  const loginCritical=installSessionLoginCritical(chrome,custodyOperations)
+  custodyOperations.setBarrier(loginCritical.recover())
   const providerProfilesRuntime = installProviderProfilesRuntime(chrome, {
     run: operation => custodyOperations.run(operation), epoch: custodyEpoch, onChange: subscribeCustodyChanges,
     invalidate: invalidateCustodyApprovals,
@@ -419,6 +418,17 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     sign: bytes => durableSigningIdentity().signBytes(bytes), legacyCredential: () => zenithMembershipState.get(),
   })
   const grantsStore=holderGrantStore(()=>providerProfilesRuntime.pins());
+  const readInstallation=async()=>{
+    const key='castalia-read-installation-v1',saved=(await chrome.storage.local.get(key))[key]
+    if(saved!==undefined){if(typeof saved!=='string'||!/^[a-f0-9]{32}$/.test(saved))throw new Error('invalid_installation');return saved}
+    const value=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('')
+    await chrome.storage.local.set({[key]:value});return value
+  }
+  installSessionLoginLauncher(chrome,Date.now,{
+    installation:()=>custodyOperations.run(readInstallation),
+    trust:(profile,owner)=>custodyOperations.run(async()=>{await verifyLoginOwner(chrome,owner.entry,owner.popupDocumentId);return providerProfilesRuntime.store.approve(profile)}),
+    saveGrants:(input,owner)=>loginCritical.within(owner,()=>saveLoginGrants(chrome,input)),
+  })
   const sessions=HOLDER_SESSION_EXCHANGE_QUALIFIED?holderSessionExchange(()=>providerProfilesRuntime.pins(),grantsStore):undefined;
   installCustodyPanelRuntime(chrome, {
     snapshot:()=>custodyOperations.run(async()=>{
@@ -432,12 +442,7 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     holderSessions:sessions,
     run: <T>(f:()=>Promise<T>)=>custodyOperations.run(f), epoch:custodyEpoch, onChange:subscribeCustodyChanges,
     state:async()=>{const state=await getCurrentExtensionStateForProvider();return state?{memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins}:null},
-    installation:async()=>{
-      const key='castalia-read-installation-v1',saved=(await chrome.storage.local.get(key))[key]
-      if(saved!==undefined){if(typeof saved!=='string'||!/^[a-f0-9]{32}$/.test(saved))throw new Error('invalid_installation');return saved}
-      const value=Array.from(crypto.getRandomValues(new Uint8Array(16)),v=>v.toString(16).padStart(2,'0')).join('')
-      await chrome.storage.local.set({[key]:value});return value
-    },
+    installation:readInstallation,
     memberships:(origin:string)=>providerProfilesRuntime.memberships(origin),
     setupStatus:(profile:unknown,origin:string)=>providerProfilesRuntime.setupStatus(profile,origin),
     membership:(origin:string,holder:string,profileId?:string)=>providerProfilesRuntime.readMembership(origin,holder,profileId),
@@ -562,7 +567,7 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
   sendResponse: (response?: any) => void
 ) => {
   // IMPORTANT: Let provider requests (from content script) pass through to the dedicated listener below
-  if ((message as any).type?.startsWith("HOLDER_GRANTS_") || (message as any).type === "CASTALIA_PROVIDER_REQUEST" || ["GET_REGISTRATION_CONFIRMATION", "RESOLVE_REGISTRATION_CONFIRMATION", "GET_CREDENTIAL_PRESENTATION_CONFIRMATION", "RESOLVE_CREDENTIAL_PRESENTATION_CONFIRMATION", "GET_FILES_KEY_CONFIRMATION", "RESOLVE_FILES_KEY_CONFIRMATION", "PROFILE_SETTINGS_GET", "PROFILE_SETTINGS_SAVE", "PROFILE_SETTINGS_REMOVE", "PROFILE_SETTINGS_BIND_LEGACY", "GET_PROVIDER_APPROVAL", "RESOLVE_PROVIDER_APPROVAL"].includes((message as any).type)) {
+  if ((message as any).type?.startsWith("SESSION_LOGIN_") || (message as any).type?.startsWith("HOLDER_GRANTS_") || (message as any).type === "CASTALIA_PROVIDER_REQUEST" || ["GET_REGISTRATION_CONFIRMATION", "RESOLVE_REGISTRATION_CONFIRMATION", "GET_CREDENTIAL_PRESENTATION_CONFIRMATION", "RESOLVE_CREDENTIAL_PRESENTATION_CONFIRMATION", "GET_FILES_KEY_CONFIRMATION", "RESOLVE_FILES_KEY_CONFIRMATION", "PROFILE_SETTINGS_GET", "PROFILE_SETTINGS_SAVE", "PROFILE_SETTINGS_REMOVE", "PROFILE_SETTINGS_BIND_LEGACY", "GET_PROVIDER_APPROVAL", "RESOLVE_PROVIDER_APPROVAL"].includes((message as any).type)) {
     return false;
   }
 
@@ -645,7 +650,9 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
           break
         case 'CUSTODY_LOCK': {
           const state = await custodyOperations.run(async () => {
+            await invalidateLoginSigners()
             await custodyState.lock()
+            await loginCritical.fenceReviews()
             return custodyState.getState()
           })
           sendResponse({ ok: true, state })
@@ -659,6 +666,8 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
           break
         case 'CUSTODY_IMPORT': {
           const result = await custodyOperations.run(async () => {
+            await invalidateLoginSigners()
+            await loginCritical.fenceReviews()
             // Session and local storage cannot commit atomically. Clear old identity-bound
             // authority first so no failure can carry it onto a replacement key.
             await sessionState.clearIdentityAuthorizations()
@@ -680,20 +689,19 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
         }
         case 'BEGIN_MEMBERSHIP_FLOW': throw new Error('Choose a membership profile in Wallet settings and use the document-bound provider API')
         case 'SETUP': {
-          const result = await sessionState.setup()
-          const state = await sessionState.getState()
+          const {result,state}=await custodyOperations.run(async()=>({result:await sessionState.setup(),state:await sessionState.getState()}))
           sendResponse({ ok: true, result, state })
           break
         }
         case 'UNLOCK': {
-          await sessionState.unlock()
-          const state = await sessionState.getState()
+          const state=await custodyOperations.run(async()=>{await sessionState.unlock();return sessionState.getState()})
           sendResponse({ ok: true, state })
           break
         }
         case 'LOCK': {
-          await sessionState.lock()
-          const state = await sessionState.getState()
+          const state=await custodyOperations.run(async()=>{
+            await invalidateLoginSigners();await custodyState.lock();await sessionState.lock();await loginCritical.fenceReviews();return sessionState.getState()
+          })
           sendResponse({ ok: true, state })
           break
         }
@@ -714,6 +722,7 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
           filesKeyRuntime.invalidate()
           const state = await custodyOperations.run(async () => {
             await sessionState.revokeOrigin(message.origin)
+            await invalidateLoginSigners()
             return sessionState.getState()
           })
           sendResponse({ ok: true, state })
@@ -788,7 +797,7 @@ chrome.runtime.onMessage.addListener((
   (async () => {
     try {
       if (message.method === 'castalia.wallet.getCapabilities') {
-        sendResponse({ id: message.id, ok: true, result: holderSessionExchangeAvailable()?[...NEUTRAL_CAPABILITIES,HOLDER_SESSION_EXCHANGE_CAPABILITY]:NEUTRAL_CAPABILITIES }); return
+        sendResponse({ id: message.id, ok: true, result: [...NEUTRAL_CAPABILITIES,...(holderSessionExchangeAvailable()?[HOLDER_SESSION_EXCHANGE_CAPABILITY]:[]),...(SESSION_LOGIN_QUALIFIED&&typeof chrome.runtime.getContexts==='function'?[SESSION_LOGIN_CAPABILITY]:[])] }); return
       }
       if (message.method === 'castalia.wallet.isAvailable') {
         sendResponse({ id: message.id, ok: true, result: true })
