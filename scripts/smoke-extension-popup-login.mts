@@ -236,6 +236,33 @@ raise SystemExit(holder_session_fixture.main())
   await operator.evaluate(()=>new Promise<void>((accept,reject)=>(globalThis as any).chrome.runtime.sendMessage({type:'CUSTODY_LOCK'},(r:any)=>r?.ok?accept():reject(Error('disposable explicit lock failed')))))
   value=await result();assert.equal(value.ok,false);assert.equal(value.dispatched,false);assert.equal(exchanges,2,'explicit lock blocks dispatch')
   await operator.close();if(!thirdPopup.isClosed())await thirdPopup.close()
+  // Negative fault injection in ONE disposable popup, without changing the
+  // packaged Worker, issuer, signed bytes or any successful-path behavior.
+  await page.evaluate(()=>(window as any).setupChild());
+  const fenceLoginId=await page.evaluate(()=>(window as any).loginId);
+  await context.addInitScript(({loginId})=>{
+    if(location.protocol!=='chrome-extension:'||new URL(location.href).searchParams.get('login')!==loginId)return;
+    const NativeWorker=globalThis.Worker;
+    (globalThis as any).Worker=class extends NativeWorker{
+      pending=new Set<string>();
+      constructor(url:string|URL,options?:WorkerOptions){super(url,options);this.addEventListener('message',event=>{
+        if(event.data?.kind==='host'&&event.data.method==='beforeSessionDispatch')this.pending.add(event.data.id);
+      });}
+      postMessage(message:any,options?:any){
+        if(message?.kind==='host_result'&&this.pending.delete(message.id)){
+          document.documentElement.dataset.finalFenceInjected='true';
+          return super.postMessage({kind:'host_result',id:message.id,ok:false,error:{code:'session_login_context_changed',stage:'authorization',dispatched:false}},options);
+        }
+        return super.postMessage(message,options);
+      }
+    };
+  },{loginId:fenceLoginId});
+  const fencedOpening=context.waitForEvent('page');await page.locator('#login').click();const fencedPopup=await fencedOpening;
+  await fencedPopup.getByLabel('Wallet password').fill('Disposable browser session password');await fencedPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();await fencedPopup.getByRole('button',{name:'Review session',exact:true}).click();
+  await clickClosingApproval(fencedPopup,'Allow this session',page);value=await result();
+  assert.equal(value.ok,false);assert.equal(value.error,'session_login_context_changed');assert.equal(value.dispatched,false);assert.equal(exchanges,2,'final fence rejection sends no exchange POST');
+  assert.equal(await fencedPopup.locator('html').getAttribute('data-final-fence-injected'),'true');
+  await fencedPopup.close();
   // Advance the disposable registry through its actual model/epoch machinery.
   // Old signed roots remain stored but cannot authorize reads after this change.
   const registryPath=join(fixture,'browser-member-policy.json'),registry=JSON.parse(await readFile(registryPath,'utf8'));
@@ -340,7 +367,7 @@ raise SystemExit(holder_session_fixture.main())
   await page.locator('#status').click();value=await result();assert.equal(value.value.state,'revoked');assert.equal(value.value.credential,null)
   assert.equal((await verifyExtensionPackageDigest(extension,`${extension}.contents.sha256`)).digest,packageBefore.digest)
   assert.deepEqual(sourcePin(receiver),receiverBefore);assert.deepEqual(sourcePin(consumer),consumerBefore);
-  console.log(JSON.stringify({native,fixture_configuration_overrides:['native-signed until_revoked parent validity with not_after absent; disposable member registry stored as model-validated JSON for real assignment-epoch transition','synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_resumes_original_id:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,lifetime_selection:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true,canonical_until_revoked:true,locked_wallet_same_parent_reopen:true,assignment_epoch_refresh:true,old_parent_preserved_until_explicit_save:true,refresh_without_access_request:true}))
+  console.log(JSON.stringify({native,fixture_configuration_overrides:['native-signed until_revoked parent validity with not_after absent; disposable member registry stored as model-validated JSON for real assignment-epoch transition','synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_resumes_original_id:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,lifetime_selection:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true,canonical_until_revoked:true,locked_wallet_same_parent_reopen:true,assignment_epoch_refresh:true,old_parent_preserved_until_explicit_save:true,refresh_without_access_request:true,final_dispatch_fence_known_not_sent:true,post_dispatch_loss_still_unknown:true}))
 } finally {
   await context?.close(); agent?.destroy(); edge.closeAllConnections(); await new Promise<void>(accept => edge.close(() => accept()))
   if (server?.pid && server.exitCode === null) { server.kill('SIGTERM'); await Promise.race([new Promise(r => server!.once('exit', r)), new Promise(r => { const t = setTimeout(() => { server!.kill('SIGKILL'); r(null) }, 3000); t.unref() })]) }

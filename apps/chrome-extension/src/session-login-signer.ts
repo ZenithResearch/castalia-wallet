@@ -151,8 +151,9 @@ export function createSessionLoginSigner(d:Dependencies) {
                 request_id:c.request_id,challenge_id:c.challenge_id,session_public_key:c.session_public_key,
                 session_installation_id:c.session_installation_id,expires_at:c.expires_at});
               await guard();
+              await d.critical();await d.beforeSessionDispatch();
             }catch(error){preDispatchError=error;throw error;}
-            await d.critical();await d.beforeSessionDispatch();stage='exchange';dispatched=true;
+            stage='exchange';dispatched=true;
           }
           const fetchImpl=d.fetchImpl;return fetchImpl(url,options);
         },
