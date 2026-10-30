@@ -113,6 +113,15 @@ still has approved access: obtaining the updated parent, saving it and authorizi
 a child each require their existing explicit review. No request, signature,
 issuance, save or replacement runs merely because recovery is displayed.
 
+Version 0.0.10 preserves the original failure from every final pre-fetch fence,
+including the last permit check and dispatch acknowledgment. If those checks
+reject before the HTTP call begins, the session result reports `dispatched:false`
+with the known failure instead of claiming an uncertain exchange. The private
+signature is never sent. Once the HTTP call begins, network loss, malformed
+receipts and post-dispatch failures remain uncertain; no automatic retry or
+replacement is introduced. This does not inspect canonical assignment/root
+status before holder proof and makes no issuer-side authorization change.
+
 For an uncertain session exchange, the page retains its original child checkpoint
 and uses the issuer's original-result status API. It must not discard that key or
 start a replacement simply because a response is lost. Closing the popup locks
@@ -133,3 +142,10 @@ leaves the old encrypted record untouched until Save, without a new access reque
 It never loads a personal Chrome profile or changes installed apps/live grants.
 Unit tests additionally exercise context spoofing, closed request shapes, mutation
 CAS, stale cleanup/window reuse, delayed writes and failed recovery barriers.
+
+The final-dispatch regression injects a negative host acknowledgment in one
+disposable popup selected by its public login ID. The actual packaged Worker,
+Core signatures, native challenge and positive transports remain intact. It
+asserts `dispatched:false`, the original fence error and zero exchange POSTs; the
+separate dropped-committed-reply case must still retain its original child and
+report an uncertain result until authenticated recovery succeeds.
