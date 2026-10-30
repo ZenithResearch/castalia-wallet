@@ -3,7 +3,7 @@ import test from 'node:test';
 import { createSessionLoginSigner } from '../src/session-login-signer.js';
 function fixture(){
  const pin={issuer:'fixture',key_id:'key',public_key:'a'.repeat(64),service:'service:fixture'},origin='https://graph.example';
- const parent={claims:{schema:'secs.holder-grant.v2',max_credential_lifetime_seconds:3600,validity:{not_after:5000}},signature:'fixture'};
+ const parent={claims:{schema:'secs.holder-grant.v2',max_credential_lifetime_seconds:3600,validity:{schema:'castalia.grant-validity.v1',mode:'dated',not_before:900,not_after:5000}},signature:'fixture'};
  const stored={pin,grant:parent};const permissions=[{operation:'fixture.read'}];let signed=0,dispatched=0,journaled=0,locked=0;
  let snapshot:any={custody:{publicKey:'b'.repeat(64),encryptedRecord:'synthetic-encrypted-record'},profiles:undefined,grants:{schema:'castalia.holder-grant-storage.v1',revision:1,ciphertext:'synthetic-encrypted-grant'},installation:'c'.repeat(32),lockRevision:null};
  let mutation='',original:any=null,accessChallenge:any=null,accessCalls:any[]=[],accessApprovals=0,enrollmentApprovals=0,grantIssues=0,grantSaves=0;let challenge:any;const request={operation:'open_session_login',service:pin.service,session_public_key:'d'.repeat(64),session_installation_id:'e'.repeat(32),requested_ttl_seconds:60};

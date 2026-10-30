@@ -1,4 +1,4 @@
-import {permissionPresentation} from './session-login-presentation.js';
+import {permissionPresentation,accessRecoveryPresentation} from './session-login-presentation.js';
 import { createSessionLoginPopupHost } from './session-login-popup-host.js';
 declare const chrome:any;
 const $=(id:string)=>document.getElementById(id)!;
@@ -25,11 +25,13 @@ function render(state:any){
     $('expiry').textContent='Ends '+new Date(state.summary.expires_at*1000).toLocaleString()+'. This expiry cannot be extended by using the session.';
   }
   if(['access_required','access_review','access_pending'].includes(state.stage)){
+    const view=accessRecoveryPresentation(state);$('status').textContent=view.status;$('access-heading').textContent=view.heading;
     $('access').hidden=false;$('prepare-grant').hidden=!state.grantDescriptor||state.stage==='access_review';$('send-original').hidden=state.result?.status!=='unknown';$('request-access').hidden=!state.descriptor||state.stage==='access_review';$('confirm-request').hidden=state.stage!=='access_review';
+    $('request-access').classList.toggle('secondary',view.primary==='check_approved');
     $('request-access').textContent=state.stage==='access_pending'?'Check original request':'Request access';
     $('confirm-request').textContent=state.checking?'Check request status':'Send access request';
     $('access-details').hidden=state.stage!=='access_review';$('access-details').textContent=state.summary?JSON.stringify(state.summary.details,null,2):'';
-    $('access-status').textContent=state.stage==='access_review'?'Review this exact request. This creates no grant or session.':state.result?.status==='active'?'Access is approved. Choose Check approved access to obtain and save its grant here.':state.stage==='access_pending'?'Request status: '+(state.result?.status??'uncertain')+'. Check this original request; no replacement request is sent.':state.error?'The service could not prepare a session from the saved access. You can explicitly check approved access or review an access request. Your saved grant has not been removed.':'This Wallet has no saved grant for this service. The operator must approve access before a session can start.';
+    $('access-status').textContent=view.detail;
   }
   if(['grant_review','save_grant','grant_recovery','grant_uncertain'].includes(state.stage)){
     $('grant').hidden=false;

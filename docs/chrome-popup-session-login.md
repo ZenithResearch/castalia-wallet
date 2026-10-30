@@ -1,6 +1,6 @@
 # Chrome popup session login
 
-Castalia 0.0.8 adds the optional `session_login_v1` provider capability. Existing
+Castalia 0.0.8 introduced the optional `session_login_v1` provider capability. Existing
 connection, read-access, grant backup, native clients and signed secS formats stay
 compatible. Capability advertisement also requires Chrome's document-context API.
 This is a browser host composition over unchanged Wallet Core; it is not a new
@@ -29,7 +29,11 @@ onward delegation. More general operations require a separately versioned review
 
 Wallet defaults to 900 seconds, clamped to the caller's requested upper bound,
 verified issuer capabilities, signed parent maximum, remaining parent validity
-and the existing 3600-second transport bound. The human can choose a shorter or
+and the existing 3600-second transport bound. Version 0.0.9 reads the canonical
+`castalia.grant-validity.v1` modes: `dated` has a required integer `not_after`;
+`until_revoked` has no `not_after` field. An unbounded parent never makes the child
+unbounded. Unknown fields/modes, future starts and malformed expiry values fail
+closed; an expired dated parent cannot open a session. The human can choose a shorter or
 longer available duration before the challenge is created. Current policy is
 rechecked before preparation; the final exact expiry is reviewed separately.
 
@@ -100,6 +104,15 @@ Saving a known result clears only its own journal row. A stale local parent stay
 saved when issuer preparation fails; explicit check/request actions remain
 available, with no inferred revocation or automatic replacement.
 
+Version 0.0.9 makes **Check approved access** the primary recovery action before
+requesting new permissions. A missing encrypted local entry, a preserved older
+parent format, and a failed parent/service check have distinct messages. A new
+request's pending/active status never substitutes for checking existing approved
+access. An assignment change can invalidate an old parent while the same holder
+still has approved access: obtaining the updated parent, saving it and authorizing
+a child each require their existing explicit review. No request, signature,
+issuance, save or replacement runs merely because recovery is displayed.
+
 For an uncertain session exchange, the page retains its original child checkpoint
 and uses the issuer's original-result status API. It must not discard that key or
 start a replacement simply because a response is lost. Closing the popup locks
@@ -111,7 +124,12 @@ root custody but does not extend or automatically revoke an already issued child
 packaged extension, native issuer and actual consumer modules selected through
 explicit environment paths. It checks popup-only first use, encrypted parent save,
 parent/result loss and closure, worker suspension, explicit lock, exact child
-recovery, scoped reads, hard expiry, replay, revocation, IndexedDB reload and logout.
+recovery, scoped reads, hard expiry, replay, revocation, IndexedDB reload and logout. The regression
+fixture requests a canonical until-revoked parent before native signing and uses
+a model-validated disposable member registry to exercise an actual assignment
+epoch change. It verifies locked/reloaded login reuses the identical encrypted
+parent with zero reissuance, and explicitly reviewed updated-parent delivery
+leaves the old encrypted record untouched until Save, without a new access request.
 It never loads a personal Chrome profile or changes installed apps/live grants.
 Unit tests additionally exercise context spoofing, closed request shapes, mutation
 CAS, stale cleanup/window reuse, delayed writes and failed recovery barriers.

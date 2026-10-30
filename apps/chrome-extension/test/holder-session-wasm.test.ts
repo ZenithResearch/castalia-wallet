@@ -54,14 +54,18 @@ test('actual WASM reviews and approves the private exchange; finite receipt veri
     return new Response(JSON.stringify(response),{status:200,headers:{'Content-Type':'application/json'}});
    },
   });
-  const prepared=await transport.prepare({service:pin.service,origin,installation,sessionPublicKey:publicHex(session.publicKey),sessionInstallationId:sessionInstallation,ttlSeconds:60,permissions:null});
+  const request={service:pin.service,origin,installation,sessionPublicKey:publicHex(session.publicKey),sessionInstallationId:sessionInstallation,ttlSeconds:60,permissions:null};
+  assert.deepEqual(await transport.options(request),{maximum_ttl_seconds:60,default_ttl_seconds:60});
+  assert.equal(Object.hasOwn(stored.grant.claims.validity,'not_after'),false,'use canonical Core-verified until_revoked bytes');
+  assert.equal(approvals,0);assert.deepEqual(calls,['/holder-sessions/v1/capabilities']);
+  const prepared=await transport.prepare(request);
   assert.equal(prepared.summary.hard_expiry,true);assert.equal(prepared.summary.expires_at,1060);assert.equal('parent_grant' in prepared.summary,false);
   assert.equal(approvals,0);
   const signature=sign(null,transcript('secs.holder-session-possession.v1/signature',challenge),session.privateKey).toString('hex');
   const opened=await transport.activate(prepared,signature);
   assert.deepEqual(opened,{credential});assert.equal(JSON.stringify(opened).includes('"parent_grant":'),false);
   assert.equal(reviews,1);assert.equal(approvals,1);assert.equal(authorization.schema,'secs.holder-session-authorization.v1');
-  assert.deepEqual(calls,['capabilities','challenges','exchange'].map(p=>'/holder-sessions/v1/'+p));
+  assert.deepEqual(calls,['capabilities','capabilities','challenges','exchange'].map(p=>'/holder-sessions/v1/'+p));
   wallet.lock();
   const verified=invoke('verifyHolderSessionCredential',[JSON.stringify(pin),JSON.stringify(credential),JSON.stringify(challenge),'1001']);
   assert.equal(verified.expires_at,1060);

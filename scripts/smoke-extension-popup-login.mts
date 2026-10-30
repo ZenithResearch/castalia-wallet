@@ -25,6 +25,31 @@ function sourcePin(directory:string){
 const receiverBefore=sourcePin(receiver),consumerBefore=sourcePin(consumer);
 const native={holder_sha256:createHash('sha256').update(await readFile(holder)).digest('hex'),read_sha256:createHash('sha256').update(await readFile(read)).digest('hex')};
 
+// Fixture-only policy storage and canonical validity, before native signing.
+// No production API, CORS behavior, signed output or verification is replaced.
+const fixtureSetup=`from pathlib import Path
+from devgraph.auth.holder_grants import HolderGrantHost
+from devgraph.auth.monitor_read import MemberMonitorReadEnrollment
+from devgraph.auth.monitor_read import MemberAccessPolicyV2
+from devgraph.auth.delegated_contract import canonical_json
+original_invoke=HolderGrantHost.invoke
+def invoke(self, operation, **fields):
+    if operation == 'issue_v2':
+        claims=dict(fields['claims'])
+        claims['validity']={'schema':'castalia.grant-validity.v1','mode':'until_revoked','not_before':claims['validity']['not_before']}
+        fields=dict(fields,claims=claims)
+    return original_invoke(self, operation, **fields)
+HolderGrantHost.invoke=invoke
+original_init=MemberMonitorReadEnrollment.__init__
+def initialize(self, **kwargs):
+    path=Path(kwargs['path']).parent/'browser-member-policy.json'
+    if not path.exists():
+        path.write_bytes(canonical_json(kwargs['members']()))
+        path.chmod(0o600)
+    kwargs['members']=lambda: MemberAccessPolicyV2.model_validate_json(path.read_bytes())
+    original_init(self, **kwargs)
+MemberMonitorReadEnrollment.__init__=initialize
+`;
 const directory = await mkdtemp(join(tmpdir(), 'castalia-holder-browser-'))
 const env = { ...process.env, PYTHONDONTWRITEBYTECODE: '1', PYTHONPATH: join(receiver, 'src') + ':' + receiver }
 const fixture = join(directory, 'issuer'), tls = join(directory, 'tls')
@@ -34,7 +59,7 @@ assert.equal(certificates.status, 0, certificates.stderr)
 const certificate = await readFile(join(tls, 'tls.crt')), key = await readFile(join(tls, 'tls.key'))
 const spki = createHash('sha256').update(new X509Certificate(certificate).publicKey.export({ type: 'spki', format: 'der' })).digest('base64')
 let server: ReturnType<typeof spawn> | undefined, agent: https.Agent | undefined, context: Awaited<ReturnType<typeof chromium.launchPersistentContext>> | undefined
-let upstream = '', profile: any, parent: any, exchanges = 0, reads = 0, statuses = 0, dropExchangeReply = false,dropGrantReply=false,grantIssues=0,denyPrepare=false,accessActions=0
+let upstream = '', profile: any, parent: any, exchanges = 0, reads = 0, statuses = 0, dropExchangeReply = false,dropGrantReply=false,grantIssues=0,denyPrepare=false,denyAccessPrepare=false,accessActions=0
 const enrollments:string[]=[];const accessIds:string[]=[];let lastIssuedParent:any=null
 const requests: Array<{path:string;status:number;method?:string;origin?:string}> = []
 const request = (path: string, raw?: Buffer, headers: Record<string, any> = {},method?:string): Promise<{ status: number; headers: any; body: Buffer }> => new Promise((accept, reject) => {
@@ -75,6 +100,7 @@ const edge = https.createServer({ cert: certificate, key }, async (req, res) => 
     if (path === '/fixture') { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify({ service: profile.presentations[0].service, profile: { ...profile, presentations: profile.presentations.map(({ service, ...pin }: any) => pin) }, parent })); return }
     if(/^\/assets\/credential-v2\/[a-z0-9-]+\.mjs$/.test(path)){res.setHeader('Content-Type','text/javascript');res.end(await readFile(join(consumer,'src/devgraph/frontend/static/credential-v2',path.split('/').at(-1)!)));return;}
     if(path==='/monitor/wallet-access/v1'){const config=JSON.parse((await request(path)).body.toString());config.provider_profile={...profile,presentations:profile.presentations.map(({service,...pin}:any)=>pin)};config.membership_requirement='optional';res.setHeader('Content-Type','application/json');res.end(JSON.stringify(config));return;}
+    if(path==='/devgraph/access-requests/v2/challenges'&&denyAccessPrepare){res.writeHead(401,{'Content-Type':'application/json'});res.end('{"error":"synthetic_access_denial"}');return;}
     if(path.endsWith('/holder-sessions/v1/challenges')&&denyPrepare){res.writeHead(401,{'Content-Type':'application/json'});res.end('{"error":"synthetic_challenge_denial"}');return;}
     if (path === '/favicon.ico') { res.writeHead(204); res.end(); return }
     assert.ok(path.startsWith('/holder-sessions/v1/') || ['/devgraph/access-requests/v2/challenges','/devgraph/access-requests/v2/actions','/monitor/wallet-access/v1/requests','/monitor/wallet-access/v1/challenges','/monitor/wallet-access/v1/grants/v2'].includes(path), 'unexpected route ' + path)
@@ -104,10 +130,10 @@ try {
   assert.match(identity, /^[a-f0-9]{64}$/)
   // Disposable issuer assignment uses this installation; no real device data.
   await custody.evaluate(()=>new Promise<void>(r=>(globalThis as any).chrome.storage.local.set({'castalia-read-installation-v1':'aa'.repeat(16)},r)))
-  const created = spawnSync(python, ['-m', 'tests.native_read.holder_session_fixture', '--directory', fixture, '--holder-public-key', identity, '--holder-binary', holder, '--read-binary', read, '--origin', origin], { cwd: receiver, env, encoding: 'utf8' })
+  const created = spawnSync(python, ['-c',fixtureSetup+'from tests.native_read.holder_session_fixture import main; raise SystemExit(main())', '--directory', fixture, '--holder-public-key', identity, '--holder-binary', holder, '--read-binary', read, '--origin', origin], { cwd: receiver, env, encoding: 'utf8' })
   assert.equal(created.status, 0, created.stderr)
   const metadata = JSON.parse(created.stdout.trim())
-  const requestFixture=`import sys, os
+  const requestFixture=fixtureSetup+`import sys, os
 from pathlib import Path
 from devgraph.api import wallet_monitor
 from devgraph.api.access_requests import register_access_request_routes
@@ -136,6 +162,7 @@ raise SystemExit(holder_session_fixture.main())
   const ready: any = await Promise.race([new Promise((accept, reject) => { lines.once('line', line => { try { accept(JSON.parse(line)) } catch (error) { reject(error) } }); server!.once('exit', code => reject(Error('fixture exited ' + code + ': ' + diagnostics))) }), new Promise((_, reject) => { const t = setTimeout(() => reject(Error('fixture startup timeout')), 15000); t.unref() })])
   lines.close(); upstream = ready.base_url; agent = new https.Agent({ ca: await readFile(ready.certificate) })
   parent = JSON.parse(await readFile(metadata.parent, 'utf8'))
+  assert.equal(parent.claims.validity.mode,'until_revoked');assert.equal(Object.hasOwn(parent.claims.validity,'not_after'),false);
   profile = { schema: 'castalia.provider-profile.v1', display_name: 'Disposable session receiver', origins: [origin], membership: null, presentations: [{ ...metadata.provider, audience: 'devgraph', callers: [{ kind: 'browser', id: origin }] }] }
   for (let n = 0; n < 40; n++) { try { if ((await request('/holder-sessions/v1/capabilities')).status === 200) break } catch {} await new Promise(r => setTimeout(r, 50)) }
   const extensionOrigin='chrome-extension://'+id;
@@ -151,6 +178,8 @@ raise SystemExit(holder_session_fixture.main())
   const approve = async (button: string, title: string) => { const opened = context!.waitForEvent('page'); await page.locator(button).click(); const popup = await opened; await clickClosingApproval(popup, title, page); const r = await result(); assert.equal(r.ok, true, r.error); return r.value }
   await approve('#connect', 'Connect')
   await approve('#save', 'Save grant and connect')
+  const storedParent=await custody.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity);
+  assert.equal(grantIssues,0,'saving a supplied native-signed fixture grant creates no replacement');
   await page.evaluate(()=>(window as any).setupChild())
   await custody.close()
   const popupPromise=context.waitForEvent('page')
@@ -177,6 +206,13 @@ raise SystemExit(holder_session_fixture.main())
   const expiryProof=await page.evaluate(()=>(window as any).session.present((window as any).call))
   while(Math.floor(Date.now()/1000)<expiry)await new Promise(r=>setTimeout(r,100))
   assert.equal((await request('/monitor/wallet-access/v1/requests',Buffer.from(JSON.stringify(expiryProof)),{Origin:origin,'Content-Type':'application/json'})).status,401,'hard expiry denied')
+  // Reopen from a locked Wallet and a reloaded page using the SAME encrypted parent.
+  const publicIdentity=await page.evaluate(()=>(window as any).identity);
+  const locked=await context.newPage();await locked.goto('chrome-extension://'+id+'/src/popup.html');
+  await locked.evaluate(()=>new Promise<void>((r,reject)=>(globalThis as any).chrome.runtime.sendMessage({type:'CUSTODY_LOCK'},(v:any)=>v?.ok?r():reject(Error('lock failed')))));
+  const lockState=await locked.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.runtime.sendMessage({type:'CUSTODY_GET_STATE'},r)));
+  assert.equal(lockState.state.unlocked,false);await locked.close();
+  await page.reload();await page.waitForFunction(()=>(window as any).ready);await page.evaluate(value=>{(window as any).identity=value},publicIdentity);
   // A committed but dropped reply must recover the original child, never re-sign.
   await page.evaluate(async()=>{(window as any).ttl=30;await (window as any).setupChild()})
   dropExchangeReply=true
@@ -186,6 +222,11 @@ raise SystemExit(holder_session_fixture.main())
   value=await result();assert.equal(value.ok,false);assert.equal(value.error,'holder_session_outcome_unknown');assert.equal(value.dispatched,true);assert.equal(exchanges,2)
   await page.locator('#status').click();value=await result();assert.equal(value.value.state,'issued');assert.equal(exchanges,2)
   await page.locator('#read').click();value=await result();assert.equal(value.value.status,200)
+  const savedInspector=await context.newPage();await savedInspector.goto('chrome-extension://'+id+'/src/popup.html');
+  assert.deepEqual(await savedInspector.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),storedParent);
+  await savedInspector.close();assert.equal(grantIssues,0,'locked/reloaded login uses the exact same parent');
+  const oldGenerationProof=await page.evaluate(()=>(window as any).session.present((window as any).call));
+  const oldGenerationExpiry=await page.evaluate(()=>(window as any).credential.claims.challenge.expires_at);
   // Explicit global lock is different from worker suspension: it cancels review.
   await page.evaluate(()=>(window as any).setupChild())
   const thirdPopupPromise=context.waitForEvent('page');await page.locator('#login').click();const thirdPopup=await thirdPopupPromise
@@ -195,14 +236,48 @@ raise SystemExit(holder_session_fixture.main())
   await operator.evaluate(()=>new Promise<void>((accept,reject)=>(globalThis as any).chrome.runtime.sendMessage({type:'CUSTODY_LOCK'},(r:any)=>r?.ok?accept():reject(Error('disposable explicit lock failed')))))
   value=await result();assert.equal(value.ok,false);assert.equal(value.dispatched,false);assert.equal(exchanges,2,'explicit lock blocks dispatch')
   await operator.close();if(!thirdPopup.isClosed())await thirdPopup.close()
+  // Advance the disposable registry through its actual model/epoch machinery.
+  // Old signed roots remain stored but cannot authorize reads after this change.
+  const registryPath=join(fixture,'browser-member-policy.json'),registry=JSON.parse(await readFile(registryPath,'utf8'));
+  registry.revision=(registry.revision??1)+1;registry.assignments[0].lifetime_seconds=299;
+  await writeFile(registryPath,JSON.stringify(registry),{mode:0o600});
+  assert.ok(Math.floor(Date.now()/1000)<oldGenerationExpiry,'old child is still within its time limit');
+  const staleRead=await request('/monitor/wallet-access/v1/requests',Buffer.from(JSON.stringify(oldGenerationProof)),{Origin:origin,'Content-Type':'application/json'});
+  assert.equal(staleRead.status,401,'the old assignment generation is no longer usable');
+  const refreshedPage=await context.newPage();await refreshedPage.goto(origin+'/actual');await refreshedPage.waitForFunction(()=>(window as any).ready);
+  const refreshOpening=context.waitForEvent('page');await refreshedPage.locator('#login').click();const refreshPopup=await refreshOpening;
+  await refreshPopup.getByLabel('Wallet password').fill('Disposable browser session password');await refreshPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();
+  await refreshPopup.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(grantIssues,0);assert.equal(accessActions,0);
+  await refreshPopup.getByRole('button',{name:'Check approved access',exact:true}).click();
+  try{await refreshPopup.getByRole('button',{name:'Obtain approved grant',exact:true}).waitFor({timeout:5000});}
+  catch(error){console.error(JSON.stringify({fixture_stage:'updated_assignment_grant_review',popup:await refreshPopup.locator('body').innerText(),requests:requests.slice(-12),diagnostics}));throw error;}
+  await refreshPopup.getByRole('button',{name:'Obtain approved grant',exact:true}).click();await refreshPopup.getByRole('button',{name:'Save grant in Wallet',exact:true}).waitFor();
+  assert.equal(grantIssues,1);assert.notEqual(lastIssuedParent.claims.revision,parent.claims.revision);assert.equal(lastIssuedParent.claims.validity.mode,'until_revoked');assert.equal(Object.hasOwn(lastIssuedParent.claims.validity,'not_after'),false);
+  const refreshInspector=await context.newPage();await refreshInspector.goto('chrome-extension://'+id+'/src/popup.html');
+  assert.deepEqual(await refreshInspector.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),storedParent,'old Wallet parent unchanged until explicit save');
+  await refreshPopup.getByRole('button',{name:'Save grant in Wallet',exact:true}).click();
+  await refreshPopup.getByLabel('Keep this application connected for').selectOption('60');await refreshPopup.getByRole('button',{name:'Review session',exact:true}).click();
+  await clickClosingApproval(refreshPopup,'Allow this session',refreshedPage);await refreshedPage.waitForFunction(()=>(window as any).stage==='ready');
+  await refreshedPage.locator('#read').click();await refreshedPage.waitForFunction(()=>(window as any).result!==null);assert.equal((await refreshedPage.evaluate(()=>(window as any).result)).ok,true);
+  assert.equal(accessActions,0,'existing approval refresh creates no access request');
+  assert.equal(grantIssues,1);assert.equal((await readFile(metadata.parent,'utf8')).includes(parent.claims.grant_id),true,'original issued parent retained');
+  await refreshedPage.locator('#logout').click();await refreshedPage.waitForFunction(()=>(window as any).stage==='choose'&&(window as any).result?.ok===true);
+  await refreshedPage.close();await refreshInspector.close();const baselineGrantIssues=grantIssues;
   // Actual DevGraph consumer, IndexedDB child custody and strict CSP. Remove
   // only the disposable encrypted grant/profile to exercise first-use setup.
   const setup=await context.newPage();await setup.goto('chrome-extension://'+id+'/src/popup.html');
   await setup.evaluate((owner)=>new Promise<void>(r=>(globalThis as any).chrome.storage.local.remove(['castalia-holder-grants-v1:'+owner,'castalia-provider-profiles-v1'],r)),identity);await setup.close();
-  const actual=await context.newPage();await actual.goto(origin+'/actual');await actual.waitForFunction(()=>(window as any).ready);
+  const actual=await context.newPage();await actual.goto(origin+'/actual');await actual.waitForFunction(()=>(window as any).ready&&(window as any).stage==='login_ready');
   const firstUsePopup=context.waitForEvent('page');await actual.locator('#login').click();let enrollmentPopup=await firstUsePopup;
   await enrollmentPopup.getByLabel('Wallet password').fill('Disposable browser session password');await enrollmentPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();
   await enrollmentPopup.getByRole('button',{name:'Trust provider and continue',exact:true}).click();
+  await enrollmentPopup.getByRole('button',{name:'Check approved access',exact:true}).waitFor();
+  assert.equal(await enrollmentPopup.locator('#access button:not([hidden])').first().getAttribute('id'),'prepare-grant','existing approved access is primary');
+  assert.equal(await enrollmentPopup.locator('#request-access').evaluate(element=>element.classList.contains('secondary')),true);
+  assert.match(await enrollmentPopup.locator('#access-status').innerText(),/already have approved access/);
+  denyAccessPrepare=true;await enrollmentPopup.getByRole('button',{name:'Request access',exact:true}).click();
+  await enrollmentPopup.getByText('Wallet could not use the available access.',{exact:true}).waitFor();
+  await enrollmentPopup.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(accessActions,0);denyAccessPrepare=false;
   await enrollmentPopup.getByRole('button',{name:'Request access',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Send access request',exact:true}).waitFor();
   await enrollmentPopup.close();await actual.waitForFunction(()=>(window as any).result!==null);assert.equal(accessActions,0,'cancel before send creates no request');
   await actual.reload();await actual.waitForFunction(()=>(window as any).ready);const accessRetry=context.waitForEvent('page');await actual.locator('#login').click();enrollmentPopup=await accessRetry;
@@ -216,7 +291,7 @@ raise SystemExit(holder_session_fixture.main())
   await enrollmentPopup.getByRole('button',{name:'Obtain approved grant',exact:true}).click();
   await enrollmentPopup.getByRole('button',{name:'Check original grant result',exact:true}).click();
   await enrollmentPopup.getByRole('button',{name:'Save grant in Wallet',exact:true}).waitFor();
-  assert.equal(grantIssues,2);assert.equal(enrollments[0],enrollments[1],'lost parent reply reuses exact authorization without re-signing');
+  assert.equal(grantIssues,baselineGrantIssues+2);assert.equal(enrollments[baselineGrantIssues],enrollments[baselineGrantIssues+1],'lost parent reply reuses exact authorization without re-signing');
   const unresolved=await enrollmentPopup.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.storage.session.get('castalia-session-login-enrollment-recovery-v1',r)));
   assert.equal(JSON.stringify(unresolved).includes('signature'),false);assert.equal(JSON.stringify(unresolved).includes('parent_grant'),false);
   // A verified but unsaved parent is lost with this private Worker. Its public
@@ -227,7 +302,7 @@ raise SystemExit(holder_session_fixture.main())
   const reopened=context.waitForEvent('page');await actual.locator('#login').click();const renewed=await reopened;
   await renewed.getByLabel('Wallet password').fill('Disposable browser session password');await renewed.getByRole('button',{name:'Unlock and continue',exact:true}).click();
   await renewed.getByRole('button',{name:'Check approved access',exact:true}).click();
-  await renewed.getByRole('button',{name:'Start a new reviewed attempt',exact:true}).waitFor();assert.equal(grantIssues,2,'no silent issuance after closure');
+  await renewed.getByRole('button',{name:'Start a new reviewed attempt',exact:true}).waitFor();assert.equal(grantIssues,baselineGrantIssues+2,'no silent issuance after closure');
   await renewed.getByRole('button',{name:'Start a new reviewed attempt',exact:true}).click();
   await renewed.getByRole('button',{name:'Obtain approved grant',exact:true}).click();
   await renewed.getByRole('button',{name:'Save grant in Wallet',exact:true}).click();
@@ -245,19 +320,19 @@ raise SystemExit(holder_session_fixture.main())
   // Revoke the disposable saved parent through the fixture's actual enrollment
   // API. A local copy must not disappear or silently obtain a replacement.
   assert.ok(lastIssuedParent);
-  const revoked=spawnSync(python,['-c','from tests.native_read.holder_session_fixture import fixture_application; import sys; a=fixture_application(sys.argv[1]); a.sessions.host.enrollment.revoke(sys.argv[2]); a.close()',metadata.profile,'dgrg_'+lastIssuedParent.claims.grant_id],{cwd:receiver,env,encoding:'utf8'});assert.equal(revoked.status,0,revoked.stderr);
+  const revoked=spawnSync(python,['-c',fixtureSetup+'from tests.native_read.holder_session_fixture import fixture_application; import sys; a=fixture_application(sys.argv[1]); a.sessions.host.enrollment.revoke(sys.argv[2]); a.close()',metadata.profile,'dgrg_'+lastIssuedParent.claims.grant_id],{cwd:receiver,env,encoding:'utf8'});assert.equal(revoked.status,0,revoked.stderr);
   const inspect=await context.newPage();await inspect.goto('chrome-extension://'+id+'/src/popup.html');
   const savedBefore=await inspect.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity);
   denyPrepare=true;const deniedPopup=context.waitForEvent('page');await actual.locator('#login').click();const stale=await deniedPopup;
   await stale.getByLabel('Wallet password').fill('Disposable browser session password');await stale.getByRole('button',{name:'Unlock and continue',exact:true}).click();await stale.getByRole('button',{name:'Review session',exact:true}).click();
-  await stale.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(grantIssues,3,'denial never auto-issues a grant');
+  await stale.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(grantIssues,baselineGrantIssues+3,'denial never auto-issues a grant');
   assert.deepEqual(await inspect.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),savedBefore,'preparation denial preserves encrypted saved parent');
   await stale.close();denyPrepare=false;await actual.waitForFunction(()=>(window as any).result!==null);
   await actual.reload();await actual.waitForFunction(()=>(window as any).ready);
   const revokedPopup=context.waitForEvent('page');await actual.locator('#login').click();const revokedReview=await revokedPopup;
   await revokedReview.getByLabel('Wallet password').fill('Disposable browser session password');await revokedReview.getByRole('button',{name:'Unlock and continue',exact:true}).click();await revokedReview.getByRole('button',{name:'Review session',exact:true}).click();
   await clickClosingApproval(revokedReview,'Allow this session',actual);await actual.waitForFunction(()=>(window as any).stage==='session_recovery');
-  assert.equal(grantIssues,3);assert.equal(await actual.evaluate(()=>(window as any).actual.clientSession.checkpoint().privateKey.extractable),false,'generic denial keeps original child');
+  assert.equal(grantIssues,baselineGrantIssues+3);assert.equal(await actual.evaluate(()=>(window as any).actual.clientSession.checkpoint().privateKey.extractable),false,'generic denial keeps original child');
   assert.equal(await actual.evaluate(()=>(window as any).actual.reconcileLogin()),false);assert.equal(await actual.evaluate(()=>(window as any).actual.notice),'read_access_revoked');
   assert.deepEqual(await inspect.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),savedBefore);
   if(!revokedReview.isClosed())await revokedReview.close();await inspect.close();await actual.close();
@@ -265,7 +340,7 @@ raise SystemExit(holder_session_fixture.main())
   await page.locator('#status').click();value=await result();assert.equal(value.value.state,'revoked');assert.equal(value.value.credential,null)
   assert.equal((await verifyExtensionPackageDigest(extension,`${extension}.contents.sha256`)).digest,packageBefore.digest)
   assert.deepEqual(sourcePin(receiver),receiverBefore);assert.deepEqual(sourcePin(consumer),consumerBefore);
-  console.log(JSON.stringify({native,fixture_configuration_overrides:['synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_resumes_original_id:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,lifetime_selection:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true}))
+  console.log(JSON.stringify({native,fixture_configuration_overrides:['native-signed until_revoked parent validity with not_after absent; disposable member registry stored as model-validated JSON for real assignment-epoch transition','synthetic provider_profile uses the disposable issuer and actual TLS edge caller','optional membership accurately describes fixture proof=={} admission; real holder signatures are still required'],consumer:consumerBefore,receiver:receiverBefore,qualification:'One popup + private dedicated Worker + native-backed disposable HTTPS issuer',disposable_data:true,package_digest:packageBefore.digest,sidebar_required:false,background_stopped_during_review:true,review_survives_background_stop:true,explicit_lock_blocks_dispatch:true,exchanges,reads,statuses,one_consent_one_exchange:true,root_parent_not_page:true,root_closes_with_popup:true,original_lost_reply_recovered:true,hard_expiry_denied:true,replay_denied:true,revocation_denied:true,actual_consumer:true,production_public_boundary:true,upstream_cors_preserved:true,extension_origins_observed:requests.some(r=>r.origin?.startsWith('chrome-extension://')),protected_read_operator_preflight_closed:true,strict_csp:true,first_use_single_popup:true,native_access_request_and_status:true,cancel_before_submit_resumes_original_id:true,parent_exact_recovery:true,unsaved_parent_closure_warning:true,expired_parent_challenge_warning_retained:true,provider_trust:true,parent_saved_encrypted:true,lifetime_selection:true,indexeddb_reload_resume:true,logout_clears_child:true,stale_parent_explicit_recovery:true,revoked_parent_denial_retains_child_until_authenticated_status:true,stale_parent_preserved:true,no_automatic_regrant:true,canonical_until_revoked:true,locked_wallet_same_parent_reopen:true,assignment_epoch_refresh:true,old_parent_preserved_until_explicit_save:true,refresh_without_access_request:true}))
 } finally {
   await context?.close(); agent?.destroy(); edge.closeAllConnections(); await new Promise<void>(accept => edge.close(() => accept()))
   if (server?.pid && server.exitCode === null) { server.kill('SIGTERM'); await Promise.race([new Promise(r => server!.once('exit', r)), new Promise(r => { const t = setTimeout(() => { server!.kill('SIGKILL'); r(null) }, 3000); t.unref() })]) }

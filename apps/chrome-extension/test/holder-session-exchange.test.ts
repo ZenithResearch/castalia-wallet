@@ -6,7 +6,7 @@ const BASE='/holder-sessions/v1';
 function fixture(attack=''){
  const calls:Array<{url:string;options:any;body:any}>=[];let reviews=0,approvals=0;
  const pin={issuer:'issuer',key_id:'key',public_key:'a'.repeat(64),service:'service:graph'};
- const parent={claims:{schema:'secs.holder-grant.v2',permissions:[{operation:'fixture.read'}]},privateFixture:'synthetic-parent-authority'};
+ const parent:any={claims:{schema:'secs.holder-grant.v2',max_credential_lifetime_seconds:3600,validity:{schema:'castalia.grant-validity.v1',mode:'until_revoked',not_before:900},permissions:[{operation:'fixture.read'}]},privateFixture:'synthetic-parent-authority'};
  const c={schema:'secs.holder-session-challenge.v1',request_id:'b'.repeat(32),challenge_id:'c'.repeat(32),session_public_key:'d'.repeat(64),session_installation_id:'e'.repeat(32),expires_at:1060,review_deadline:1030};
  const token={claims:{schema:'secs.holder-session-credential.v1',challenge:c},signature:'synthetic-signature'};
  const caps={schema:'secs.holder-session-capabilities.v1',supported:true,profile:'secs.holder-session.v1',issuer_pin:pin,audience:'devgraph',grant_schemas:['secs.holder-grant.v2'],credential_schema:'secs.holder-session-credential.v1',presentation_schema:'secs.holder-session-presentation.v1',read_only:true,max_ttl_seconds:600,review_ttl_seconds:120,proof_max_ttl_seconds:60,challenge_path:BASE+'/challenges',exchange_path:BASE+'/exchange',status_path:BASE+'/status'};
@@ -63,4 +63,34 @@ test('malformed issuer JSON never exposes its raw body through an error',async()
 test('a response broader than explicit requested permissions is rejected before authorization',async()=>{
  const f=fixture(),request={...f.request,permissions:[{operation:'fixture.read',selection:'narrow'}]};
  await assert.rejects(f.transport.prepare(request));assert.equal(f.counts().approvals,0);
+});
+
+test('canonical until-revoked grant omits expiry and still has a finite session ceiling',async()=>{
+ const f=fixture();assert.equal(Object.hasOwn(f.parent.claims.validity,'not_after'),false);
+ assert.deepEqual(await f.transport.options({...f.request,ttlSeconds:3600}),{maximum_ttl_seconds:600,default_ttl_seconds:600});
+ f.parent.claims.max_credential_lifetime_seconds=120;
+ assert.deepEqual(await f.transport.options({...f.request,ttlSeconds:3600}),{maximum_ttl_seconds:120,default_ttl_seconds:120});
+ assert.deepEqual(await f.transport.options({...f.request,ttlSeconds:30}),{maximum_ttl_seconds:30,default_ttl_seconds:30});
+ assert.equal(f.counts().approvals,0);assert.ok(f.calls.every(c=>c.url.endsWith('/capabilities')));
+});
+test('dated parent expiry caps the exact remaining session lifetime',async()=>{
+ const f=fixture();f.parent.claims.validity={schema:'castalia.grant-validity.v1',mode:'dated',not_before:900,not_after:1001};
+ assert.deepEqual(await f.transport.options({...f.request,ttlSeconds:3600}),{maximum_ttl_seconds:1,default_ttl_seconds:1});
+ for(const end of [1000,999]){f.parent.claims.validity.not_after=end;await assert.rejects(f.transport.options(f.request),/read_approval_expired/);}
+ assert.equal(f.counts().approvals,0);
+});
+for(const validity of [undefined,null,{},
+ {not_after:null},
+ {schema:'castalia.grant-validity.v1',mode:'until_revoked',not_before:900,not_after:null},
+ {schema:'castalia.grant-validity.v1',mode:'until_revoked',not_before:900,extra:true},
+ {schema:'wrong',mode:'until_revoked',not_before:900},
+ {schema:'castalia.grant-validity.v1',mode:'forever',not_before:900},
+ {schema:'castalia.grant-validity.v1',mode:'until_revoked',not_before:-1},
+ {schema:'castalia.grant-validity.v1',mode:'until_revoked',not_before:1001},
+ {schema:'castalia.grant-validity.v1',mode:'dated',not_before:900,not_after:null},
+ {schema:'castalia.grant-validity.v1',mode:'dated',not_before:900,not_after:1000.5},
+ {schema:'castalia.grant-validity.v1',mode:'dated',not_before:900,not_after:Number.MAX_SAFE_INTEGER+1},
+])test('duration options reject malformed or not-yet-valid parent '+JSON.stringify(validity),async()=>{
+ const f=fixture();f.parent.claims.validity=validity;
+ await assert.rejects(f.transport.options(f.request),/invalid_holder_session/);assert.equal(f.counts().approvals,0);
 });
