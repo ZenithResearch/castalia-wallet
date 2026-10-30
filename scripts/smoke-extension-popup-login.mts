@@ -204,7 +204,7 @@ raise SystemExit(holder_session_fixture.main())
   const popupPromise=nextPopup()
   await page.locator('#login').click();const popup=await popupPromise
   await popup.getByLabel('Wallet password').fill('Disposable browser session password')
-  await popup.getByRole('button',{name:'Unlock and continue',exact:true}).click();await popup.getByRole('button',{name:'Review session',exact:true}).click()
+  await popup.getByRole('button',{name:'Unlock and continue',exact:true}).click()
   await popup.getByRole('button',{name:'Allow this session',exact:true}).waitFor()
   assert.equal(exchanges,0,'unlock and exact review never dispatch the exchange')
   assert.equal(context.pages().some(p=>/src\/(sidepanel|popup)\.html/.test(p.url())),false,'sidebar is closed')
@@ -236,7 +236,7 @@ raise SystemExit(holder_session_fixture.main())
   await page.evaluate(async()=>{(window as any).ttl=30;await (window as any).setupChild()})
   dropExchangeReply=true
   const secondPopupPromise=nextPopup();await page.locator('#login').click();const secondPopup=await secondPopupPromise
-  await secondPopup.getByLabel('Wallet password').fill('Disposable browser session password');await secondPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();await secondPopup.getByRole('button',{name:'Review session',exact:true}).click()
+  await secondPopup.getByLabel('Wallet password').fill('Disposable browser session password');await secondPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click()
   await clickClosingApproval(secondPopup,'Allow this session',page)
   value=await result();assert.equal(value.ok,false);assert.equal(value.error,'holder_session_outcome_unknown');assert.equal(value.dispatched,true);assert.equal(exchanges,2)
   await page.locator('#status').click();value=await result();assert.equal(value.value.state,'issued');assert.equal(exchanges,2)
@@ -249,7 +249,7 @@ raise SystemExit(holder_session_fixture.main())
   // Explicit global lock is different from worker suspension: it cancels review.
   await page.evaluate(()=>(window as any).setupChild())
   const thirdPopupPromise=nextPopup();await page.locator('#login').click();const thirdPopup=await thirdPopupPromise
-  await thirdPopup.getByLabel('Wallet password').fill('Disposable browser session password');await thirdPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();await thirdPopup.getByRole('button',{name:'Review session',exact:true}).click()
+  await thirdPopup.getByLabel('Wallet password').fill('Disposable browser session password');await thirdPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click()
   await thirdPopup.getByRole('button',{name:'Allow this session',exact:true}).waitFor()
   const operator=await context.newPage();await operator.goto('chrome-extension://'+id+'/src/popup.html')
   await operator.evaluate(()=>new Promise<void>((accept,reject)=>(globalThis as any).chrome.runtime.sendMessage({type:'CUSTODY_LOCK'},(r:any)=>r?.ok?accept():reject(Error('disposable explicit lock failed')))))
@@ -277,7 +277,7 @@ raise SystemExit(holder_session_fixture.main())
     };
   },{loginId:fenceLoginId});
   const fencedOpening=nextPopup();await page.locator('#login').click();const fencedPopup=await fencedOpening;
-  await fencedPopup.getByLabel('Wallet password').fill('Disposable browser session password');await fencedPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();await fencedPopup.getByRole('button',{name:'Review session',exact:true}).click();
+  await fencedPopup.getByLabel('Wallet password').fill('Disposable browser session password');await fencedPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();
   await clickClosingApproval(fencedPopup,'Allow this session',page);value=await result();
   assert.equal(value.ok,false);assert.equal(value.error,'session_login_context_changed');assert.equal(value.dispatched,false);assert.equal(exchanges,2,'final fence rejection sends no exchange POST');
   assert.equal(await fencedPopup.locator('html').getAttribute('data-final-fence-injected'),'true');
@@ -316,7 +316,7 @@ raise SystemExit(holder_session_fixture.main())
   const refreshInspector=await context.newPage();await refreshInspector.goto('chrome-extension://'+id+'/src/popup.html');
   assert.deepEqual(await refreshInspector.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),forgotten,'forgotten state unchanged until explicit save');
   await refreshPopup.getByRole('button',{name:'Save grant in Wallet',exact:true}).click();
-  await refreshPopup.getByLabel('Keep this application connected for').selectOption('60');await refreshPopup.getByRole('button',{name:'Review session',exact:true}).click();
+
   await clickClosingApproval(refreshPopup,'Allow this session',refreshedPage);await refreshedPage.waitForFunction(()=>(window as any).stage==='ready');
   await refreshedPage.locator('#read').click();await refreshedPage.waitForFunction(()=>(window as any).result!==null);assert.equal((await refreshedPage.evaluate(()=>(window as any).result)).ok,true);
   assert.equal(accessActions,0,'existing approval refresh creates no access request');
@@ -335,17 +335,17 @@ raise SystemExit(holder_session_fixture.main())
   assert.equal(await enrollmentPopup.locator('#access button:not([hidden])').first().getAttribute('id'),'prepare-grant','existing approved access is primary');
   assert.equal(await enrollmentPopup.locator('#request-access').evaluate(element=>element.classList.contains('secondary')),true);
   assert.match(await enrollmentPopup.locator('#access-status').innerText(),/already have approved access/);
-  denyAccessPrepare=true;await enrollmentPopup.getByRole('button',{name:'Request access',exact:true}).click();
+  denyAccessPrepare=true;await enrollmentPopup.getByRole('button',{name:'Send access request',exact:true}).click();
   await enrollmentPopup.getByText('Wallet could not use the available access.',{exact:true}).waitFor();
   await enrollmentPopup.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(accessActions,0);denyAccessPrepare=false;
-  await enrollmentPopup.getByRole('button',{name:'Request access',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Send access request',exact:true}).waitFor();
+  // Closing before the one send gesture must create no signed request.
   await enrollmentPopup.close();await actual.waitForFunction(()=>(window as any).result!==null);assert.equal(accessActions,0,'cancel before send creates no request');
   await actual.reload();await actual.waitForFunction(()=>(window as any).ready);const accessRetry=nextPopup();await actual.locator('#login').click();enrollmentPopup=await accessRetry;
   await enrollmentPopup.getByLabel('Wallet password').fill('Disposable browser session password');await enrollmentPopup.getByRole('button',{name:'Unlock and continue',exact:true}).click();
-  await enrollmentPopup.getByRole('button',{name:'Request access',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Check request status',exact:true}).click();
-  await enrollmentPopup.getByRole('button',{name:'Review sending the original request',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Send access request',exact:true}).click();
-  await enrollmentPopup.getByRole('button',{name:'Check original request',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Check request status',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Check original request',exact:true}).waitFor();
-  assert.equal(accessActions,3,'unknown status, explicit original submit and pending status verify Core signatures');assert.equal(new Set(accessIds).size,1,'no replacement request ID');
+  await enrollmentPopup.getByRole('button',{name:'Send access request',exact:true}).click();
+  await enrollmentPopup.getByRole('button',{name:'Check original request',exact:true}).waitFor();assert.equal(accessActions,1,'one send gesture submits once');
+  await enrollmentPopup.getByRole('button',{name:'Check original request',exact:true}).click();await enrollmentPopup.getByRole('button',{name:'Check original request',exact:true}).waitFor();
+  assert.equal(accessActions,2,'the next gesture checks the original request only');assert.equal(new Set(accessIds).size,1,'no replacement request ID');
   await enrollmentPopup.getByRole('button',{name:'Check approved access',exact:true}).click();
   dropGrantReply=true;
   await enrollmentPopup.getByRole('button',{name:'Obtain approved grant',exact:true}).click();
@@ -366,7 +366,7 @@ raise SystemExit(holder_session_fixture.main())
   await renewed.getByRole('button',{name:'Start a new reviewed attempt',exact:true}).click();
   await renewed.getByRole('button',{name:'Obtain approved grant',exact:true}).click();
   await renewed.getByRole('button',{name:'Save grant in Wallet',exact:true}).click();
-  await renewed.getByLabel('Keep this application connected for').selectOption('60');await renewed.getByRole('button',{name:'Review session',exact:true}).click();
+
   await clickClosingApproval(renewed,'Allow this session',actual);
   await actual.waitForFunction(()=>(window as any).stage==='ready');
   assert.equal(await actual.evaluate(()=>(window as any).actual.clientSession.checkpoint().privateKey.extractable),false);
@@ -384,13 +384,13 @@ raise SystemExit(holder_session_fixture.main())
   const inspect=await context.newPage();await inspect.goto('chrome-extension://'+id+'/src/popup.html');
   const savedBefore=await inspect.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity);
   denyPrepare=true;const deniedPopup=nextPopup();await actual.locator('#login').click();const stale=await deniedPopup;
-  await stale.getByLabel('Wallet password').fill('Disposable browser session password');await stale.getByRole('button',{name:'Unlock and continue',exact:true}).click();await stale.getByRole('button',{name:'Review session',exact:true}).click();
+  await stale.getByLabel('Wallet password').fill('Disposable browser session password');await stale.getByRole('button',{name:'Unlock and continue',exact:true}).click();
   await stale.getByRole('button',{name:'Check approved access',exact:true}).waitFor();assert.equal(grantIssues,baselineGrantIssues+3,'denial never auto-issues a grant');
   assert.deepEqual(await inspect.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),savedBefore,'preparation denial preserves encrypted saved parent');
   await stale.close();denyPrepare=false;await actual.waitForFunction(()=>(window as any).result!==null);
   await actual.reload();await actual.waitForFunction(()=>(window as any).ready);
   const revokedPopup=nextPopup();await actual.locator('#login').click();const revokedReview=await revokedPopup;
-  await revokedReview.getByLabel('Wallet password').fill('Disposable browser session password');await revokedReview.getByRole('button',{name:'Unlock and continue',exact:true}).click();await revokedReview.getByRole('button',{name:'Review session',exact:true}).click();
+  await revokedReview.getByLabel('Wallet password').fill('Disposable browser session password');await revokedReview.getByRole('button',{name:'Unlock and continue',exact:true}).click();
   await clickClosingApproval(revokedReview,'Allow this session',actual);await actual.waitForFunction(()=>(window as any).stage==='session_recovery');
   assert.equal(grantIssues,baselineGrantIssues+3);assert.equal(await actual.evaluate(()=>(window as any).actual.clientSession.checkpoint().privateKey.extractable),false,'generic denial keeps original child');
   assert.equal(await actual.evaluate(()=>(window as any).actual.reconcileLogin()),false);assert.equal(await actual.evaluate(()=>(window as any).actual.notice),'read_access_revoked');

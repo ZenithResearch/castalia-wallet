@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Castalia",
   "short_name": "Castalia",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Encrypted Member Key custody with independently approved providers and credentials.",
   "icons": {
     "16": "icons/castalia-16.png",

@@ -30,7 +30,7 @@ function render(state:any){
     const view=accessRecoveryPresentation(state);$('status').textContent=view.status;$('access-heading').textContent=view.heading;
     $('access').hidden=false;$('prepare-grant').hidden=!state.grantDescriptor||state.stage==='access_review';$('send-original').hidden=state.result?.status!=='unknown';$('request-access').hidden=!state.descriptor||state.stage==='access_review';$('confirm-request').hidden=state.stage!=='access_review';
     $('request-access').classList.toggle('secondary',view.primary==='check_approved');
-    $('request-access').textContent=state.stage==='access_pending'?'Check original request':'Request access';
+    $('request-access').textContent=state.stage==='access_pending'?'Check original request':'Send access request';
     $('confirm-request').textContent=state.checking?'Check request status':'Send access request';
     $('access-details').hidden=state.stage!=='access_review';$('access-details').textContent=state.summary?JSON.stringify(state.summary.details,null,2):'';
     $('access-status').textContent=view.detail;
