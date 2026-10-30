@@ -28,6 +28,22 @@ export function createHolderGrantsStore(d: D) {
     async function persist(grants: Record<string, any>, revision: number) { if (Object.keys(grants).length > 128 || !Number.isSafeInteger(revision + 1))
         throw Error('grant_capacity'); const raw = JSON.stringify({ schema: 'castalia.holder-grant-backup.v1', owner_public_key: d.owner(), grants }); d.validateBackup(raw); const ciphertext = d.seal(raw); await d.storage.set({ [key()]: { schema: 'castalia.holder-grant-storage.v1', revision: revision + 1, ciphertext } }); }
     return {
+        async reviewForget(service: string) {
+            if (typeof service !== 'string' || !service || service.length > 256) throw Error('invalid_service');
+            const owner=d.owner(),saved=await load();
+            if(!Object.hasOwn(saved.grants,service))throw Error('grant_not_saved');
+            const stored=saved.grants[service];
+            return {owner,service,revision:saved.revision,record:JSON.stringify(stored),grant:structuredClone(stored.grant.claims)};
+        },
+        /** Wallet-owned confirmation only; caller holds the shared custody FIFO.
+         * Keep an encrypted empty collection and advance revision to prevent ABA. */
+        async forget(prepared: {owner:string;service:string;revision:number;record:string}) {
+            if(prepared.owner!==d.owner())throw Error('grant_storage_changed');
+            const saved=await load();
+            if(prepared.owner!==d.owner()||saved.revision!==prepared.revision||!Object.hasOwn(saved.grants,prepared.service)||JSON.stringify(saved.grants[prepared.service])!==prepared.record)throw Error('grant_storage_changed');
+            delete saved.grants[prepared.service];
+            await persist(saved.grants,saved.revision);
+        },
         async prepare(grant: unknown, service: string, origin: string, installation: string, permissions: unknown = null) {
             const saved = await load();
             let reviewed: any;

@@ -35,6 +35,7 @@ export function createSessionLoginSigner(d:Dependencies) {
   let accessHandle:any=null,accessAction:any=null,accessPrefix='',accessReceiver=d.origin;
   let grantsStore:ReturnType<typeof createHolderGrantsStore>|null=null,saving=false;
   let grantHandle:any=null,grantChallenge:any=null,enrollment:any=null,grantReview:any=null;
+  let forgetReview:{prepared:Awaited<ReturnType<ReturnType<typeof createHolderGrantsStore>['reviewForget']>>;expires:number}|null=null;
   const ensure=()=>{
     if(!live)throw loginFailure('session_login_context_changed',stage,dispatched);
     if(d.now()>=d.deadline)throw loginFailure('session_login_expired',stage,dispatched);
@@ -52,7 +53,7 @@ export function createSessionLoginSigner(d:Dependencies) {
   };
   const clearAccess=()=>{accessHandle?.dispose();accessHandle?.free();accessHandle=null;};
   const clearGrant=()=>{grantHandle?.dispose();grantHandle?.free();grantHandle=null;};
-  const stop=()=>{live=false;unlocked=false;preparation=null;proof=null;exchange=null;clearAccess();clearGrant();enrollment=null;grantReview=null;d.core.lock();};
+  const stop=()=>{live=false;unlocked=false;preparation=null;proof=null;exchange=null;clearAccess();clearGrant();enrollment=null;grantReview=null;forgetReview=null;d.core.lock();};
   const route=async()=>{
     if(!baseline||!loginRequest)throw loginFailure('session_login_context_changed',stage);
     const pins=await d.pins(baseline);let routedPins=pins,caller={kind:'browser',id:d.origin};accessPrefix='';accessReceiver=d.origin;
@@ -104,6 +105,7 @@ export function createSessionLoginSigner(d:Dependencies) {
       const request=parseSessionLoginRequest(input);
       if(request.operation!=='open_session_login')throw loginFailure('invalid_session_login_request','request');
       loginRequest=request;
+      forgetReview=null;
       stage='provider';await guard();const snapshot=baseline,pins=await d.pins(snapshot);
       const installation=snapshot.installation;
       if(!/^[a-f0-9]{32}$/.test(installation))throw loginFailure('session_login_context_changed',stage);
@@ -205,6 +207,19 @@ export function createSessionLoginSigner(d:Dependencies) {
       await d.critical();try{result=await accessCall(loginRequest.access_request.action_path,authorization);}catch{throw loginFailure('session_login_access_pending',stage);}
       if(!result||!loginRequest.access_request.result_schemas.includes(result.schema)||result.request_id!==accessAction.request_id||result.authority_issued!==false||!['pending','expired','unknown','approved_pending_activation','denied','active','revoked','superseded','partially_active'].includes(result.status))throw loginFailure('session_login_access_pending',stage);
       return {status:result.status,request_id:accessAction.request_id};
+    },
+    async reviewForget() {
+      ensure();await guard();
+      if(!unlocked||!loginRequest||!grantsStore||preparation||proof||consumed||enrollment||grantHandle||grantReview)throw loginFailure('invalid_session_login_request','save_grant');
+      const prepared=await grantsStore.reviewForget(loginRequest.service);await guard();forgetReview={prepared,expires:d.now()+120};
+      return {summary:{service:prepared.service,grant:prepared.grant,local_only:true}};
+    },
+    cancelForget(){forgetReview=null;},
+    async forget() {
+      stage='save_grant';ensure();await guard();const reviewed=forgetReview;forgetReview=null;
+      if(!reviewed||d.now()>=reviewed.expires||!grantsStore||preparation||proof||consumed||enrollment||grantHandle||grantReview||saving)throw loginFailure('invalid_session_login_request',stage);
+      await d.critical();saving=true;
+      try{await grantsStore.forget(reviewed.prepared);await guard();return {forgotten:true};}finally{saving=false;}
     },
     async prepareGrant() {
       stage='enrollment';ensure();await guard();

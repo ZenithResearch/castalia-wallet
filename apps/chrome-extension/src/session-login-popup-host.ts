@@ -172,10 +172,10 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
   };
   const prepare=async(ttlSeconds?:number)=>{
     onState({stage:'preparing'});
-    try{const result=await command('prepare',{request,ttlSeconds});if(result.options){onState({stage:'lifetime',options:result.options,grantDescriptor:request.grant_acquisition});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
+    try{const result=await command('prepare',{request,ttlSeconds});if(result.options){onState({stage:'lifetime',options:result.options,grantDescriptor:request.grant_acquisition,canForget:true});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
     catch(error){
       const e=loginError(error,'challenge');
-      if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:e.code==='grant_not_saved'?undefined:e});
+      if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:e.code!=='grant_not_saved',error:e.code==='grant_not_saved'?undefined:e});
       else {dispose(error);onState({stage:'failed',error:e});}
     }
   };
@@ -209,6 +209,17 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
       catch(error){onState({stage:'access_pending',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,error:loginError(error,'access')});}
     },
     async acknowledgeEnrollment(){acknowledgeUncertain=true;await this.prepareGrant();},
+    async reviewForget(){
+      onState({stage:'preparing'});
+      try{const result=await command('reviewForget');onState({stage:'forget_review',...result});}
+      catch(error){dispose(error);onState({stage:'failed',error:loginError(error,'save_grant')});}
+    },
+    async cancelForget(){await command('cancelForget');await prepare();},
+    async forget(){
+      onState({stage:'opening'});
+      try{await criticalCommand('forget');await prepare();}
+      catch(error){dispose(error);onState({stage:'failed',error:loginError(error,'save_grant')});}
+    },
     async prepareGrant(){
       onState({stage:'preparing'});
       try{const result=await command('prepareGrant');onState({stage:result.uncertain?'grant_uncertain':'grant_review',...result});}
