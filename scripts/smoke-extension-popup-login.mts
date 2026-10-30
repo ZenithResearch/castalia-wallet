@@ -185,12 +185,13 @@ raise SystemExit(holder_session_fixture.main())
   // Wallet-owned Saved grants confirmation: cancellation preserves the record;
   // a lost confirmation reply must not claim the completed deletion was undone.
   const grantsUi=await context.newPage();await grantsUi.goto('chrome-extension://'+id+'/src/holder-grants.html');
-  await grantsUi.getByRole('button',{name:'Remove devgraph grant from Wallet',exact:true}).click();await grantsUi.getByRole('button',{name:'Keep saved grant',exact:true}).click();
+  const removeSavedGrant=()=>grantsUi.locator('#grants>article').filter({has:grantsUi.getByText(parent.claims.service,{exact:true})}).getByRole('button',{name:/^Remove .+ grant from Wallet$/});
+  await removeSavedGrant().click();await grantsUi.getByRole('button',{name:'Keep saved grant',exact:true}).click();
   const allBefore=await custody.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get(null,r)));
   const journalsBefore=await custody.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.storage.session.get(null,r)));
   assert.deepEqual(await custody.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity),storedParent);
   await grantsUi.evaluate(()=>{const api=(globalThis as any).chrome.runtime,original=api.sendMessage.bind(api);api.sendMessage=(message:any,callback:any)=>message?.type==='HOLDER_GRANTS_FORGET_CONFIRM'?original(message,()=>callback({ok:false,error:'synthetic_lost_confirmation_reply'})):original(message,callback);});
-  await grantsUi.getByRole('button',{name:'Remove devgraph grant from Wallet',exact:true}).click();await grantsUi.getByRole('button',{name:'Remove saved grant',exact:true}).click();
+  await removeSavedGrant().click();await grantsUi.getByRole('button',{name:'Remove saved grant',exact:true}).click();
   await grantsUi.getByText('Could not confirm this operation. Unlock the same Wallet and refresh to check the current saved grants.',{exact:true}).waitFor();
   await grantsUi.getByRole('button',{name:'Refresh',exact:true}).click();await grantsUi.getByRole('heading',{name:'No saved grants',exact:true}).waitFor();
   const allAfter=await custody.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get(null,r)));
