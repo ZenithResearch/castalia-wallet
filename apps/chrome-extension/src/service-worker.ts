@@ -4,6 +4,7 @@ import {saveLoginGrants} from './session-login-storage.js'
 import {createCustodyOperationQueue} from './custody-operation-queue.js'
 import {installSessionLoginCritical} from './session-login-critical.js'
 export {createCustodyOperationQueue} from './custody-operation-queue.js'
+import {installHolderGrantForgetRuntime} from './holder-grants-forget-runtime.js'
 import { holderGrantStore,holderSessionExchange,holderSessionExchangeAvailable,HOLDER_SESSION_EXCHANGE_QUALIFIED } from "./custody-runtime.js"
 import { HOLDER_SESSION_EXCHANGE_CAPABILITY, SESSION_LOGIN_CAPABILITY } from '@castalia-wallet/provider-types'
 import { isWalletIdentityPage } from './wallet-identities-store.js'
@@ -449,6 +450,7 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     prepareRequest:async(challenge:unknown,origin:string,installation:string,binding?:unknown)=>prepareAccessRequest(challenge,origin,installation,await providerProfilesRuntime.pins(),binding),
     prepare:async(challenge:unknown,origin:string,installation:string,binding?:unknown)=>prepareReadAccess(challenge,origin,installation,await providerProfilesRuntime.pins(),binding),
   })
+  installHolderGrantForgetRuntime(chrome,{run:f=>custodyOperations.run(f),state:async()=>{const s=await getCurrentExtensionStateForProvider();return s?{owner:s.signingIdentity.publicKeyRawHex}:null;},epoch:custodyEpoch,now:Date.now,randomId:()=>crypto.randomUUID(),onChange:subscribeCustodyChanges,store:grantsStore});
   let grantImport:{token:string;file:string;epoch:number;owner:string;revision:number;expires:number}|null=null;
   subscribeCustodyChanges(()=>{grantImport=null;void chrome.runtime.sendMessage({type:'HOLDER_GRANTS_INVALIDATED'}).catch(()=>{})});
   chrome.runtime.onMessage.addListener((message:any,sender:any,respond:(r:unknown)=>void)=>{

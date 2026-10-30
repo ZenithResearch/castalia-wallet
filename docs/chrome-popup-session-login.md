@@ -138,7 +138,7 @@ fixture requests a canonical until-revoked parent before native signing and uses
 a model-validated disposable member registry to exercise an actual assignment
 epoch change. It verifies locked/reloaded login reuses the identical encrypted
 parent with zero reissuance, and explicitly reviewed updated-parent delivery
-leaves the old encrypted record untouched until Save, without a new access request.
+leaves local state unchanged until each explicit confirmation, without a new access request.
 It never loads a personal Chrome profile or changes installed apps/live grants.
 Unit tests additionally exercise context spoofing, closed request shapes, mutation
 CAS, stale cleanup/window reuse, delayed writes and failed recovery barriers.
@@ -149,3 +149,27 @@ Core signatures, native challenge and positive transports remain intact. It
 asserts `dispatched:false`, the original fence error and zero exchange POSTs; the
 separate dropped-committed-reply case must still retain its original child and
 report an uncertain result until authenticated recovery succeeds.
+
+## Forget a local saved grant
+
+Version 0.0.11 adds **Forget saved grant** to Wallet's Saved grants view and to
+popup recovery before child preparation. Review shows the exact canonical service
+and saved grant; confirmation removes only that service's local parent. It does
+not revoke server approval or already-issued credentials. Sign out in the
+application to stop using a finite browser credential; otherwise its existing
+expiry/revocation rules still apply. Existing backup copies are unchanged.
+
+The encrypted owner collection remains present even when empty, with revision
+advanced monotonically. Confirmation checks owner, exact record, revision and
+Wallet state under the shared custody queue. Saved grants UI tokens are one-shot,
+expire after 120 seconds and bind the exact trusted top-level Wallet document.
+Popup confirmation uses its private unlocked Worker and the existing full-snapshot
+permit/CAS, with no public provider forget/reset RPC. Active private enrollment or
+child preparation blocks forgetting. Other services, identity, keys, accounts,
+trust and pending/uncertain session/enrollment/action journals are preserved.
+
+Forgetting and obtaining/saving a current approved parent are separate explicit
+steps. Neither forgetting nor viewing recovery sends a replacement access request,
+issues a grant, changes server policy or signs a session. If confirmation's reply
+is lost, refresh or reopen Wallet to inspect actual local state; do not assume the
+write was undone or automatically repeat it.

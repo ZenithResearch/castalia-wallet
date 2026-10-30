@@ -49,6 +49,9 @@ worker.onmessage=(event:any)=>{
       case 'prepareAccess':return signer.prepareAccess(m.value===true);
       case 'approveAccess':return signer.approveAccess();
       case 'prepareGrant':return signer.prepareGrant();
+      case 'reviewForget':return signer.reviewForget();
+      case 'cancelForget':return signer.cancelForget();
+      case 'forget':return signer.forget();
       case 'obtainGrant':return signer.obtainGrant();
       case 'recoverGrant':return signer.recoverGrant();
       case 'saveGrant':return signer.saveGrant();
@@ -57,7 +60,7 @@ worker.onmessage=(event:any)=>{
     }
   };
   const bounded=async()=>{
-    const needs=['approve','approveAccess','obtainGrant','recoverGrant','saveGrant'].includes(m.operation);
+    const needs=['approve','approveAccess','obtainGrant','recoverGrant','saveGrant','forget'].includes(m.operation);
     if(needs){permit=m.permit;assertCritical();}
     else if(m.permit!==undefined)throw Error('invalid_session_login_request');
     try{return await run();}finally{permit=null;}

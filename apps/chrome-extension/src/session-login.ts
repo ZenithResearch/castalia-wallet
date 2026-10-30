@@ -6,10 +6,12 @@ const buttons=Array.from(document.querySelectorAll('button'));
 let host:Awaited<ReturnType<typeof createSessionLoginPopupHost>>|null=null;
 const messages:Record<string,string>={wallet_unlock_failed:'Could not unlock this Wallet. Try again here.',membership_required:'This service requires a membership proof. This popup does not support that enrollment yet; no proof or new grant was sent.',wallet_not_setup:'Set up or import your Wallet in Castalia before logging in.',issuer_setup_required:'This service does not match your trusted provider settings.',read_approval_expired:'This review has expired. Return to the application for a new review.',session_login_context_changed:'The application, Wallet or trust settings changed. Start a new login.',holder_session_outcome_unknown:'The original session result is uncertain. Return to the application and check its original result; do not start another session.',session_login_expired:'This login expired. Start again from the application.',session_login_failed:'Wallet could not finish this login. No automatic retry was sent.'};
 function render(state:any){
-  for(const id of ['unlock','provider','lifetime','review','access','grant'])$(id).hidden=true;
+  for(const id of ['unlock','provider','lifetime','review','access','grant','forget-review'])$(id).hidden=true;
   buttons.forEach(b=>b.disabled=false);$('status').classList.remove('error');
+  $('forget-saved').hidden=!state.canForget;
+  if(state.stage==='forget_review'){$('forget-review').hidden=false;$('forget-details').textContent=JSON.stringify(state.summary,null,2);}
   if(state.stage==='closed'||state.stage==='done'){window.close();return;}
-  const text:Record<string,string>={unlock:'Unlock Wallet to continue.',unlocking:'Unlocking your Wallet…',provider:'Review the issuer before continuing.',preparing:'Checking your saved grant…',waiting_proof:'Confirming the application’s temporary key…',lifetime:'Choose a duration within your approved access.',grant_review:'Review the service’s approved grant.',save_grant:'Save this reusable grant in Wallet.',grant_recovery:'The original grant result is uncertain.',grant_uncertain:'An earlier grant attempt is unresolved.',review:'Review the exact access for this session.',opening:'Creating the reviewed session…',access_required:'No saved grant is available.',access_review:'Review your access request.',access_pending:'Your access request is awaiting the operator.'};
+  const text:Record<string,string>={forget_review:'Review this local removal. No server access is revoked.',unlock:'Unlock Wallet to continue.',unlocking:'Unlocking your Wallet…',provider:'Review the issuer before continuing.',preparing:'Checking your saved grant…',waiting_proof:'Confirming the application’s temporary key…',lifetime:'Choose a duration within your approved access.',grant_review:'Review the service’s approved grant.',save_grant:'Save this reusable grant in Wallet.',grant_recovery:'The original grant result is uncertain.',grant_uncertain:'An earlier grant attempt is unresolved.',review:'Review the exact access for this session.',opening:'Creating the reviewed session…',access_required:'No saved grant is available.',access_review:'Review your access request.',access_pending:'Your access request is awaiting the operator.'};
   $('status').textContent=state.message??messages[state.error?.code]??text[state.stage]??'Wallet could not finish this login.';
   if(state.error||state.stage==='failed')$('status').classList.add('error');
   if(state.stage==='unlock'){$('unlock').hidden=false;($('passphrase') as HTMLInputElement).focus();}
@@ -41,6 +43,9 @@ function render(state:any){
   }
   if(['unlocking','preparing','opening'].includes(state.stage))buttons.filter(b=>b.id!=='cancel').forEach(b=>b.disabled=true);
 }
+$('forget-saved').onclick=()=>void host?.reviewForget();
+$('forget-confirm').onclick=()=>void host?.forget();
+$('forget-cancel').onclick=()=>void host?.cancelForget();
 $('unlock').addEventListener('submit',event=>{event.preventDefault();const input=$('passphrase') as HTMLInputElement;const value=input.value;input.value='';void host?.unlock(value);});
 $('trust').onclick=()=>void host?.trust();
 $('choose-duration').onclick=()=>void host?.chooseLifetime(Number(($('duration') as HTMLSelectElement).value));
