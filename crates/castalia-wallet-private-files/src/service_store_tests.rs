@@ -61,7 +61,7 @@ fn independent_roots_share_readers_epoch_and_busy_writer() {
     let init = a.initialize().unwrap();
     drop(init);
     let b = ServiceRoot::open(&temp.path().canonicalize().unwrap()).unwrap();
-    let x = a.lock_shared().unwrap();
+    let x = after_inherited_locks_close(|| a.lock_shared()).unwrap();
     let y = b.lock_shared().unwrap();
     assert_eq!(
         a.lock_exclusive().err().unwrap().kind(),
@@ -140,7 +140,7 @@ fn dropping_one_independent_reader_does_not_unlock_other_for_child_process() {
     let (temp, a) = root();
     drop(a.initialize().unwrap());
     let b = ServiceRoot::open(&temp.path().canonicalize().unwrap()).unwrap();
-    let first = a.lock_shared().unwrap();
+    let first = after_inherited_locks_close(|| a.lock_shared()).unwrap();
     let second = b.lock_shared().unwrap();
     assert_eq!(process_exclusive(temp.path()), 87);
     drop(first);
@@ -373,6 +373,11 @@ fn seed_public_fixture(root: &ServiceRoot) {
     lease.publish_revision(1).unwrap();
     lease.publish_clock(b"clock-one", false).unwrap();
     lease.publish_current(&public_pointer(1), false).unwrap();
+    drop(lease);
+    // A parallel child may retain the initialization writer until exec. Establish
+    // a shared baseline before any public reads or malformed-metadata assertions;
+    // otherwise those rejection tests could pass for unrelated lock contention.
+    drop(after_inherited_locks_close(|| root.lock_shared()).unwrap());
 }
 #[test]
 fn public_metadata_selects_current_and_reader_lifetime_excludes_writers() {
@@ -396,7 +401,7 @@ fn public_metadata_selects_current_and_reader_lifetime_excludes_writers() {
 fn exclusive_public_view_drops_before_clock_write_without_unlocking() {
     let (temp, root) = root();
     seed_public_fixture(&root);
-    let mut lease = root.lock_exclusive().unwrap();
+    let mut lease = after_inherited_locks_close(|| root.lock_exclusive()).unwrap();
     let identity = lease.lock_identity();
     {
         let view = lease.public_observation().unwrap();
@@ -412,7 +417,7 @@ fn exclusive_public_view_drops_before_clock_write_without_unlocking() {
     assert_eq!(process_exclusive(temp.path()), 87);
     drop(view);
     drop(lease);
-    let shared = root.lock_shared().unwrap();
+    let shared = after_inherited_locks_close(|| root.lock_shared()).unwrap();
     assert!(shared.public_observation().is_err());
 }
 #[test]
