@@ -51,7 +51,7 @@ for (const file of [
 await mkdir(join(outputRoot, 'src'), { recursive: true })
 for (const file of [
   'session-login.html', 'session-login.css',
-  'holder-grants.html', 'wallet-identities.html', 'provider-settings.html', 'provider-settings.css',
+  'holder-grants.html', 'holder-grants.css', 'wallet-identities.html', 'provider-settings.html', 'provider-settings.css',
   'read-access-confirmation.html', 'confirmation.css',
   'credential-presentation-confirmation.html',
   'confirmation.html',

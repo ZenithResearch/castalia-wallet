@@ -132,3 +132,42 @@ not an installed app, production migration or released package. The DevGraph
 adapter currently issues reusable read grants; writes retain the existing signed
 projection path with paired receiver checks. Generic role-specific administration
 and holder-derived write issuance remain follow-up gates.
+
+## Chrome saved-grant management
+
+Wallet → Saved grants & backup shows a compact card for each locally saved
+canonical service. A card displays its service identifier, permission count and
+validity period; opening it reveals issuer, identity binding, grant ID, revision,
+permission restrictions and every original claim. Service names and claims are
+rendered as text. The Wallet does not infer current server approval from a saved
+record: “Saved in Wallet” describes local storage only. An expired or future
+validity period is labeled using the local clock, without changing verification.
+
+Update access expands a guide to the existing service-driven flow: open the
+service, choose Sign in with Wallet → Saved access help → Check saved access →
+Check approved access, review the result and Save grant in Wallet. The guide
+itself does not contact the service. Saving an approved replacement overwrites
+that service’s local record; removing the old copy first is unnecessary. Then
+review a fresh browser session to use the updated permissions. Refresh on the
+saved-grants page reloads local Wallet storage; it does not fetch a new approval.
+
+Remove from Wallet opens the existing one-shot, exact-record removal review.
+Confirmation removes only that service’s encrypted local grant. It does not
+revoke server approval, delete copies in old backups, clear recovery journals,
+or end credentials already issued to applications. Applications retain their
+separate sign-out and service-side revocation paths. Cancellation changes no
+records; an uncertain confirmation asks the user to refresh and inspect rather
+than automatically repeating removal. Wallet invalidation clears the page and
+late list replies cannot restore private card details after lock or identity
+change. This UI changes no signed formats, custody operations or permissions.
+
+`node --import tsx scripts/smoke-grant-cards.mts` checks the actual page in a
+new disposable headless browser profile with a synthetic extension-runtime
+fixture. It covers collapsed details, update guidance, removal, lost confirmation,
+late replies after lock, text injection and narrow layouts. It accesses no real
+Wallet or service. Pass `CASTALIA_CHROMIUM_EXECUTABLE` to select a browser and
+`GRANT_CARDS_SCREENSHOT_DIRECTORY` to retain synthetic screenshots. Pass
+`GRANT_CARDS_EXTENSION_DIRECTORY` to verify and exercise an exact packaged UI
+instead of bundling from source. The separate
+packaged native-backed session smoke retains its existing signing and fresh-grant
+coverage with selectors matching these controls.
