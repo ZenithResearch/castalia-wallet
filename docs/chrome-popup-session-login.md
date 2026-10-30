@@ -190,3 +190,10 @@ Browser reloads use the original finite credential and key, not another Wallet
 ceremony. The matched DevGraph monitor can reconcile temporary status failures
 without replacing custody or extending expiry. First-time trust and approved
 grant acquisition/saving remain distinct consent decisions.
+
+Saved access help on the unlock form is optional recovery for changed assignments.
+Check saved access unlocks into the existing pre-child access/forget controls. It
+prepares no child challenge, so an approved parent can be obtained and saved before
+the browser is bound to a session challenge. Saving that parent then resumes the
+normal final consent. This does not inspect canonical parent status before holder
+proof or remove the existing enrollment/forget guards.

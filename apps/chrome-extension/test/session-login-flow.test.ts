@@ -36,3 +36,11 @@ test('failed unsigned preparation cannot send, and unknown outcomes are not retr
  await assert.rejects(sendGeneralAccessRequest(async()=>{throw Error('preparation_failed');},async()=>{sends++;}),/preparation_failed/);assert.equal(sends,0);
  await assert.rejects(sendGeneralAccessRequest(async()=>({}),async()=>{sends++;throw Error('outcome_unknown');}),/outcome_unknown/);assert.equal(sends,1);
 });
+
+test('saved-access help stops before child preparation so stale-grant recovery stays possible',async()=>{
+ const calls:any[]=[];
+ const request={requested_ttl_seconds:3600};
+ const options={maximum_ttl_seconds:3600,default_ttl_seconds:900};
+ assert.deepEqual(await prepareLoginReview(async(op,value)=>{calls.push([op,value]);return {options};},request,undefined,true),{options});
+ assert.deepEqual(calls,[['prepare',{request,ttlSeconds:undefined}]]);
+});

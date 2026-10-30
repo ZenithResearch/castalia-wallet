@@ -46,7 +46,7 @@ function render(state:any){
 $('forget-saved').onclick=()=>void host?.reviewForget();
 $('forget-confirm').onclick=()=>void host?.forget();
 $('forget-cancel').onclick=()=>void host?.cancelForget();
-$('unlock').addEventListener('submit',event=>{event.preventDefault();const input=$('passphrase') as HTMLInputElement;const value=input.value;input.value='';void host?.unlock(value);});
+$('unlock').addEventListener('submit',event=>{event.preventDefault();const input=$('passphrase') as HTMLInputElement;const value=input.value;input.value='';void host?.unlock(value,(event as SubmitEvent).submitter?.id==='unlock-access');});
 $('trust').onclick=()=>void host?.trust();
 $('choose-duration').onclick=()=>void host?.chooseLifetime(Number(($('duration') as HTMLSelectElement).value));
 $('refresh-approved').onclick=()=>void host?.prepareGrant();
