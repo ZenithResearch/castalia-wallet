@@ -173,7 +173,7 @@ export async function createSessionLoginPopupHost(chrome:any,id:string,makeWorke
   };
   const prepare=async(ttlSeconds?:number)=>{
     onState({stage:'preparing'});
-    try{const result=await prepareLoginReview(command,request,ttlSeconds,accessHelp);if(result.options){onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:true});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
+    try{const result=await prepareLoginReview(command,request,ttlSeconds,accessHelp);if(result.options){onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:true,savedGrantAvailable:true});return;}signal({kind:'prepared',result:{schema:'castalia.session-login-prepared.v1',loginId:id,challenge:result.challenge}});onState({stage:'waiting_proof'});}
     catch(error){
       const e=loginError(error,'challenge');
       if(['grant_not_saved','holder_session_parent_unsupported'].includes(e.code)||request.grant_acquisition&&['invalid_holder_session','session_login_failed','read_approval_expired'].includes(e.code))onState({stage:'access_required',descriptor:request.access_request,grantDescriptor:request.grant_acquisition,canForget:e.code!=='grant_not_saved',error:e.code==='grant_not_saved'?undefined:e});

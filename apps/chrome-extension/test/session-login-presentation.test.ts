@@ -34,3 +34,12 @@ test('recovery copy preserves membership and issuer failures instead of calling 
   assert.match(view.status,pattern);assert.match(view.detail,/unchanged/);
  }
 });
+
+test('options-only saved-access help acknowledges the local grant without claiming current authorization',()=>{
+ const view=accessRecoveryPresentation({stage:'access_required',savedGrantAvailable:true,grantDescriptor:{}});
+ assert.equal(view.primary,'check_approved');
+ assert.equal(view.heading,'Saved access');
+ assert.match(view.status,/saved in this Wallet/);
+ assert.doesNotMatch(view.detail,/not saved|currently authorized|current read access/);
+ assert.match(view.detail,/does not confirm/);
+});

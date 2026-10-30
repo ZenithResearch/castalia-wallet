@@ -28,6 +28,8 @@ export function accessRecoveryPresentation(state:any){
    detail:(unsupported?'Your saved grant is unchanged. It cannot authorize this session profile.':'Your saved Wallet records are unchanged. This result does not establish that your access is missing or revoked.')+
     ' Check approved access to review what the service currently allows before requesting new permissions.',primary};
  }
+ if(state.savedGrantAvailable===true)return {heading:'Saved access',status:'A grant is saved in this Wallet.',
+  detail:'This confirms only the local copy; it does not confirm the service still authorizes it. Check approved access for the service’s current permissions, or forget this local copy.',primary};
  return {heading:'Check existing access',status:'Check your approved access.',
   detail:'A reusable grant is not saved in this browser Wallet. You may already have approved access on the service. Check it before sending a new access request.',primary};
 }

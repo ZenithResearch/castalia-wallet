@@ -295,6 +295,7 @@ raise SystemExit(holder_session_fixture.main())
   const refreshOpening=nextPopup();await refreshedPage.locator('#login').click();const refreshPopup=await refreshOpening;
   await refreshPopup.getByLabel('Wallet password').fill('Disposable browser session password');await refreshPopup.getByText('Saved access help',{exact:true}).click();await refreshPopup.getByRole('button',{name:'Check saved access',exact:true}).click();
   try{await refreshPopup.getByRole('button',{name:'Check approved access',exact:true}).waitFor({timeout:5000});}catch(error){console.error(JSON.stringify({fixture_stage:'changed_assignment_login',popup:await refreshPopup.locator('body').innerText(),requests:requests.slice(-8),diagnostics}));throw error;}assert.equal(grantIssues,0);assert.equal(accessActions,0);
+  await refreshPopup.getByText('A grant is saved in this Wallet.',{exact:true}).waitFor();assert.match(await refreshPopup.locator('#access-status').innerText(),/does not confirm/);
   const refreshInspectorSnapshot=()=>refreshPopup.evaluate(owner=>new Promise<any>(r=>(globalThis as any).chrome.storage.local.get('castalia-holder-grants-v1:'+owner,r)),identity);
   const popupJournalsBefore=await refreshPopup.evaluate(()=>new Promise<any>(r=>(globalThis as any).chrome.storage.session.get(null,r)));
   await refreshPopup.getByRole('button',{name:'Forget saved grant',exact:true}).click();
