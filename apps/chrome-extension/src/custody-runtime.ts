@@ -160,6 +160,7 @@ export const walletIdentities = createWalletIdentitiesStore({
   state:()=>custodyState.getState(),epoch:custodyEpoch,now:()=>Date.now(),storage,
   chainAccounts:()=>JSON.parse(hybridCore.chainAccounts()),
   validateContents:raw=>core.validateCastawayDescriptors(raw),
+  preflight:raw=>core.preflightCastawayDescriptors(raw),
   validate:raw=>core.validateWalletIdentities(raw),
   merge:(current,incoming)=>core.mergeWalletIdentities(current,incoming),
   seal:raw=>core.sealIdentitySection(raw),

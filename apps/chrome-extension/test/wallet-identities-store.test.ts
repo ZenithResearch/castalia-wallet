@@ -12,13 +12,15 @@ function fixture() {
     storage:{get:async(key:string)=>({[key]:disk[key]}),set:async(values:Record<string,unknown>)=>{writes++;Object.assign(disk,structuredClone(values))}},
     chainAccounts:()=>({schema:'zenith.chain-accounts-section.v1',version:1,ownerMemberKey:owner,authority:'descriptor-only',recovery:'castalia.wallet-custody.v1',accounts:[]}),
     validateContents:(raw:string)=>raw,
+    preflight:()=>1000,
     validate:(raw:string)=>{const v=JSON.parse(raw);if(v.ownerMemberKey!==owner)throw Error('wrong_owner');return JSON.stringify(v)},
     merge:(a:string,b:string)=>{const first=JSON.parse(a),second=JSON.parse(b);if(second.ownerMemberKey!==owner)throw Error('wrong_owner');return JSON.stringify({...first,accounts:[...first.accounts,...second.accounts.filter((x:any)=>!first.accounts.some((y:any)=>JSON.stringify(x)===JSON.stringify(y)))]})},
     seal:(raw:string)=>{const id='ciphertext-'+sealed.size;sealed.set(id,raw);return id},open:(v:string)=>{const raw=sealed.get(v);if(!raw)throw Error('invalid_ciphertext');return raw},
     importFile:(raw:string)=>raw,exportFile:(raw:string)=>raw,
   })
   const file=()=>JSON.stringify({schema:'castalia.castaway-contents.v2',version:2,sections:{identity:{subject:{memberKey:owner}},walletIdentities:ids()}})
-  return {store,disk,file,ids,owner:()=>owner,writes:()=>writes,lock:()=>{unlocked=false;epoch++},unlock:()=>{unlocked=true;epoch++},switchOwner:()=>{owner='22'.repeat(32);epoch++},expire:()=>{now+=121_000}}
+  const seedContents=(contents:unknown)=>{const ciphertext='seed-'+sealed.size;sealed.set(ciphertext,JSON.stringify(contents));disk['castalia-wallet-identities-v1:'+owner]={schema:'castalia.wallet-identity-storage.v1',revision:1,ciphertext}}
+  return {store,disk,file,ids,seedContents,owner:()=>owner,writes:()=>writes,lock:()=>{unlocked=false;epoch++},unlock:()=>{unlocked=true;epoch++},switchOwner:()=>{owner='22'.repeat(32);epoch++},expire:()=>{now+=121_000}}
 }
 test('import preparation does not write; exact confirmation persists encrypted data once',async()=>{
   const f=fixture(),preview=await f.store.reviewImport(f.file(),'file password')
@@ -55,4 +57,40 @@ test('only exact top-level Wallet identity UI can reach private records',()=>{
 test('explicit identity edits preserve encryption and reject stale form revisions',async()=>{
   const f=fixture();await f.store.saveIdentities(f.ids(),0);assert.equal(f.writes(),1);assert.deepEqual((await f.store.read()).identities,f.ids());
   await assert.rejects(f.store.saveIdentities(f.ids(),0));assert.equal(f.writes(),1);assert.equal(JSON.stringify(f.disk).includes('Chat'),false)
+})
+
+test('reader support does not let an unqualified extension discard imported feeds',async()=>{
+  const f=fixture(),previous=await f.store.reviewImport(f.file(),'password')
+  const contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v3';contents.version=3
+  contents.sections.feeds={schema:'castalia.feeds-section.v1',version:1,subscriptions:[],collections:[],preferences:{order:'newest-first'}}
+  await assert.rejects(f.store.reviewImport(JSON.stringify(contents),'password'),/feed_storage_not_qualified/)
+  await assert.rejects(f.store.confirmImport(previous.token))
+  assert.equal(f.writes(),0)
+  assert.deepEqual((await f.store.read()).identities.accounts,[])
+})
+
+test('stored v3 survives legacy imports and explicit identity edits while export stays gated',async()=>{
+  const f=fixture(),contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v3';contents.version=3
+  contents.sections.feeds={schema:'castalia.feeds-section.v1',version:1,subscriptions:[],collections:[],preferences:{order:'newest-first'}}
+  f.seedContents(contents)
+  assert.deepEqual((await f.store.read()).feeds,contents.sections.feeds)
+  const review=await f.store.reviewImport(f.file(),'password')
+  assert.deepEqual(review.feeds.preserved,contents.sections.feeds)
+  assert.equal(review.feeds.incoming,null)
+  await f.store.confirmImport(review.token)
+  await f.store.saveIdentities(f.ids(),2)
+  const prior=JSON.stringify(f.disk)
+  await assert.rejects(f.store.exportFile('backup password 123'),/feed_writer_not_qualified/)
+  assert.equal(JSON.stringify(f.disk),prior)
+  assert.deepEqual((await f.store.read()).feeds,contents.sections.feeds)
+  assert.equal(f.writes(),2)
+})
+
+test('extension host refuses a future core format before import review or writes',async()=>{
+  const f=fixture(),contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v4';contents.version=4
+  await assert.rejects(f.store.reviewImport(JSON.stringify(contents),'password'),/feed_storage_not_qualified/)
+  assert.equal(f.writes(),0)
 })

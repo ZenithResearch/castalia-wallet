@@ -1,0 +1,67 @@
+{
+  "schema": "castalia.extension-feed-development-evidence.v1",
+  "date": "2026-11-14",
+  "base_revision": "e84428c6c50e4d218479c987a4d30d04e11391bf",
+  "scope": "Guarded extension reader/preservation development stage; not production v3 admission/export",
+  "source_sha256": {
+    "apps/chrome-extension/src/custody-runtime.ts": "a69d39ec6dfefad2c9ab6adc9d17dba138d42bf396ff55078a8b44a25dc7ad54",
+    "apps/chrome-extension/src/wallet-identities-store.ts": "a82f015b5042bb8c6c63715592abc7f86fce430b8451d0605ffb9c19e1c084ad",
+    "apps/chrome-extension/src/wallet-identities.ts": "1a7cdd1ad9512bd4b1ba1f2040ada3ab509da6cc2807a775a72e0934cb5c9023",
+    "apps/chrome-extension/src/wallet-identities.html": "84210fc1996842f8bd35e64f8bdb43e2de6fdb27f0866fe12592cfa6207e7c9e",
+    "apps/chrome-extension/src/wallet-feeds.ts": "004d78d6b565ff8cb3bb33ac115056ff40a2095a37e063eae17caf5f0a16409e",
+    "apps/chrome-extension/test/wallet-identities-store.test.ts": "286dddbd2f2ea722b151600dee3200796058086c48b6481720d0302442b48e30",
+    "apps/chrome-extension/test/wallet-feeds-review.test.ts": "1b42d8a1f2e1d87d84cf477226f746bb0e80be7711a4111da861227e087b9a88",
+    "apps/chrome-extension/test/wallet-feeds-storage.test.ts": "d11cadbf4cfda4093b9d3d0a5e87156fe16c5734ef7604330f99464ef5c9845e",
+    "apps/chrome-extension/test/wallet-feeds-ui.test.ts": "8db05c99a2799ec621b309008b23799e23a877272eaf36dfbbccd76737c822f4"
+  },
+  "fixture_sha256": {
+    "contracts/feeds/v1/encrypted-v3.json": "1f2819bdc1ca2dfc403c5c7f9edbe9ee3f59dfe7126756cd85737ce366db93ce",
+    "contracts/feeds/v1/conformance.json": "07dfd61336d1ccbaafe2d3cf7540255ae5345222366daf4ce4e942b83a369d8f",
+    "contracts/feeds/v1/section.json": "eff3c3c4b15743661c2628d504052211f54c0ec2ab220d6d1d103218569c0ec2"
+  },
+  "checks": {
+    "full_npm_test": {
+      "passed": 450,
+      "opt_in_skipped": 4,
+      "failed": 0
+    },
+    "typecheck": "passed",
+    "loaded_chrome_workflow_checks": 12,
+    "final_read_regressions": 6,
+    "independent_review": "P2 final-read invalidation race fixed; re-review found no remaining concrete blocker"
+  },
+  "coverage": {
+    "actual_wasm": "Full strict descriptor validation, identity merge/seal/open, public encrypted-v3 import, actual preflight before prepare/confirm/edit, existing102-vector reader parity in full npm suite.",
+    "adapter_tests": "In-memory storage dictionary; atomic-set failure and post-real-preflight refusal injected explicitly. Previews detached from exact prepared encrypted bytes; cancel/expiry/lock/same-revision ciphertext change, source/collection conflicts and combined count/section limits. Final-read invalidation regressions fail before the fix and pass after, including cancel-only calls with unchanged custody epoch.",
+    "loaded_chrome": "Actual Chrome storage.local read/set and disk restart, root unlock required; exact encrypted bytes preserved; actual QUOTA_BYTES failure left no identity/feed record; two real UI pages exercise stale review and expected-revision refusal. Controlled real REVOKE_ORIGIN invalidation during each final paused Chrome read blocks review/edit/confirm.",
+    "ui": "Incoming/preserved metadata, all source and collection fields as inert text, no anchors/fetch/activation, stale asynchronous read cannot repopulate after invalidation."
+  },
+  "safeguards": {
+    "incoming_v3_default_gate": true,
+    "v3_export_gate": true,
+    "repository_source_never_changed_during_browser_run": true,
+    "browser_package_changes": [
+      "dist/service-worker.js"
+    ],
+    "browser_transformation": "One in-memory esbuild import-gate override in private development-only package; default guarded copy also tested.",
+    "temporary_profiles_removed": true,
+    "observed_http_requests": 0,
+    "page_errors": 0,
+    "final_store_sha256": "a82f015b5042bb8c6c63715592abc7f86fce430b8451d0605ffb9c19e1c084ad",
+    "controlled_browser_instrumentation": "Test-only pause of real storage.get; no changed storage values or production source. Real existing revocation handler performs epoch invalidation/cancel.",
+    "core_fixtures_manifest_permissions_custody_signing_unchanged": true
+  },
+  "remaining_limits": [
+    "Development positive acceptance does not enable production v3 import/export or assert completion of every consumer rollout.",
+    "Chrome storage.local has no independent cross-context CAS. All supported mutations remain inside the existing single service-worker custody FIFO, plus exact encrypted-snapshot/revision fencing. Future external writers would require a new serialization/CAS design.",
+    "Loaded browser proved quota rejection, not process termination during a storage.set or disk corruption/power-loss recovery.",
+    "Timer expiry and same-revision ciphertext substitution are deterministic adapter tests; two-page stale review/form, cancellation, quota failure and full restart are actual browser tests.",
+    "No external feed transport/login/activation, personal browser profile, extension installation into an existing browser profile, physical device, custody/authority change or production writer used."
+  ],
+  "commands": [
+    "npm test",
+    "npm run typecheck",
+    "node --import tsx --test apps/chrome-extension/test/wallet-identities-store.test.ts apps/chrome-extension/test/wallet-feeds-storage.test.ts apps/chrome-extension/test/wallet-feeds-review.test.ts apps/chrome-extension/test/wallet-feeds-ui.test.ts"
+  ],
+  "browser_qualification": "Actual disposable Chrome profiles and private guarded/qualified development packages; only one in-memory import-gate override, never a production capability. Production source bytes remained unchanged and profiles were removed."
+}

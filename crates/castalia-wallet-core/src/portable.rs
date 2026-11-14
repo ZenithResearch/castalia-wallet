@@ -494,7 +494,7 @@ fn validate_contents(wallet: &OpenedWallet, contents: &Value, trust: Option<&Tru
         return Err("file_too_large");
     }
     exact(contents, &["schema", "version", "sections"])?;
-    let v2 = contents_version(contents)? == 2;
+    let contents_version = contents_version(contents)?;
     let sections = &contents["sections"];
     let mut keys = vec!["identity"];
     for k in ["memberships", "scopedMemberships", "chainAccounts"] {
@@ -502,12 +502,18 @@ fn validate_contents(wallet: &OpenedWallet, contents: &Value, trust: Option<&Tru
             keys.push(k)
         }
     }
-    if v2 {
+    if contents_version == 2
+        || (contents_version == 3 && sections.get("walletIdentities").is_some())
+    {
         keys.push("walletIdentities");
         crate::wallet_identities::validate(
             &sections["walletIdentities"],
             &wallet.public_key_hex(),
         )?;
+    }
+    if contents_version == 3 {
+        keys.push("feeds");
+        crate::feeds::validate(&sections["feeds"])?;
     }
     exact(sections, &keys)?;
     identity(&sections["identity"], &wallet.public_key_hex())?;
@@ -674,6 +680,10 @@ pub fn export(
     trust: &Trust,
 ) -> Result<Zeroizing<String>> {
     validate(wallet, contents, trust)?;
+    // Reader-first rollout: storage, host review and preservation are not qualified yet.
+    if contents_version(contents)? == 3 {
+        return Err("feed_writer_not_qualified");
+    }
     if password.chars().count() < 12 {
         return Err("password_minimum_12");
     }
@@ -681,12 +691,13 @@ pub fn export(
     let mut nonce = [0; 12];
     OsRng.fill_bytes(&mut salt);
     OsRng.fill_bytes(&mut nonce);
-    let mut v = json!({"schema":"castalia.castaway.v1","contentsSchema":"castalia.castaway-contents.v1","ownerPublicKey":wallet.public_key_hex(),"exportedAt":now,"kdf":{"name":"Argon2id","version":19,"salt":B64.encode(salt),"memoryKiB":65536,"iterations":3,"parallelism":1,"derivedKeyBytes":32},"aead":{"name":"AES-256-GCM","nonce":B64.encode(nonce),"tagBits":128}});
-    if contents_version(contents)? == 2 {
-        v["schema"] = json!("castalia.castaway.v2");
-        v["contentsSchema"] = json!("castalia.castaway-contents.v2");
-    }
-    number(&v["exportedAt"])?;
+    let mut v = envelope_header(
+        &wallet.public_key_hex(),
+        contents_version(contents)?,
+        now,
+        &salt,
+        &nonce,
+    )?;
     let aad = serde_jcs::to_vec(&v).map_err(|_| "encoding_failed")?;
     let plain = Zeroizing::new(serde_jcs::to_vec(contents).map_err(|_| "encoding_failed")?);
     let key = crate::derive_key(password, &salt).map_err(|_| "export_failed")?;
@@ -711,11 +722,64 @@ pub fn export(
     Ok(Zeroizing::new(result))
 }
 
-/// Frozen v1 remains strict. V2 is the public-descriptor extension.
+fn envelope_header(
+    owner: &str,
+    version: u64,
+    now: u64,
+    salt: &[u8; 16],
+    nonce: &[u8; 12],
+) -> Result<Value> {
+    let (schema, contents_schema) = match version {
+        1 => ("castalia.castaway.v1", "castalia.castaway-contents.v1"),
+        2 => ("castalia.castaway.v2", "castalia.castaway-contents.v2"),
+        3 => ("castalia.castaway.v3", "castalia.castaway-contents.v3"),
+        _ => return Err("unsupported_version"),
+    };
+    number(&json!(now))?;
+    Ok(
+        json!({"schema":schema,"contentsSchema":contents_schema,"ownerPublicKey":owner,"exportedAt":now,"kdf":{"name":"Argon2id","version":19,"salt":B64.encode(salt),"memoryKiB":65536,"iterations":3,"parallelism":1,"derivedKeyBytes":32},"aead":{"name":"AES-256-GCM","nonce":B64.encode(nonce),"tagBits":128}}),
+    )
+}
+
+/// Exact encrypted-file length at the largest valid export timestamp. No KDF,
+/// encryption, passphrase or writer enablement is needed to reserve portable capacity.
+/// Callers must separately validate the complete contents and trust policy.
+pub fn preflight_export_size(contents: &Value) -> Result<usize> {
+    let owner = &contents["sections"]["identity"]["subject"]["memberKey"];
+    hex32(owner)?;
+    let mut header = envelope_header(
+        owner.as_str().ok_or("invalid_identity")?,
+        contents_version(contents)?,
+        9_007_199_254_740_991,
+        &[0; 16],
+        &[0; 12],
+    )?;
+    header["ciphertext"] = json!("");
+    let plaintext_bytes = serde_jcs::to_vec(contents)
+        .map_err(|_| "encoding_failed")?
+        .len();
+    let ciphertext_bytes = plaintext_bytes.checked_add(16).ok_or("file_too_large")?;
+    let encoded_bytes = (ciphertext_bytes / 3)
+        .checked_mul(4)
+        .and_then(|n| n.checked_add([0, 2, 3][ciphertext_bytes % 3]))
+        .ok_or("file_too_large")?;
+    let total = serde_jcs::to_vec(&header)
+        .map_err(|_| "encoding_failed")?
+        .len()
+        .checked_add(encoded_bytes)
+        .ok_or("file_too_large")?;
+    if total > MAX {
+        return Err("file_too_large");
+    }
+    Ok(total)
+}
+
+/// Frozen v1/v2 remain strict. V3 reads inert feed configuration, with writers gated.
 pub fn contents_version(value: &Value) -> Result<u64> {
     match (value["schema"].as_str(), value["version"].as_u64()) {
         (Some("castalia.castaway-contents.v1"), Some(1)) => Ok(1),
         (Some("castalia.castaway-contents.v2"), Some(2)) => Ok(2),
+        (Some("castalia.castaway-contents.v3"), Some(3)) => Ok(3),
         _ => Err("unsupported_version"),
     }
 }
@@ -723,14 +787,18 @@ pub fn envelope_version(value: &Value) -> Result<u64> {
     match (value["schema"].as_str(), value["contentsSchema"].as_str()) {
         (Some("castalia.castaway.v1"), Some("castalia.castaway-contents.v1")) => Ok(1),
         (Some("castalia.castaway.v2"), Some("castalia.castaway-contents.v2")) => Ok(2),
+        (Some("castalia.castaway.v3"), Some("castalia.castaway-contents.v3")) => Ok(3),
         _ => Err("unsupported_version"),
     }
 }
 pub fn with_wallet_identities(contents: &Value, identities: &Value, owner: &str) -> Result<Value> {
+    let version = contents_version(contents)?;
     let mut next = contents.clone();
     next["sections"]["walletIdentities"] = crate::wallet_identities::validate(identities, owner)?;
-    next["schema"] = json!("castalia.castaway-contents.v2");
-    next["version"] = json!(2);
+    if version != 3 {
+        next["schema"] = json!("castalia.castaway-contents.v2");
+        next["version"] = json!(2);
+    }
     Ok(next)
 }
 

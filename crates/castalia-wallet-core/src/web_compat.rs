@@ -105,11 +105,13 @@ fn open(mut envelope: Value, key: &[u8]) -> Result<Zeroizing<String>> {
 fn data_contents(value: &Value, wallet: &OpenedWallet) -> Result<()> {
     let owner = wallet.public_key_hex();
     exact(value, &["schema", "version", "sections"])?;
-    let v2 = crate::portable::contents_version(value).map_err(closed)? == 2;
-    if v2 {
+    let version = crate::portable::contents_version(value).map_err(closed)?;
+    if version >= 2 {
         crate::portable::validate_descriptors(wallet, value).map_err(closed)?;
-        crate::wallet_identities::validate(&value["sections"]["walletIdentities"], &owner)
-            .map_err(closed)?;
+        if version == 2 || value["sections"].get("walletIdentities").is_some() {
+            crate::wallet_identities::validate(&value["sections"]["walletIdentities"], &owner)
+                .map_err(closed)?;
+        }
         if value["sections"]["identity"]["subject"]["memberKey"] != owner {
             return Err(invalid());
         }
@@ -124,7 +126,8 @@ fn data_contents(value: &Value, wallet: &OpenedWallet) -> Result<()> {
                 "chainAccounts",
             ]
             .contains(&k.as_str())
-                || (v2 && k == "walletIdentities"))
+                || (version >= 2 && k == "walletIdentities")
+                || (version == 3 && k == "feeds"))
         })
         || ["memberships", "scopedMemberships"]
             .iter()
@@ -235,6 +238,9 @@ impl OpenedWallet {
     ) -> Result<Zeroizing<String>> {
         let value = object(raw)?;
         data_contents(&value, self)?;
+        if crate::portable::contents_version(&value).map_err(closed)? == 3 {
+            return Err(CustodyError::FeedWriterNotQualified);
+        }
         let mut salt = [0; 16];
         let mut n = [0; 12];
         OsRng.fill_bytes(&mut salt);
@@ -290,6 +296,14 @@ impl OpenedWallet {
         let value = object(raw)?;
         crate::portable::validate_descriptors(self, &value).map_err(closed)?;
         serde_json::to_string(&value).map_err(closed)
+    }
+    /// Validate the descriptor/owner shape and reserve the complete portable file
+    /// size without deriving a password key or enabling an export writer.
+    /// This does not verify membership trust or grant disclosure authority.
+    pub fn preflight_castaway_descriptors(&self, raw: &str) -> Result<usize> {
+        let value = object(raw)?;
+        crate::portable::validate_descriptors(self, &value).map_err(closed)?;
+        crate::portable::preflight_export_size(&value).map_err(closed)
     }
     pub fn validate_wallet_identities(&self, raw: &str) -> Result<String> {
         let value = crate::wallet_identities::validate(&object(raw)?, &self.public_key_hex())
@@ -404,8 +418,8 @@ impl OpenedWallet {
 pub struct WebWalletCustody {
     inner: Option<OpenedWallet>,
 }
-fn js_closed(_: CustodyError) -> JsValue {
-    JsValue::from_str("invalid_wallet_file")
+fn js_closed(error: CustodyError) -> JsValue {
+    JsValue::from_str(&error.to_string())
 }
 impl WebWalletCustody {
     fn wallet(&self) -> core::result::Result<&OpenedWallet, JsValue> {
@@ -517,6 +531,15 @@ impl WebWalletCustody {
         self.wallet()?
             .import_castaway(value, password)
             .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name=preflightCastawayDescriptors)]
+    pub fn preflight_castaway_descriptors(
+        &self,
+        value: &str,
+    ) -> core::result::Result<usize, JsValue> {
+        self.wallet()?
+            .preflight_castaway_descriptors(value)
             .map_err(js_closed)
     }
     #[wasm_bindgen(js_name=validateWalletIdentities)]
