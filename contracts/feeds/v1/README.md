@@ -161,3 +161,9 @@ transport or persistence. Real host adapters still must bind their actual truste
 destination, current source/revision, session lifetime and explicit consent before
 delivering any selected data. Inert additive accepting-host import remains later
 work; an empty selected section never authorizes deletion.
+
+### Unregistered selected-feed host controller
+
+The Wallet-private source adapter now retains an exact encrypted-record snapshot, owner, custody epoch and revision. Its one-shot synchronous consume fence refuses same-revision resealing and changed context. The selected-feed controller uses the actual WASM preparation and existing custody queue/confirmation broker, releases the queue during consent, then rechecks supported and approved trusted origin, document/tab, owner, epoch, expiry, observed-clock monotonicity and original encrypted snapshot before consuming and delivering once. The produced preview is immutable in-process. Canceled work retains its capacity slot until it actually exits; independent cleanup errors do not strand consent or leak other resources.
+
+[Focused host-domain evidence](../../../docs/feed-projection-host-evidence.json) includes60 source/controller tests in the final511-pass repository suite, four existing gated skips, and full typecheck. Tests use real Rust encryption/WASM with synthetic trusted documents and confirmation windows. Of46 preparation vectors,42 enter the controller and4 invalid raw sources are rejected by real encrypted preflight. Actual browser/native origin authenticity, a read-only serialized consent view, connected lifecycle invalidation and accepting-host additive import need separate qualification. All host mutations must use the same queue or invalidate epoch/context; this is not a generic cross-process CAS. No method, capability, service-worker route, v3 writer or app pin is enabled here.

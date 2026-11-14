@@ -3,6 +3,15 @@ import {mergeFeedSections,type FeedSection,type FeedReview} from './wallet-feeds
 /** Extension-owned adapter. The Rust core owns identity/schema validation. */
 export type WalletIdentityRecord={accountId:string;kind:'matrix'|'nostr'|'github'|'x';label:string;identifier:string;server:string}
 export type WalletIdentitySection={schema:'castalia.wallet-identities.v1';version:1;ownerMemberKey:string;authority:'descriptor-only';accounts:WalletIdentityRecord[]}
+/** Wallet-private, memory-only source snapshot. Never expose this object on a
+ * provider wire. Calls must share the custody FIFO; outside invalidation bumps
+ * the epoch or cancels this store. No approval or authority is carried here. */
+export type FeedProjectionSource={
+  readonly owner:string;readonly epoch:number;readonly revision:number
+  copySource():Uint8Array
+  consumeCurrent(deliver:(currentSource:Uint8Array)=>boolean):Promise<boolean>
+  dispose():void
+}
 type Dependencies={
   state():Promise<{unlocked:boolean;publicKey:string|null}>;epoch():number;now():number
   storage:{get(key:string):Promise<Record<string,unknown>>;set(values:Record<string,unknown>):Promise<void>}
@@ -55,6 +64,38 @@ export function createWalletIdentitiesStore(d:Dependencies){
   function revisionAfter(revision:number){if(!Number.isSafeInteger(revision+1))throw Error('revision_exhausted');return revision+1}
   return {
     cancel(){cancellations++;pending=null},
+    async captureFeedProjectionSource():Promise<FeedProjectionSource>{
+      const cancellation=cancellations,owner=await guard(),epoch=d.epoch(),saved=await load(owner)
+      const section=feeds(saved.contents)
+      if(!section||saved.snapshot===null)throw Error('feed_source_unavailable')
+      // This is the exact internally prepared section representation. The
+      // independent encrypted-record fence also catches reserialization/reseal
+      // and same-revision replacement of the surrounding Wallet record.
+      const raw=new TextEncoder().encode(JSON.stringify(section))
+      try{await guard(owner,epoch);await unchanged(owner,saved.snapshot);finalFence(epoch,cancellation)}
+      catch(error){raw.fill(0);throw error}
+      let status:'prepared'|'consuming'|'closed'='prepared'
+      const dispose=()=>{status='closed';raw.fill(0)}
+      return Object.freeze({owner,epoch,revision:saved.revision,
+        copySource(){if(status!=='prepared')throw Error('feed_source_consumed');return raw.slice()},
+        async consumeCurrent(deliver:(currentSource:Uint8Array)=>boolean):Promise<boolean>{
+          if(status!=='prepared')throw Error('feed_source_consumed')
+          status='consuming' // consume before any await or callback validation
+          try{
+            if(typeof deliver!=='function')throw Error('invalid_feed_delivery')
+            await guard(owner,epoch);await unchanged(owner,saved.snapshot)
+            finalFence(epoch,cancellation)
+            if(status!=='consuming')throw Error('feed_source_consumed')
+            // No await between the final fence and this synchronous callback.
+            // Non-void typing rejects async callbacks; dynamic values never get
+            // awaited or interpreted as successful delivery.
+            const current=raw.slice()
+            try{const delivered=deliver(current);if(typeof delivered!=='boolean')throw Error('invalid_feed_delivery');return delivered}
+            finally{current.fill(0)}
+          }finally{dispose()}
+        },dispose,
+      })
+    },
     async read(){const owner=await guard(),epoch=d.epoch(),saved=await load(owner);await guard(owner,epoch);return {revision:saved.revision,identities:identities(saved.contents,owner),feeds:structuredClone(feeds(saved.contents))}},
     async reviewImport(file:string,password:string){
       pending=null
