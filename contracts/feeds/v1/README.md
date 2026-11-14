@@ -26,3 +26,9 @@ A selected projection includes only reviewed subscriptions and explicitly review
 Reader tests must preserve legacy positive/negative fixtures, reject wrong owner/version/unknown sections, and decrypt independently created synthetic v3 files. Production v3 encryption/export stays refused until host persistence, native admission and cross-client fixtures qualify. Later stages cover atomic canceled/stale/conflicting imports, size preflight, restart and credential-free public transport/redirect/proxy behavior.
 
 The independent TypeScript reader in Castalia Web mirrors these bytes under `packages/castaway-contract/fixtures/feeds-v1`. Update the canonical set and mirror deliberately, and record exact source/digests when publishing. Broader plan: Book Nook `docs/FEEDS.md`; work ownership: `Project/castalia-portable-feeds` in DevGraph.
+
+## Independently encrypted synthetic files
+
+`encrypted-v3.json` contains eight authenticated synthetic vectors: populated, empty and conflicting-title files are individually valid; raw duplicate properties, outer/inner mismatch, wrong inner owner, future version and unknown section are invalid. A valid standalone conflicting file must still fail reconciliation against different existing values. The inputs contain only the publicly known encrypted custody vector and public test passwords. Never use them for real custody.
+
+The fixture was independently produced using Node 24.20.0 built-in Argon2id and OpenSSL AES-256-GCM, after checking the historical custody-vector derived key. Canonical header/plaintext keys are ASCII and use the existing JCS profile; nonce values are distinct per case. Both actual rebuilt WASM host adapters decrypt/validate the expected verdicts. These are test artifacts, not a production v3 export API or a supported-client rollout claim.

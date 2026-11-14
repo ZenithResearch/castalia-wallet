@@ -214,3 +214,63 @@ test("actual WASM preflights both host adapters without enabling v3 export", () 
     }
   }
 });
+
+test("both actual WASM adapters decrypt independent synthetic v3 envelopes", () => {
+  const fixture = JSON.parse(
+    readFileSync(
+      new URL("../../../contracts/feeds/v1/encrypted-v3.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.equal(fixture.cases.length, 8);
+  assert.equal(
+    fixture.cases.filter((v: { valid: boolean }) => v.valid).length,
+    3,
+  );
+  for (const Core of [WasmWallet, WebWalletCustody]) {
+    const core = new Core();
+    core.unlock(
+      encoder.encode(fixture.inputs.custodyFile),
+      fixture.inputs.custodyPassword,
+    );
+    const owner = core.publicKey();
+    try {
+      for (const vector of fixture.cases) {
+        if (vector.valid) {
+          const opened = core.importCastaway(
+            encoder.encode(vector.envelope),
+            fixture.inputs.dataPassword,
+          );
+          assert.deepEqual(
+            JSON.parse(opened),
+            JSON.parse(vector.contentsRaw),
+            vector.id,
+          );
+          assert.throws(
+            () => core.exportCastaway(opened, fixture.inputs.dataPassword, 1n),
+            /feed_writer_not_qualified/,
+          );
+        } else
+          assert.throws(
+            () =>
+              core.importCastaway(
+                encoder.encode(vector.envelope),
+                fixture.inputs.dataPassword,
+              ),
+            undefined,
+            vector.id,
+          );
+      }
+      assert.throws(() =>
+        core.importCastaway(
+          encoder.encode(fixture.cases[0].envelope),
+          "wrong fixture password",
+        ),
+      );
+      assert.equal(core.publicKey(), owner);
+    } finally {
+      core.lock();
+      core.free();
+    }
+  }
+});
