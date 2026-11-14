@@ -7,6 +7,8 @@ use std::{
     sync::{Mutex, OnceLock},
 };
 use zeroize::Zeroizing;
+mod feed_projection;
+pub use feed_projection::*;
 #[cfg(test)]
 mod holder_custody_tests;
 #[derive(Default)]
@@ -14,6 +16,7 @@ struct Handles {
     next: u64,
     sessions: HashMap<u64, RecoverySession>,
     holder_custody: HashMap<u64, HolderSessionCustody>,
+    feed_projections: HashMap<u64, castalia_wallet_core::feed_projection::PreparedFeedProjectionV1>,
     results: HashMap<u64, Zeroizing<Vec<u8>>>,
 }
 static HANDLES: OnceLock<Mutex<Handles>> = OnceLock::new();
