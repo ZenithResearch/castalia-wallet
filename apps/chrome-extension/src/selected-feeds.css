@@ -1,0 +1,8 @@
+main { width: min(100%, 560px); overflow-wrap: anywhere; }
+p { line-height: 1.5; }
+section { border-top: 1px solid #cbd4df; padding: 16px 0; }
+label { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; }
+input[type=checkbox] { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; }
+h2 { font-size: 17px; }
+.actions { background: #f7f4ec; padding: 12px 0; }
+#origin { display: block; }

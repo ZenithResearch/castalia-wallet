@@ -1,3 +1,4 @@
+import {installSelectedFeedsRuntime} from "./selected-feeds-runtime.js"
 import { installCustodyPanelRuntime } from './custody-panel-state.js'
 import { installSessionLoginLauncher, verifyLoginOwner, SESSION_LOGIN_INVALIDATION, SESSION_LOGIN_QUALIFIED } from './session-login-broker.js'
 import {saveLoginGrants} from './session-login-storage.js'
@@ -438,6 +439,11 @@ if (typeof chrome !== 'undefined' && chrome?.runtime?.onMessage) {
     }),
     subscribe:subscribeCustodyChanges,
   })
+  const selectedFeedsRuntime = installSelectedFeedsRuntime(chrome, {
+    run: operation => custodyOperations.run(operation), epoch: custodyEpoch, onChange: subscribeCustodyChanges,
+    state: async () => { const state=await getCurrentExtensionStateForProvider(); return state ? {setupComplete:state.setupComplete,unlocked:state.unlocked,memberKey:state.signingIdentity.publicKeyRawHex,approvedOrigins:state.approvedOrigins} : null },
+    source: () => walletIdentities.captureFeedProjectionSource(),
+  })
   installReadAccessRuntime(chrome, {
     holderGrants:grantsStore,
     holderSessions:sessions,
@@ -799,7 +805,7 @@ chrome.runtime.onMessage.addListener((
   (async () => {
     try {
       if (message.method === 'castalia.wallet.getCapabilities') {
-        sendResponse({ id: message.id, ok: true, result: [...NEUTRAL_CAPABILITIES,...(holderSessionExchangeAvailable()?[HOLDER_SESSION_EXCHANGE_CAPABILITY]:[]),...(SESSION_LOGIN_QUALIFIED&&typeof chrome.runtime.getContexts==='function'?[SESSION_LOGIN_CAPABILITY]:[])] }); return
+        sendResponse({ id: message.id, ok: true, result: [...NEUTRAL_CAPABILITIES,...selectedFeedsRuntime.capabilities(),...(holderSessionExchangeAvailable()?[HOLDER_SESSION_EXCHANGE_CAPABILITY]:[]),...(SESSION_LOGIN_QUALIFIED&&typeof chrome.runtime.getContexts==='function'?[SESSION_LOGIN_CAPABILITY]:[])] }); return
       }
       if (message.method === 'castalia.wallet.isAvailable') {
         sendResponse({ id: message.id, ok: true, result: true })

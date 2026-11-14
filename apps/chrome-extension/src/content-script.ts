@@ -1,3 +1,4 @@
+import {forwardSelectedFeeds,installSelectedFeedsLifecycle} from "./selected-feeds-content.js"
 import { forwardReadAccess,installReadDocumentLifecycle } from './read-access-content.js'
 import { createSessionLoginContent } from './session-login-content.js'
 import { forwardCredentialPresentation } from './credential-presentation-content.js'
@@ -90,6 +91,7 @@ declare const chrome: any;
 if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.runtime?.sendMessage) {
   const sessionLogin=createSessionLoginContent(chrome,window)
   installReadDocumentLifecycle(chrome,window)
+  installSelectedFeedsLifecycle(chrome,window)
   injectPageProvider(document, chrome.runtime.getURL('dist/provider.js'))
   chrome.runtime.onMessage.addListener((message: any, sender: any) => {
     if (sender?.id === chrome.runtime.id && message?.type === 'CASTALIA_READ_ACCESS_INVALIDATED')
@@ -105,6 +107,12 @@ if (typeof window !== 'undefined' && typeof chrome !== 'undefined' && chrome?.ru
   })
 
   if (!normalized) return
+
+  if (normalized.method === 'castalia.wallet.selectFeeds') {
+    const reply = (response: unknown) => window.postMessage({type: CASTALIA_WALLET_RESPONSE, id: normalized.id, ...(response as object)}, window.location.origin)
+    forwardSelectedFeeds(chrome,normalized.payload,reply,window,navigator.userActivation?.isActive===true)
+    return
+  }
 
   if (normalized.method === 'castalia.wallet.readAccess') {
     const reply = (response: unknown) => window.postMessage({ type: CASTALIA_WALLET_RESPONSE, id: normalized.id, ...(response as object) }, window.location.origin)

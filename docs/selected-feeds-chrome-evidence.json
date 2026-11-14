@@ -1,0 +1,326 @@
+{
+  "schema": "castalia.selected-feeds-chrome-evidence.v1",
+  "recorded_at": "2026-11-14T13:54:59.271030+00:00",
+  "parent_verified_at": "2026-11-14T13:57:36.031982+00:00",
+  "base_commit": "a9234ebe07cb131dfea697a44922acc54224c5d7",
+  "private_receipt_sha256": "900a2041b2fa7ab60192092bb0e80b00c2ecb14a217df068504bcb125b36cdab",
+  "source": [
+    {
+      "path": "apps/chrome-extension/src/content-script.ts",
+      "sha256": "d9a5b2ecf803b66ffadcdf0af7cf062530417d15c046a52e188b78a290c67d03",
+      "bytes": 8682
+    },
+    {
+      "path": "apps/chrome-extension/src/provider.ts",
+      "sha256": "020d840d9f3cb5a596a2358274a93b60f688d0857134522c8abc709a49b9c0dc",
+      "bytes": 8554
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-choice.html",
+      "sha256": "97d0599d192f6724074f7ebb82921fa226e0f7436327793b1ab2f4a09027c122",
+      "bytes": 996
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-choice.ts",
+      "sha256": "7fac0a589a9eaa606e952dc98338f41b6cb9ec735630bbe5ef5ea9c953c6dee7",
+      "bytes": 3115
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-confirmation.html",
+      "sha256": "eaeb7a28aac9c307f9b94dc51f5c253facf38721eb98572b91881e36d48c009d",
+      "bytes": 975
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-confirmation.ts",
+      "sha256": "4c350eb88f0089421090e0e15ea38a41073482c8d1b2fe9eecd7608d1f3afbd7",
+      "bytes": 1402
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-content.ts",
+      "sha256": "4d79bb1b89b08da815b4e3a4e0e85606ba31cce2273795dfbc5f8dd66c20b571",
+      "bytes": 1280
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-runtime.ts",
+      "sha256": "058e7d6d486cf359168d733facb60acfb221e8e0b7aa887a94da6e7c78a13f56",
+      "bytes": 15628
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds-ui.ts",
+      "sha256": "62cf50d0ce197e990e55e6ace67101422d152113b6f0920e3f6024d28a5ff038",
+      "bytes": 1910
+    },
+    {
+      "path": "apps/chrome-extension/src/selected-feeds.css",
+      "sha256": "4f2020fec0493517c0424181d434f29195562cdf7714189ced2c4fec0f5240b0",
+      "bytes": 408
+    },
+    {
+      "path": "apps/chrome-extension/src/service-worker.ts",
+      "sha256": "b84d474c6c5e755b5aab0aa17176c384d5053ce61597d4e033945aea9ef57cf0",
+      "bytes": 40902
+    },
+    {
+      "path": "apps/chrome-extension/test/selected-feeds-content.test.ts",
+      "sha256": "91262a58a2d9d47a5fe5bac1e32ec7d10d082bf5cd273e542a895ab11a513696",
+      "bytes": 3228
+    },
+    {
+      "path": "apps/chrome-extension/test/selected-feeds-runtime.test.ts",
+      "sha256": "e9fd99ff47503f41c77fc71f3d0e164c0277fbc9e86b8553f4b5a9f7925da6ae",
+      "bytes": 13956
+    },
+    {
+      "path": "apps/chrome-extension/test/selected-feeds-ui.test.ts",
+      "sha256": "7794abec77ce8822bb45716e82f3b3311f39da86d5e07fc7b390c9be023b3bad",
+      "bytes": 2618
+    },
+    {
+      "path": "packages/provider-types/src/index.ts",
+      "sha256": "3c5821b6a831ab54a5313f6bc6197d216b0f0b407d77941b5de656de29b77a5d",
+      "bytes": 4873
+    },
+    {
+      "path": "packages/provider-types/src/selected-feeds.ts",
+      "sha256": "bec46191639620fea66058b92d39a061c7bed35d690f4c659ca5eb8f8198aefa",
+      "bytes": 464
+    },
+    {
+      "path": "scripts/bundle-castalia-extension.mjs",
+      "sha256": "4e994d90ab7c9af772633c8587e2cf5b0e940e31578f35e7a5d40f6fc00f2903",
+      "bytes": 4246
+    },
+    {
+      "path": "scripts/fixtures/selected-feeds-worker.ts",
+      "sha256": "99ce316ca0e734b371e00c2bb5040744f9700fc2d0bfdaeee0359631e7af963b",
+      "bytes": 5348
+    },
+    {
+      "path": "scripts/package-selected-feeds-fixture.mjs",
+      "sha256": "cd35824bca9e3e41cdc4cfb3c2766ece646d37a6569e3a506cce5a6d7dadae89",
+      "bytes": 5259
+    },
+    {
+      "path": "scripts/smoke-extension-selected-feeds.mts",
+      "sha256": "8db86957a1cb395ec19d6d93b44bb1f49ff08833360980e055bc507cb127dbac",
+      "bytes": 14920
+    }
+  ],
+  "shared_core_preservation": {
+    "artifacts": [
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/.gitignore",
+        "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+        "bytes": 1,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/LICENSE",
+        "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2",
+        "bytes": 1080,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/bindings.d.ts",
+        "sha256": "b193d38a303ad4f9bf2532d501c8e54c12832e8372f0090203ab0d8b3c32bf42",
+        "bytes": 150,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/bindings.js",
+        "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+        "bytes": 79064,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core.d.ts",
+        "sha256": "a7d88e79e09cee6db15231b05bf197e2c6d1f010b3db62518ae94c65a4171fbf",
+        "bytes": 17764,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core.js",
+        "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+        "bytes": 79064,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core_bg.wasm",
+        "sha256": "2d9003f2f9f90667273b4334cf9b8e5876c2acf960ed3d4516304880b96079f6",
+        "bytes": 2654770,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core_bg.wasm.d.ts",
+        "sha256": "3afa5a4433a38c75a7accd3fba3ebdda7045f4b0304c4b2e6abc231ce4595665",
+        "bytes": 10768,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/package.json",
+        "sha256": "09caa321ff03214f52ad160b0eb20cc1081ae0cc2e48424b0e96ae5f24b1939c",
+        "bytes": 407,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/wasm-bytes.d.ts",
+        "sha256": "2a199f75db9a69dabe1382558bd8289bed95fc8d443db7a651f38e845b616bd8",
+        "bytes": 59,
+        "matches_qualified_shared_host": true
+      },
+      {
+        "path": "apps/chrome-extension/src/generated/castalia-wallet-core/wasm-bytes.js",
+        "sha256": "1a2ece7664b4530c285b444612c6d47ee4da4cd4bca72291fc13edd7fc121cba",
+        "bytes": 3539785,
+        "matches_qualified_shared_host": true
+      }
+    ],
+    "protected": [
+      {
+        "path": "apps/chrome-extension/src/feed-projection-controller.ts",
+        "sha256": "f86e86bdba1576bb8604ad2b4905c183629cf342e23e56d9113b1c5df55151b7",
+        "matches_base": true
+      },
+      {
+        "path": "apps/chrome-extension/src/wallet-identities-store.ts",
+        "sha256": "f96dc80b99bfe0ea147084653679524c3f7f694c144ce49ee50ad06ed476cf32",
+        "matches_base": true
+      },
+      {
+        "path": "apps/chrome-extension/manifest.json",
+        "sha256": "a149c703659336fe5e9531a3d89a0fdfea58afc57e3ac81f8debdfbeb4905052",
+        "matches_base": true
+      },
+      {
+        "path": "scripts/package-production-extension.mjs",
+        "sha256": "d6e8817c72491cfa2c4c78f5b4b3c9c2c30c50c382b9d9da6dd95d93b4915437",
+        "matches_base": true
+      },
+      {
+        "path": "contracts/feeds/v1/projection-conformance.json",
+        "sha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7",
+        "matches_base": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": "node --import tsx --test apps/chrome-extension/test/selected-feeds-*.test.ts",
+      "result": "48 passed, 0 failed"
+    },
+    {
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 npm test",
+      "result": {
+        "tests": 563,
+        "pass": 559,
+        "fail": 0,
+        "skipped": 4
+      }
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 CASTALIA_EXTENSION_OUTPUT=<work>/production-policy node scripts/package-production-extension.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "CASTALIA_EXTENSION_OUTPUT=<work>/production-policy node scripts/inspect-production-extension.mjs",
+      "result": "46 packaged files passed"
+    },
+    {
+      "command": "node --import tsx scripts/smoke-extension-selected-feeds.mts (recorded environment paths below)",
+      "result": "11 actual headless browser groups passed; includes 10 receiving-host assertions"
+    }
+  ],
+  "production_tree_sha256": "9eee67fc7620709541c900712443b4e28227e1f7b3e3c7bec8cb0c20ae97f9db",
+  "fixture_tree_sha256": "db5e458180747602f723412d7013c0c4828cab927656d19a892f815ee33bd25a",
+  "actual_browser_cases": [
+    {
+      "case": "untouched-production-default-refusal",
+      "passed": true
+    },
+    {
+      "case": "actual-synthetic-custody-unlock-separate-origin-approval-v3-guard",
+      "passed": true
+    },
+    {
+      "case": "actual-browser-delivery-and-explicit-inert-booknook-import",
+      "passed": true
+    },
+    {
+      "case": "receiving-host-independent-SDK-and-IndexedDB",
+      "passed": [
+        "opaque original-byte import",
+        "all conflicts explicit",
+        "cancel without save",
+        "additive selected interpretation",
+        "private records retained",
+        "empty/no-op row retained",
+        "malformed/wrapper/strict-URL refusal",
+        "actual competing-tab CAS",
+        "pre-CAS cancellation",
+        "restart inactive persistence"
+      ],
+      "fixtureOnly": true,
+      "runtimeOrProductionAcceptance": false
+    },
+    {
+      "case": "empty-explicit-consent",
+      "passed": true
+    },
+    {
+      "case": "choice-cancel",
+      "passed": true
+    },
+    {
+      "case": "consent-deny",
+      "passed": true
+    },
+    {
+      "case": "exact-ciphertext-staleness",
+      "passed": true
+    },
+    {
+      "case": "combined120s-deadline-synthetic-clock",
+      "passed": true
+    },
+    {
+      "case": "real-custody-lock-cancellation",
+      "passed": true
+    },
+    {
+      "case": "document-navigation-cancellation",
+      "passed": true
+    }
+  ],
+  "decisions": [
+    "Add optional selectFeeds and selected_feeds_v1; page sends an empty object and cannot provide source, origin or selections.",
+    "Retain false production qualification and default-deny destination predicate; private chooser/consent assets are packaged only into the separate synthetic fixture.",
+    "Unsupported browser/destination refuses before adapter custody hooks; unapproved destinations cannot learn setup/lock status from this operation.",
+    "Bind document and exact destination from Chrome sender context; trusted popup documents are checked through runtime.getContexts.",
+    "Capture encrypted source before trusted choice UI; reuse unchanged pure/shared controller, exact ciphertext fence and FIFO. Keep 16 real queued/in-flight slots, observed-clock rollback refusal and one outer 120-second deadline.",
+    "Separate choices, privacy consent and receiving-host additive import confirmation. Return only unchanged raw FeedSection data; no authority, grants, signing or activation.",
+    "Use normal-flow actions and presentation-only blank-title labels. Preserve nonblank literal text and raw source strings.",
+    "Reuse cached pinned Chrome for Testing after branded Chrome refused unpacked-extension loading; no browser installation or personal profile was used."
+  ],
+  "scope_limits": [
+    "No production enablement, accepted production destination, runtime v3 guard waiver, app repin, registry publication, signing/custody/recovery/grant change, or actual user/account/browser data.",
+    "Browser positive path is a separate disposable synthetic worker and receiver using real Chrome APIs, encrypted storage, shared Wallet WASM, packaged Book Nook WASM/typed SDK and IndexedDB. It is not production host qualification.",
+    "The 120-second boundary is exercised with the fixture clock; not a 120-second wall-time soak. Clock protection covers observed decreases only.",
+    "No physical device, hardware keyboard, screen-reader/VoiceOver or full human accessibility qualification. Screenshots were visually inspected and accessible fallback checkbox labels were asserted.",
+    "Network claim is bounded to Playwright-observed context HTTP requests; no source fetch adapter is installed or activated at the receiving host.",
+    "Four existing qualified-v3-import tests remain intentionally gated/skipped. The actual v3 default import refusal was exercised in the browser.",
+    "Existing session/grant protocol and source-preserving mainline controller remain unchanged; their prior qualification is not expanded by this adapter."
+  ],
+  "remaining_work": [
+    "Independent parent review and PR publication.",
+    "Explicit future production destination/host qualification with live lifecycle and consent policy before any capability enablement.",
+    "Any actual accepting app integration/repin is a separate reviewed increment; Book Nook browser client remains out of this scope."
+  ]
+}
