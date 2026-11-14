@@ -25,7 +25,7 @@ person-controlled encrypted vault
 
 The development [feed contract and raw fixtures](../contracts/feeds/v1/README.md) add strict data-only `sections.feeds` readers targeting matching `castalia.castaway.v3` / `castalia.castaway-contents.v3`. V1/v2 keep their existing meanings; v2 already represents wallet identities. This is a narrow closed-section extension, not opaque entry support, new signing authority or a membership-credential version change.
 
-Native candidates preserve committed, older-host and incoming feed records additively, with exact conflict refusal, cancellation and whole-artifact size checks. Production v3 export stays refused until encrypted host storage, native review and cross-client qualification are complete. The extension currently refuses v3 rather than silently dropping it. Reader acceptance alone is not a host compatibility or release claim. Unknown future sections remain an explicit whole-import refusal.
+Native candidates preserve committed, older-host and incoming feed records additively, with exact conflict refusal, cancellation and whole-artifact size checks. Production v3 export stays refused until encrypted host storage, native review and cross-client qualification are complete. The extension preserves already stored v3 through edits and older imports, but keeps default incoming-v3 admission and export refused; see [guarded storage evidence](feed-storage-development.md). Reader acceptance alone is not a host compatibility or release claim. Unknown future sections remain an explicit whole-import refusal.
 
 ## Boundary with wallet recovery
 

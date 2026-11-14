@@ -12,6 +12,7 @@ function fixture() {
     storage:{get:async(key:string)=>({[key]:disk[key]}),set:async(values:Record<string,unknown>)=>{writes++;Object.assign(disk,structuredClone(values))}},
     chainAccounts:()=>({schema:'zenith.chain-accounts-section.v1',version:1,ownerMemberKey:owner,authority:'descriptor-only',recovery:'castalia.wallet-custody.v1',accounts:[]}),
     validateContents:(raw:string)=>raw,
+    preflight:()=>1000,
     validate:(raw:string)=>{const v=JSON.parse(raw);if(v.ownerMemberKey!==owner)throw Error('wrong_owner');return JSON.stringify(v)},
     merge:(a:string,b:string)=>{const first=JSON.parse(a),second=JSON.parse(b);if(second.ownerMemberKey!==owner)throw Error('wrong_owner');return JSON.stringify({...first,accounts:[...first.accounts,...second.accounts.filter((x:any)=>!first.accounts.some((y:any)=>JSON.stringify(x)===JSON.stringify(y)))]})},
     seal:(raw:string)=>{const id='ciphertext-'+sealed.size;sealed.set(id,raw);return id},open:(v:string)=>{const raw=sealed.get(v);if(!raw)throw Error('invalid_ciphertext');return raw},
@@ -69,20 +70,22 @@ test('reader support does not let an unqualified extension discard imported feed
   assert.deepEqual((await f.store.read()).identities.accounts,[])
 })
 
-test('unqualified extension preserves saved future feed data through every attempted operation',async()=>{
+test('stored v3 survives legacy imports and explicit identity edits while export stays gated',async()=>{
   const f=fixture(),contents=JSON.parse(f.file())
   contents.schema='castalia.castaway-contents.v3';contents.version=3
   contents.sections.feeds={schema:'castalia.feeds-section.v1',version:1,subscriptions:[],collections:[],preferences:{order:'newest-first'}}
   f.seedContents(contents)
+  assert.deepEqual((await f.store.read()).feeds,contents.sections.feeds)
+  const review=await f.store.reviewImport(f.file(),'password')
+  assert.deepEqual(review.feeds.preserved,contents.sections.feeds)
+  assert.equal(review.feeds.incoming,null)
+  await f.store.confirmImport(review.token)
+  await f.store.saveIdentities(f.ids(),2)
   const prior=JSON.stringify(f.disk)
-  for(const operation of [
-    ()=>f.store.read(),
-    ()=>f.store.reviewImport(f.file(),'password'),
-    ()=>f.store.saveIdentities(f.ids(),1),
-    ()=>f.store.exportFile('backup password 123'),
-  ])await assert.rejects(operation(),/feed_storage_not_qualified/)
+  await assert.rejects(f.store.exportFile('backup password 123'),/feed_writer_not_qualified/)
   assert.equal(JSON.stringify(f.disk),prior)
-  assert.equal(f.writes(),0)
+  assert.deepEqual((await f.store.read()).feeds,contents.sections.feeds)
+  assert.equal(f.writes(),2)
 })
 
 test('extension host refuses a future core format before import review or writes',async()=>{
