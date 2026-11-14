@@ -297,6 +297,14 @@ impl OpenedWallet {
         crate::portable::validate_descriptors(self, &value).map_err(closed)?;
         serde_json::to_string(&value).map_err(closed)
     }
+    /// Validate the descriptor/owner shape and reserve the complete portable file
+    /// size without deriving a password key or enabling an export writer.
+    /// This does not verify membership trust or grant disclosure authority.
+    pub fn preflight_castaway_descriptors(&self, raw: &str) -> Result<usize> {
+        let value = object(raw)?;
+        crate::portable::validate_descriptors(self, &value).map_err(closed)?;
+        crate::portable::preflight_export_size(&value).map_err(closed)
+    }
     pub fn validate_wallet_identities(&self, raw: &str) -> Result<String> {
         let value = crate::wallet_identities::validate(&object(raw)?, &self.public_key_hex())
             .map_err(closed)?;
@@ -523,6 +531,15 @@ impl WebWalletCustody {
         self.wallet()?
             .import_castaway(value, password)
             .map(|v| v.to_string())
+            .map_err(js_closed)
+    }
+    #[wasm_bindgen(js_name=preflightCastawayDescriptors)]
+    pub fn preflight_castaway_descriptors(
+        &self,
+        value: &str,
+    ) -> core::result::Result<usize, JsValue> {
+        self.wallet()?
+            .preflight_castaway_descriptors(value)
             .map_err(js_closed)
     }
     #[wasm_bindgen(js_name=validateWalletIdentities)]

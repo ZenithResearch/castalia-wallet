@@ -7,7 +7,13 @@ import {
 } from "../src/generated/castalia-wallet-core/bindings.js";
 import { CASTALIA_WALLET_CORE_WASM } from "../src/generated/castalia-wallet-core/wasm-bytes.js";
 
+import {
+  initSync as initWebSync,
+  WebWalletCustody,
+} from "../src/generated/castalia-wallet-core/castalia_wallet_core.js";
+
 initSync({ module: CASTALIA_WALLET_CORE_WASM });
+initWebSync({ module: CASTALIA_WALLET_CORE_WASM });
 const encoder = new TextEncoder();
 const custody = JSON.parse(
   readFileSync(
@@ -146,5 +152,65 @@ test("actual rebuilt WASM retains legacy v1 and v2 encrypted round trips", () =>
   } finally {
     core.lock();
     core.free();
+  }
+});
+
+test("actual WASM preflights both host adapters without enabling v3 export", () => {
+  for (const Core of [WasmWallet, WebWalletCustody]) {
+    const core = new Core();
+    core.unlock(
+      encoder.encode(JSON.stringify(custody.container)),
+      custody.inputs.passphraseUnicode,
+    );
+    const owner = core.publicKey();
+    const preflight = (raw: string): number =>
+      (
+        core as unknown as { preflightCastawayDescriptors(raw: string): number }
+      ).preflightCastawayDescriptors(raw);
+    try {
+      for (const vector of corpus.cases) {
+        const raw =
+          '{"schema":"castalia.castaway-contents.v3","version":3,"sections":{"identity":' +
+          JSON.stringify(identity(owner)) +
+          ',"feeds":' +
+          vector.raw +
+          "}}";
+        if (vector.valid) {
+          const size = preflight(raw);
+          assert.ok(
+            Number.isSafeInteger(size) &&
+              size > encoder.encode(JSON.stringify(JSON.parse(raw))).length &&
+              size <= 1_048_576,
+            vector.id,
+          );
+          assert.throws(
+            () => core.exportCastaway(raw, "backup password", 1n),
+            /feed_writer_not_qualified/,
+          );
+        } else assert.throws(() => preflight(raw), undefined, vector.id);
+      }
+      const legacy = {
+        schema: "castalia.castaway-contents.v1",
+        version: 1,
+        sections: { identity: identity(owner) },
+      };
+      const raw = JSON.stringify(legacy);
+      const file = core.exportCastaway(
+        raw,
+        "backup password",
+        9_007_199_254_740_991n,
+      );
+      assert.equal(preflight(raw), encoder.encode(file).length);
+      const wrong = structuredClone(legacy);
+      wrong.sections.identity.subject.memberKey = "ff".repeat(32);
+      assert.throws(() => preflight(JSON.stringify(wrong)));
+      const duplicate = raw.replace('"version":1', '"version":1,"version":1');
+      assert.throws(() => preflight(duplicate));
+      core.lock();
+      assert.throws(() => preflight(raw));
+    } finally {
+      core.lock();
+      core.free();
+    }
   }
 });

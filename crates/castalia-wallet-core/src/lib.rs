@@ -558,6 +558,17 @@ impl WasmWallet {
             .validate_castaway_descriptors(value)
             .map_err(js_closed)
     }
+    #[wasm_bindgen(js_name = preflightCastawayDescriptors)]
+    pub fn preflight_castaway_descriptors(
+        &self,
+        value: &str,
+    ) -> core::result::Result<usize, JsValue> {
+        self.inner
+            .as_ref()
+            .ok_or_else(|| js_closed(CustodyError::InvalidWalletFile))?
+            .preflight_castaway_descriptors(value)
+            .map_err(js_closed)
+    }
     #[wasm_bindgen(js_name = validateWalletIdentities)]
     pub fn validate_wallet_identities(&self, value: &str) -> core::result::Result<String, JsValue> {
         self.inner
