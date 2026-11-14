@@ -1,0 +1,716 @@
+{
+  "schema": "castalia.feed-projection-fixtures.v1",
+  "status": "development-synthetic",
+  "selectionSchema": "castalia.feed-projection-selection.v1",
+  "sectionSchema": "castalia.feeds-section.v1",
+  "cases": [
+    {
+      "id": "source-order-unicode-explicit-memberships",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "https-port",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org:8443",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "https-ipv6",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://[2001:db8::1]",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "https-ipv4",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://127.0.0.1",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "http-localhost",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://localhost:8080",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "http-ipv4-loopback",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://127.0.0.1:8080",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "http-ipv6-loopback",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://[::1]:8080",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "ascii-idn",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://xn--bcher-kva.example.org",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [
+              "b41ef5e8-0e06-43e0-aa47-00000000000c",
+              "b41ef5e8-0e06-43e0-aa47-00000000000b"
+            ],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000c",
+            "title": "  "
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-00000000000b",
+            "title": "Café"
+          }
+        ],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "empty-prunes-labels",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[]}",
+      "origin": "https://reader.example.org",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [],
+        "collections": [],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "labels-do-not-imply-membership",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[]}]}",
+      "origin": "https://reader.example.org",
+      "valid": true,
+      "expectedSection": {
+        "schema": "castalia.feeds-section.v1",
+        "version": 1,
+        "subscriptions": [
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000002",
+            "url": "https://example.org/two.xml",
+            "format": "atom",
+            "title": " Café 📚 ",
+            "enabled": true,
+            "collectionIds": [],
+            "disclosure": "selected"
+          },
+          {
+            "id": "b41ef5e8-0e06-43e0-aa47-000000000001",
+            "url": "https://example.org/one.xml",
+            "format": "rss",
+            "title": "",
+            "enabled": false,
+            "collectionIds": [],
+            "disclosure": "selected"
+          }
+        ],
+        "collections": [],
+        "preferences": {
+          "order": "newest-first"
+        }
+      }
+    },
+    {
+      "id": "unknown-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000063\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "duplicate-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000001\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "unknown-label",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000063\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "duplicate-label",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "implicit-membership",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "future-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v2\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "private-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000003\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"collectionIds\":[]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "invented-membership",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "unselected-label",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "duplicate-membership",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "duplicate-membership-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "untrusted-origin-in-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}],\"origin\":\"https://other.example.org\"}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "unknown-nested-field",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[],\"fetch\":true},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "raw-duplicate-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"ignored\",\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "escaped-duplicate-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"sch\\u0065ma\":\"ignored\",\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "raw-duplicate-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "escaped-duplicate-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"ver\\u0073ion\":1,\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "deep-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "deep-source",
+      "sourceRaw": "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "lone-surrogate-selection",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"\\ud800\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"\\ud800\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "lone-surrogate-source",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"\\ud800\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-trailing-slash",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org/",
+      "valid": false
+    },
+    {
+      "id": "origin-path",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org/path",
+      "valid": false
+    },
+    {
+      "id": "origin-query",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org?",
+      "valid": false
+    },
+    {
+      "id": "origin-fragment",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org#",
+      "valid": false
+    },
+    {
+      "id": "origin-default-port",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org:443",
+      "valid": false
+    },
+    {
+      "id": "origin-uppercase",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://READER.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-unicode-idn",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://bücher.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-credentials",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://user:pass@reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-empty-userinfo",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://@reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-http-public",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-http-other-ip",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://127.0.0.2",
+      "valid": false
+    },
+    {
+      "id": "origin-http-loopback-suffix",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://localhost.example.org",
+      "valid": false
+    },
+    {
+      "id": "origin-http-trailing-dot",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "http://localhost.",
+      "valid": false
+    },
+    {
+      "id": "origin-opaque",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "null",
+      "valid": false
+    },
+    {
+      "id": "origin-file",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "file:///tmp/feeds",
+      "valid": false
+    }
+  ],
+  "confirmationCases": [
+    {
+      "id": "unchanged",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "currentSourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "confirmOrigin": "https://reader.example.org",
+      "valid": true
+    },
+    {
+      "id": "whitespace-is-stale",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "currentSourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}} ",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "confirmOrigin": "https://reader.example.org",
+      "valid": false
+    },
+    {
+      "id": "changed-origin",
+      "sourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "currentSourceRaw": "{\"schema\":\"castalia.feeds-section.v1\",\"version\":1,\"subscriptions\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"url\":\"https://example.org/two.xml\",\"format\":\"atom\",\"title\":\" Café 📚 \",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"url\":\"https://example.org/one.xml\",\"format\":\"rss\",\"title\":\"\",\"enabled\":false,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\"],\"disclosure\":\"selected\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-000000000003\",\"url\":\"https://example.org/private.xml\",\"format\":\"auto\",\"title\":\"Private source\",\"enabled\":true,\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"disclosure\":\"private\"}],\"collections\":[{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"title\":\"  \"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"title\":\"Café\"},{\"id\":\"b41ef5e8-0e06-43e0-aa47-00000000000d\",\"title\":\"Private label\"}],\"preferences\":{\"order\":\"newest-first\"}}",
+      "selectionRaw": "{\"schema\":\"castalia.feed-projection-selection.v1\",\"subscriptionIds\":[\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"b41ef5e8-0e06-43e0-aa47-000000000002\"],\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\",\"b41ef5e8-0e06-43e0-aa47-00000000000d\"],\"memberships\":[{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000001\",\"collectionIds\":[]},{\"subscriptionId\":\"b41ef5e8-0e06-43e0-aa47-000000000002\",\"collectionIds\":[\"b41ef5e8-0e06-43e0-aa47-00000000000b\",\"b41ef5e8-0e06-43e0-aa47-00000000000c\"]}]}",
+      "origin": "https://reader.example.org",
+      "confirmOrigin": "https://other.example.org",
+      "valid": false
+    }
+  ]
+}

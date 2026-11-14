@@ -22,6 +22,7 @@ use zeroize::{Zeroize, Zeroizing};
 pub mod browser_read;
 mod credential_presentation;
 pub use credential_presentation::WasmCredentialPresentation;
+pub mod feed_projection;
 pub mod feeds;
 mod files_keys;
 pub mod portable;
