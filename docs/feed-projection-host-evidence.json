@@ -1,0 +1,423 @@
+{
+  "created_at": "2026-11-14T12:48:11.056878+00:00",
+  "base_commit": "ba55cbc8e89d6a774a6ae69ea3b939c9fde609a7",
+  "branch": "codex/selected-feed-host-controller",
+  "scope": "Wallet-private selected-feed source/controller only; no registered method, wire envelope, grant, custody, recovery, capability, application pin or rollout guard change.",
+  "source": [
+    {
+      "path": "apps/chrome-extension/src/wallet-identities-store.ts",
+      "sha256": "f96dc80b99bfe0ea147084653679524c3f7f694c144ce49ee50ad06ed476cf32",
+      "bytes": 12826
+    },
+    {
+      "path": "apps/chrome-extension/src/feed-projection-controller.ts",
+      "sha256": "f86e86bdba1576bb8604ad2b4905c183629cf342e23e56d9113b1c5df55151b7",
+      "bytes": 8066
+    },
+    {
+      "path": "apps/chrome-extension/test/feed-projection-controller.test.ts",
+      "sha256": "c36d052abc91fbc708c78365cb4f6aafe9276307bd89ca9dcd62fb6675f2153f",
+      "bytes": 13730
+    },
+    {
+      "path": "apps/chrome-extension/test/feed-projection-fixture.ts",
+      "sha256": "cf74f9adc64f45cc05b884cfa10e637ef0ba364f2722a0bf0620c8d4025779d3",
+      "bytes": 3097
+    },
+    {
+      "path": "apps/chrome-extension/test/feed-projection-source.test.ts",
+      "sha256": "14dbdbbada3a4273ba5955b3714ee9996d201f2fe6cd760fc53040bfd2ece216",
+      "bytes": 4008
+    }
+  ],
+  "source_unchanged_across_final_checks": true,
+  "artifacts": [
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/.gitignore",
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+      "bytes": 1
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2",
+      "bytes": 1080
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/bindings.d.ts",
+      "sha256": "b193d38a303ad4f9bf2532d501c8e54c12832e8372f0090203ab0d8b3c32bf42",
+      "bytes": 150
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/bindings.js",
+      "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+      "bytes": 79064
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core.d.ts",
+      "sha256": "a7d88e79e09cee6db15231b05bf197e2c6d1f010b3db62518ae94c65a4171fbf",
+      "bytes": 17764
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core.js",
+      "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+      "bytes": 79064
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core_bg.wasm",
+      "sha256": "2d9003f2f9f90667273b4334cf9b8e5876c2acf960ed3d4516304880b96079f6",
+      "bytes": 2654770
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/castalia_wallet_core_bg.wasm.d.ts",
+      "sha256": "3afa5a4433a38c75a7accd3fba3ebdda7045f4b0304c4b2e6abc231ce4595665",
+      "bytes": 10768
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/package.json",
+      "sha256": "09caa321ff03214f52ad160b0eb20cc1081ae0cc2e48424b0e96ae5f24b1939c",
+      "bytes": 407
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/wasm-bytes.d.ts",
+      "sha256": "2a199f75db9a69dabe1382558bd8289bed95fc8d443db7a651f38e845b616bd8",
+      "bytes": 59
+    },
+    {
+      "path": "apps/chrome-extension/src/generated/castalia-wallet-core/wasm-bytes.js",
+      "sha256": "1a2ece7664b4530c285b444612c6d47ee4da4cd4bca72291fc13edd7fc121cba",
+      "bytes": 3539785
+    }
+  ],
+  "all_11_artifacts_byte_identical_before_and_after_rebuild": true,
+  "protected_files_equal_base": [
+    {
+      "path": "apps/chrome-extension/src/service-worker.ts",
+      "sha256": "6755ff6b38bd217acca7d44e3f8c079a4b4d957717be2cffa86cb43a885abb63",
+      "bytes": 40286
+    },
+    {
+      "path": "apps/chrome-extension/src/bridge.ts",
+      "sha256": "a314fd8726b1af90924e81781f872124967c425dca582a2f6e136b8c94d68ff9",
+      "bytes": 2267
+    },
+    {
+      "path": "apps/chrome-extension/src/custody-runtime.ts",
+      "sha256": "a69d39ec6dfefad2c9ab6adc9d17dba138d42bf396ff55078a8b44a25dc7ad54",
+      "bytes": 13525
+    },
+    {
+      "path": "apps/chrome-extension/src/read-access-runtime.ts",
+      "sha256": "c426d699e83abb29c505df4588820b762a9efa6d0870f5f8a29950d450045cc0",
+      "bytes": 8896
+    },
+    {
+      "path": "apps/chrome-extension/src/operation-confirmation-broker.ts",
+      "sha256": "2482615d5c3446d5437a1f23d2f12e817bdef1ca60f37d6eb73d2027167338ea",
+      "bytes": 5253
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/feed_projection.rs",
+      "sha256": "14723e68408c7fe552957c30145737b56b701b686ffb339c20524a7fd1a8875d",
+      "bytes": 8825
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/lib.rs",
+      "sha256": "75a918d02e58567e121386d26da8fb25b4c931be0da616fc9aa7bbd0bc1c891b",
+      "bytes": 7247
+    },
+    {
+      "path": "contracts/feeds/v1/projection-conformance.json",
+      "sha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7",
+      "bytes": 103072
+    },
+    {
+      "path": "contracts/feeds/v1/encrypted-v3.json",
+      "sha256": "1f2819bdc1ca2dfc403c5c7f9edbe9ee3f59dfe7126756cd85737ce366db93ce",
+      "bytes": 33243
+    },
+    {
+      "path": "apps/chrome-extension/src/provider.ts",
+      "sha256": "021af9aae03aca36cd2f0b4a5e70ff4bfaad2ef8b2fbf527dd5f7e9ad2afcecc",
+      "bytes": 8408
+    },
+    {
+      "path": "apps/chrome-extension/src/custody-operation-queue.ts",
+      "sha256": "0ef2b906ea8d80488d866fd1c76ddfe719b1d64addb1f3808ee98440b2fddbfa",
+      "bytes": 602
+    },
+    {
+      "path": "apps/chrome-extension/src/wallet-feeds.ts",
+      "sha256": "004d78d6b565ff8cb3bb33ac115056ff40a2095a37e063eae17caf5f0a16409e",
+      "bytes": 3340
+    },
+    {
+      "path": "packages/provider-types/src/index.ts",
+      "sha256": "11c4ce1ca14f3a4174906edea1422c00baf667d10ca3b26a905d9686c5d46be2",
+      "bytes": 4744
+    },
+    {
+      "path": "packages/provider-types/src/read-access.ts",
+      "sha256": "a0e1c968d7b2ee8cfbef9c482bf7e44182f8031aab681ea718c5bdd17406db34",
+      "bytes": 2041
+    },
+    {
+      "path": "packages/provider-types/src/session-login.ts",
+      "sha256": "69a7d28a573c884151623c1344ac1240325749b7edba7a2d51d23e3e094431ed",
+      "bytes": 6869
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/feed_projection_wasm.rs",
+      "sha256": "73e91fb2e0799eb04d4f4ff848e375407f51a0e74e9ab332f86309c3476d268c",
+      "bytes": 2163
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/feed_projection.rs",
+      "sha256": "b6692cb7f76eed5c38f15d69a75a628161c02e5764d0fb0eb481d461cb4b863e",
+      "bytes": 4897
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/recovery_session.rs",
+      "sha256": "a7ca77bdb3756d6b0bac0df6a8e8a815db886c28bcb50d809fa98017771e20de",
+      "bytes": 77008
+    },
+    {
+      "path": "scripts/build-castalia-wallet-wasm.mjs",
+      "sha256": "d9c17a63547524ebd89f092ad72783c41cd7ce05a145214b0d0ebb02336f4d0a",
+      "bytes": 2353
+    }
+  ],
+  "checks": [
+    {
+      "command": "./node_modules/.bin/tsx --test apps/chrome-extension/test/feed-projection-source.test.ts apps/chrome-extension/test/feed-projection-controller.test.ts",
+      "log": "focused-capacity-final.log",
+      "result": "60 passed, 0 failed",
+      "scope": "Targeted capacity fix checkpoint; immediate selection wiping was added afterward and all same tests passed again within final npm test."
+    },
+    {
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 CARGO_NET_OFFLINE=true CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 npm test",
+      "log": "npm-test-final.log",
+      "exit_code": 0,
+      "counts": {
+        "tests": 515,
+        "pass": 511,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 4
+      },
+      "scope": "Final five-source hash set; includes all 60 new source/controller tests, existing repository tests and actual cached release WASM rebuild."
+    },
+    {
+      "command": "npm run typecheck",
+      "log": "npm-typecheck-final.log",
+      "exit_code": 0,
+      "scope": "All workspace typechecks on final source."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "toolchains": {
+    "node": "v26.8.2",
+    "npm": "11.19.1",
+    "rustc": "rustc 1.85.1 (4eb161250 2025-03-15)",
+    "cargo": "cargo 1.85.1 (d73d2caf9 2024-12-31)",
+    "wasm_pack": "wasm-pack 0.14.0"
+  },
+  "fixture_coverage": {
+    "fixture": {
+      "path": "contracts/feeds/v1/projection-conformance.json",
+      "sha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7",
+      "bytes": 103072
+    },
+    "preparation_cases": 46,
+    "actual_controller_cases": 42,
+    "malformed_sources_rejected_by_actual_rust_encrypted_storage_preflight": 4,
+    "malformed_source_ids": [
+      "raw-duplicate-source",
+      "escaped-duplicate-source",
+      "deep-source",
+      "lone-surrogate-source"
+    ],
+    "confirmation_coverage": "Equivalent host scenarios, not a literal confirmation-vector loop: unchanged source succeeds; changed origin refuses; exact encrypted-record changes refuse, including same-revision reseal and logically equivalent whitespace. Prior standalone Rust/WASM binding vector qualification is unchanged.",
+    "shared_fixture_confirmation_vectors": 3
+  },
+  "guardrails_verified": [
+    "Actual WasmWallet opens/seals synthetic encrypted source records; actual WasmFeedProjectionV1 produces/consumes selection. No mock crypto or accepted fake source snapshot.",
+    "Preparation and final consume share existing custody FIFO. Human consent occurs outside it through the existing broker.",
+    "Checks setup, unlock, owner, epoch, supported AND approved exact trusted origin, tab/document, context lifetime and fixed expiry; any observed wall-clock rollback refuses.",
+    "Exact encrypted record, including revision and ciphertext, is rechecked after awaits. Final synchronous policy fence precedes consuming the Rust operation and fixed delivery callback.",
+    "Selection copied before awaits; produced summary tree deeply frozen; source and Wasm handles consumed/disposed before delivery. Dynamic nonboolean/async delivery is refused; no automatic retry after failed delivery.",
+    "Cancellation settles consent locally even if broker cancellation throws; independent cleanup failures cannot mask the original refusal or skip other cleanup. Canceled queued work keeps its capacity slot until outer finally.",
+    "Sixteen pending operations is the hard bound, including canceled queued/in-flight work. Actual deferred source/FIFO test proves capacity refusal and subsequent reuse.",
+    "Successful projection and refusal tests assert no source writes, and the encrypted records are preserved. Existing v3 import/export gate tests remain closed."
+  ],
+  "nonpasses_preserved": [
+    {
+      "log": "source-red-parse-nonpass.log",
+      "meaning": "Initial test stub syntax error, not a meaningful negative control."
+    },
+    {
+      "log": "source-red.log",
+      "meaning": "Expected not-implemented source adapter failures before implementation."
+    },
+    {
+      "log": "controller-red.log",
+      "meaning": "Expected missing-controller failures; deferred tests also reported canceled/asynchronous activity under the stub."
+    },
+    {
+      "log": "focused-green-attempt.log",
+      "meaning": "52 pass / 1 fail: malformed-source fixtures were refused by real Rust encryption preflight. Harness classification corrected; no crypto bypass."
+    },
+    {
+      "log": "review-red.log",
+      "meaning": "40 pass / 4 fail before cleanup and deep-freeze fixes; cancellation throw also caused post-test asynchronous rejection."
+    },
+    {
+      "log": "review-disposal-red.log",
+      "meaning": "Expected actual Wasm disposal failure before independent cleanup fix."
+    },
+    {
+      "log": "clock-red.log",
+      "meaning": "Expected failure: pre-fix controller accepted observed rollback above creation time."
+    },
+    {
+      "log": "capacity-red.log",
+      "meaning": "First capacity negative-control assertion awaited the wrongly queued request indefinitely. Task-owned PIDs 9677/9688/9689 terminated; no production process touched. Replaced with a bounded event-loop assertion."
+    },
+    {
+      "log": "capacity-bounded-red.log",
+      "meaning": "Bounded assertion failed with incorrectly queued instead of feed_projection_capacity before outer-finally slot release."
+    }
+  ],
+  "limits": [
+    "This controller is unregistered. There is no real Chrome document/port route, native accepting-host integration, page request method, transmitted result or human UI qualification in this increment.",
+    "Tests use synthetic trusted document identities and confirmation-window platform with the actual broker/FIFO and crypto/WASM; they do not establish real browser-origin authenticity.",
+    "Host mutations must share the FIFO or synchronously invalidate epoch/context. The fence is not a generic cross-process transactional CAS.",
+    "The produced summary is deeply immutable in-process. A later serialized UI copy must be rendered read-only and changed choices must prepare anew. No guarantee of JavaScript immutable-string memory erasure is made.",
+    "Clock defense rejects observed rollback and fixed-expiry violations, not unobserved wall-clock changes.",
+    "Four existing qualified-v3-import tests remain intentionally skipped while default v3 import/export guards stay closed.",
+    "No new Rust implementation or native ABI was changed; prior bindings qualification is retained, not presented as a new native-host execution test."
+  ],
+  "remaining_adapter_work": [
+    "Qualify an actual supported browser/native destination context with trusted origin/document and fixed delivery port; supply no page-selected source or origin.",
+    "Render the exact selected metadata read-only, gather explicit owner consent, and connect all lock/revoke/navigation/disconnect paths to invalidation.",
+    "Implement accepting-host inert additive import review with same-ID conflicts and source/config CAS; absence or empty selection never deletes saved sources.",
+    "Run real end-to-end host acceptance before any registration, default guard change, application repin or release enablement."
+  ],
+  "evidence": [
+    {
+      "path": "capacity-bounded-red.log",
+      "sha256": "59679d9cc1f4b5d779a82ecb76cc65a9eeeca0401a1eac82713ec892a43dc1ce",
+      "bytes": 1120
+    },
+    {
+      "path": "capacity-red.log",
+      "sha256": "a6717b2922c6ed864dbd256bad204b6ece999a91f36c4f16cb44f85f4deb8267",
+      "bytes": 620
+    },
+    {
+      "path": "clock-red.log",
+      "sha256": "ad6141baaffa62459eea3653638b380dceb5d7b31ab8a736fce464d0962979ef",
+      "bytes": 971
+    },
+    {
+      "path": "controller-red.log",
+      "sha256": "ca132a463f2807da15811022bc30465f3ad0736f7ef7796c8124c3a8ed4450cc",
+      "bytes": 19303
+    },
+    {
+      "path": "focused-capacity-final.log",
+      "sha256": "2540b1c69a182408eaf49b66dc4be72dd1070435c848c7174ab887ec18a366db",
+      "bytes": 5025
+    },
+    {
+      "path": "focused-final.log",
+      "sha256": "972ff7b43cc5918a93cb5edaff40c255fa52226856fd2399c570bbb9531047e5",
+      "bytes": 4914
+    },
+    {
+      "path": "focused-green-attempt.log",
+      "sha256": "14ff0c14d687aaeef1baad2e28c73e9efef4cce2c3289a6a86526213a29554ba",
+      "bytes": 4517
+    },
+    {
+      "path": "focused-green.log",
+      "sha256": "71bc3eaa91635910cb09023da6a54bfa6773ce742d612cbe3138d95aa521dce7",
+      "bytes": 4301
+    },
+    {
+      "path": "focused-typecheck.log",
+      "sha256": "fedc87e2aae8a318d73eef57ee84cdde6d8ab533cae9ce4ce0e3cfd2ae2124bf",
+      "bytes": 598
+    },
+    {
+      "path": "npm-test-final.log",
+      "sha256": "d7a1ea8a1a9afca1c48b55d70635fb588cc8fff556d60e7fbf8a57c36c14957a",
+      "bytes": 47515
+    },
+    {
+      "path": "npm-test.log",
+      "sha256": "880a18877a8ced32f464742109b71a51ec4f053dff8ab1d05f19d918750da4cb",
+      "bytes": 47530
+    },
+    {
+      "path": "npm-typecheck-final.log",
+      "sha256": "561a70483f01c65eb1346f7bb78a98fd60a810d0f045a665f1a71ed2f5514997",
+      "bytes": 1226
+    },
+    {
+      "path": "npm-typecheck.log",
+      "sha256": "561a70483f01c65eb1346f7bb78a98fd60a810d0f045a665f1a71ed2f5514997",
+      "bytes": 1226
+    },
+    {
+      "path": "review-disposal-red.log",
+      "sha256": "8f9d645038424948f807af8788c6153ec1f506c2673c18ab6ecdf1c0179479a7",
+      "bytes": 2373
+    },
+    {
+      "path": "review-green.log",
+      "sha256": "f7b9edd0ba76b08c666e4a94b7da38c8cdd8e6ae807c47bfda131751ddc86fa2",
+      "bytes": 4824
+    },
+    {
+      "path": "review-red.log",
+      "sha256": "5c06c9da42a3e328f065c3cdb3ce3e7575adee4f467036e75424b9219d73edc1",
+      "bytes": 9439
+    },
+    {
+      "path": "source-red-parse-nonpass.log",
+      "sha256": "93d76e0feb233b7c29a371b844945925df8ec0d9c78df200af540a7effd57144",
+      "bytes": 1835
+    },
+    {
+      "path": "source-red.log",
+      "sha256": "53703b7406a7778276a8d4ae2a38e9fac90cb65aa9afc8ff6dd6a0b8dab29ac5",
+      "bytes": 11749
+    },
+    {
+      "path": "pre-full-checks.json",
+      "sha256": "059929790efbbb638c68b5940c6fcd8f3c1f9ba10699de054a7c3c533288fc52",
+      "bytes": 5121
+    },
+    {
+      "path": "pre-capacity-final-checks.json",
+      "sha256": "dfa32d3b31fcc143a160a8891935e1521f471906fb8e4b0b154cc4c60ded7c16",
+      "bytes": 5121
+    },
+    {
+      "path": "controller-before-capacity-fix.ts",
+      "sha256": "26d2b43a391f00f87bcbdce1bf117cd4a0861752bd4c3095d7cd8781a79df4e7",
+      "bytes": 7901
+    },
+    {
+      "path": "tracked-diff.patch",
+      "sha256": "11a37ba67e63e9abb3d0ed4bbfcee1195daaed7587c62f18afa20ebadf1c7727",
+      "bytes": 4095
+    }
+  ],
+  "schema": "castalia.feed-projection-host-evidence.v1",
+  "status": "Qualified Wallet-private source/controller; unregistered and without actual browser/native host acceptance.",
+  "private_receipt_sha256": "09d55b12cffa6569c1cc25ffb4ec684ddaa892b322cdf1f2586b16f566201e31"
+}
