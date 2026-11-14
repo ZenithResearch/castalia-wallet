@@ -1,0 +1,463 @@
+{
+  "schema": "castalia.feed-projection-binding-evidence.v1",
+  "status": "scoped_binding_checks_passed",
+  "scope": "Standalone foreign data-projection bindings; web-target tested in Node, not real browser; native C/Swift arm64 test consumer, not host consent or production custody qualification",
+  "base_revision": "37d0b7b4b0b7fc5d66fdd3a757b5e38578c30578",
+  "source_receipt_sha256": "1ecd8be4e4ebd23e39927189cf9e8240daa02b264b53cd49b99fba6ddc9fcac4",
+  "files": [
+    {
+      "path": "apps/chrome-extension/test/feed-projection-wasm.test.ts",
+      "sha256": "5c5aa58641d366878474746f0bc51670478fd984d10606ee2c159a6066c07609",
+      "bytes": 629
+    },
+    {
+      "path": "contracts/feeds/v1/README.md",
+      "sha256": "297c73b42a429aad6c22921c7e8bceb5c2f9987db8afb5ca0aecfb489d5de7a3",
+      "bytes": 13489
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/feed_projection_wasm.rs",
+      "sha256": "73e91fb2e0799eb04d4f4ff848e375407f51a0e74e9ab332f86309c3476d268c",
+      "bytes": 2163
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/lib.rs",
+      "sha256": "b678d6c0c6c22a5abefa6be49985c0ac9b312eb2a12cc75c5c0e66acb6a623f5",
+      "bytes": 24747
+    },
+    {
+      "path": "crates/castalia-wallet-native/include/CastaliaWallet.h",
+      "sha256": "1579c9e7a1306671dd1489c1b1acf7ff1668f917da47273bf848f2cb610fc832",
+      "bytes": 2331
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/feed_projection.rs",
+      "sha256": "b6692cb7f76eed5c38f15d69a75a628161c02e5764d0fb0eb481d461cb4b863e",
+      "bytes": 4897
+    },
+    {
+      "path": "crates/castalia-wallet-native/src/lib.rs",
+      "sha256": "75a918d02e58567e121386d26da8fb25b4c931be0da616fc9aa7bbd0bc1c891b",
+      "bytes": 7247
+    },
+    {
+      "path": "crates/castalia-wallet-native/tests/feed_projection.rs",
+      "sha256": "9e77f9dde9993a77cf6be4c0f52defa056803898b0a14d821b9ddcb1f0480dfb",
+      "bytes": 10078
+    },
+    {
+      "path": "scripts/build-castalia-wallet-wasm.mjs",
+      "sha256": "d9c17a63547524ebd89f092ad72783c41cd7ce05a145214b0d0ebb02336f4d0a",
+      "bytes": 2353
+    },
+    {
+      "path": "scripts/test-feed-projection-node.mjs",
+      "sha256": "2862dfe01e6117f01257effd66e8fe5572ea82cdf4474cbf88ce4e8521453a6b",
+      "bytes": 493
+    },
+    {
+      "path": "scripts/test-feed-projection-swift.sh",
+      "sha256": "61664a3ef2c72c187ba811efe90d3b7c4f0b98eb0a9b766d2b0377755e91c83b",
+      "bytes": 866
+    },
+    {
+      "path": "tests/feed-projection-types.ts",
+      "sha256": "4c0b2c6d6faddda3e93642f059ffed1c15cbbebc5cfe1439085151d4bfbe08a0",
+      "bytes": 513
+    },
+    {
+      "path": "tests/feed-projection-wasm-contract.mjs",
+      "sha256": "452575ec872f6744704685f025662f8f78c71b71f2f0a7a7a2e4e1080bf53995",
+      "bytes": 2697
+    },
+    {
+      "path": "tests/native/FeedProjectionSmoke.swift",
+      "sha256": "eda8d22ccebebfa1422afbe83cd62dbe97127cecc5d22ed6eff86d849957996a",
+      "bytes": 5538
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "artifacts/native/libcastalia_wallet_native.a",
+      "sha256": "94f9ecb41f7cc5651b7c2d1ea21c1a9835a2d89c64db5856b215998c02e1c3e0",
+      "bytes": 28814648,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/native/CastaliaWallet.h",
+      "sha256": "1579c9e7a1306671dd1489c1b1acf7ff1668f917da47273bf848f2cb610fc832",
+      "bytes": 2331,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/native/module.modulemap",
+      "sha256": "c227ca436ea9f0eb558c69077db437459ebc8137fa4996f1f352471c04e518cd",
+      "bytes": 61,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/castalia_wallet_core.js",
+      "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+      "bytes": 79064,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/castalia_wallet_core.d.ts",
+      "sha256": "a7d88e79e09cee6db15231b05bf197e2c6d1f010b3db62518ae94c65a4171fbf",
+      "bytes": 17764,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/castalia_wallet_core_bg.wasm",
+      "sha256": "2d9003f2f9f90667273b4334cf9b8e5876c2acf960ed3d4516304880b96079f6",
+      "bytes": 2654770,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/castalia_wallet_core_bg.wasm.d.ts",
+      "sha256": "3afa5a4433a38c75a7accd3fba3ebdda7045f4b0304c4b2e6abc231ce4595665",
+      "bytes": 10768,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/bindings.js",
+      "sha256": "5ee460130bcb0c3b3dd2176a2a4a0fb4bde65ca4286ca0b81e7a94806fd4a3a6",
+      "bytes": 79064,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/bindings.d.ts",
+      "sha256": "b193d38a303ad4f9bf2532d501c8e54c12832e8372f0090203ab0d8b3c32bf42",
+      "bytes": 150,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/wasm-bytes.js",
+      "sha256": "1a2ece7664b4530c285b444612c6d47ee4da4cd4bca72291fc13edd7fc121cba",
+      "bytes": 3539785,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/wasm-bytes.d.ts",
+      "sha256": "2a199f75db9a69dabe1382558bd8289bed95fc8d443db7a651f38e845b616bd8",
+      "bytes": 59,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "artifacts/web-target/package.json",
+      "sha256": "09caa321ff03214f52ad160b0eb20cc1081ae0cc2e48424b0e96ae5f24b1939c",
+      "bytes": 407,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/LICENSE",
+      "sha256": "20f4d915bd7924e095ee0c532941c5362828c4049371e0efa5b8ab597c9fa2c2",
+      "bytes": 1080,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/castalia_wallet_core.d.ts",
+      "sha256": "5df3d3a6cb402d5be593ea0f9f717a6845e01073051948d191cff078925a56c8",
+      "bytes": 6053,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/castalia_wallet_core.js",
+      "sha256": "22d378983d288b49d9c6bea4e02c5b6e8b9c21665567e74658edf88cfa72261c",
+      "bytes": 76191,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/castalia_wallet_core_bg.wasm",
+      "sha256": "2d9003f2f9f90667273b4334cf9b8e5876c2acf960ed3d4516304880b96079f6",
+      "bytes": 2654770,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/castalia_wallet_core_bg.wasm.d.ts",
+      "sha256": "3afa5a4433a38c75a7accd3fba3ebdda7045f4b0304c4b2e6abc231ce4595665",
+      "bytes": 10768,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "node-target/package.json",
+      "sha256": "1757d54ae8aca1dea4be4c56e6fc2b7579fca4a625d57e5a07163c162317aa22",
+      "bytes": 344,
+      "provenance": "Preserved local development artifact; not published."
+    },
+    {
+      "path": "swift/feed-projection-swift",
+      "sha256": "20e0d50c3cd975aaa07d2db25d0c1b39b87dfc008b5c3ae0ddd372c0b4f0e781",
+      "bytes": 8994008,
+      "provenance": "Preserved local development artifact; not published."
+    }
+  ],
+  "checks": [
+    {
+      "name": "native-tdd-red",
+      "command": "cargo +1.85.1 test --locked --offline -p castalia-wallet-native --test feed_projection",
+      "status": "expected_failure",
+      "exitCode": 101,
+      "log_sha256": "4379fb9fc203ff0c9d314d829117500a68396bb685a6dd287f3d774310a85caa"
+    },
+    {
+      "name": "wasm-tdd-red-build",
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 CARGO_NET_OFFLINE=true CARGO_INCREMENTAL=0 node scripts/build-castalia-wallet-wasm.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "62d123004b0ea9d0f84fa96c5cc509c843248857082aa0e5b87edc65a15ebd9f"
+    },
+    {
+      "name": "wasm-tdd-red",
+      "command": "node_modules/.bin/tsx --test apps/chrome-extension/test/feed-projection-wasm.test.ts",
+      "status": "expected_failure",
+      "exitCode": 1,
+      "log_sha256": "b15a5214dd4084b74fd88cc9e295f6f118af53c2e46e140b1547e5a2f7389efe"
+    },
+    {
+      "name": "native-first-green",
+      "command": "cargo +1.85.1 test --locked --offline -p castalia-wallet-native --test feed_projection",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "d32ef7f24a17cff5094ab83b2119ef88ab6d8766f04ca032833b87f70eb12c5d"
+    },
+    {
+      "name": "core-focused",
+      "command": "cargo +1.85.1 test --locked --offline -p castalia-wallet-core --test feed_projection --test feeds",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "d06c901fcfb347ea80940527d534da1fac99daab614469de39920915be547b99"
+    },
+    {
+      "name": "native-focused-final",
+      "command": "cargo +1.85.1 test --locked --offline -p castalia-wallet-native --lib --test feed_projection",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "8514779567ac0281c06d38d37a5358181d8777874ccd5a94055917c91a0db0d0"
+    },
+    {
+      "name": "strict-clippy-pinned",
+      "command": "cargo +1.85.1 clippy --locked --offline -p castalia-wallet-core -p castalia-wallet-native --lib --test feed_projection --test feeds -- -D warnings",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "228885b6996136d12ab4923d645118b135c0d369375bc93851da5ca86964a1ac"
+    },
+    {
+      "name": "web-wasm-build",
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 CARGO_NET_OFFLINE=true CARGO_INCREMENTAL=0 node scripts/build-castalia-wallet-wasm.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "03fd227fcef094c4c001adac10787f0c096d8a3de083f398be39649593959943"
+    },
+    {
+      "name": "web-wasm-node-execution",
+      "command": "node_modules/.bin/tsx --test apps/chrome-extension/test/feed-projection-wasm.test.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "5e545a5ce16160257cc51eab7196fc5f8abbf1fa35e26d73a5adcd720ac53359"
+    },
+    {
+      "name": "node-wasm-build",
+      "command": "wasm-pack build crates/castalia-wallet-core --target nodejs --release --out-dir <work>/node-target --out-name castalia_wallet_core -- --locked; pinned1.85.1 via localBuildEnvironment",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "b7e0afb62fe979612b7a97f3179bf60d1c419f5bcde8fbe285c2cc46e9f040a9"
+    },
+    {
+      "name": "node-wasm-execution",
+      "command": "node scripts/test-feed-projection-node.mjs <work>/node-target/castalia_wallet_core.js",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "641a54691bc675b4880e6620ba5e0d42c8c16b450e9eccbc5c9590341f60508a"
+    },
+    {
+      "name": "fresh-native-staticlib",
+      "command": "cargo +1.85.1 build --locked --offline --release -p castalia-wallet-native",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "d554c3cb7d3a020b2478702ccdd314f1dbd2cb2c0d57c14c0284f74c36e582bb"
+    },
+    {
+      "name": "fresh-swift-consumer",
+      "command": "bash scripts/test-feed-projection-swift.sh <repo>/target/release/libcastalia_wallet_native.a <work>/swift",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "ce106dd39b9feb73d5db0fab8d293b2fe6a80e60c08c5328c80c560a2947d747"
+    },
+    {
+      "name": "generated-type-consumer",
+      "command": "node_modules/.bin/tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext --target ES2022 tests/feed-projection-types.ts",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "npm-test",
+      "command": "RUSTUP_TOOLCHAIN=1.85.1 CARGO_NET_OFFLINE=true CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 npm test",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "f53665dbddacc10bb9ebfe0978093a1288a378a1d9f134d16e14a958d040fe3d"
+    },
+    {
+      "name": "npm-typecheck",
+      "command": "npm run typecheck",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "561a70483f01c65eb1346f7bb78a98fd60a810d0f045a665f1a71ed2f5514997"
+    },
+    {
+      "name": "owned-rustfmt",
+      "command": "rustfmt +1.85.1 --edition 2024 --check crates/castalia-wallet-core/src/feed_projection_wasm.rs crates/castalia-wallet-native/src/feed_projection.rs crates/castalia-wallet-native/tests/feed_projection.rs",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff-whitespace",
+      "command": "git diff --check",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "counts": {
+    "coreFocusedPassed": 21,
+    "nativePassed": 4,
+    "preparationVectorsPerBinding": 46,
+    "confirmationVectorsPerBinding": 3,
+    "npm": {
+      "tests": 455,
+      "pass": 451,
+      "fail": 0,
+      "skipped": 4
+    }
+  },
+  "toolchains": {
+    "rustc": "rustc 1.85.1 (4eb161250 2025-03-15)",
+    "cargo": "cargo 1.85.1 (d73d2caf9 2024-12-31)",
+    "clippy": "clippy 0.1.85 (4eb161250e 2025-03-15)",
+    "swift": "Apple Swift version 6.0.3 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)\nTarget: arm64-apple-macosx16.0",
+    "node": "v26.8.2",
+    "npm": "11.19.1",
+    "wasm_pack": "wasm-pack 0.14.0"
+  },
+  "unchanged_baselines": [
+    {
+      "relativePath": "Cargo.toml",
+      "unchangedFromFoundation": true,
+      "bytes": 619,
+      "sha256": "2a586de313690e4ec699aeccca7735d6ffa81f2e329baafb4a450005706d921d"
+    },
+    {
+      "relativePath": "Cargo.lock",
+      "unchangedFromFoundation": true,
+      "bytes": 32865,
+      "sha256": "22018d39753aee9f93f6b6e05ca4d4f87dd4b236b124d77091695ea5f9aea37f"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/Cargo.toml",
+      "unchangedFromFoundation": true,
+      "bytes": 1464,
+      "sha256": "4b8126206fcbc33eb30c304f6c6b1ffa04eeecae11c5967f94440ee301882cc5"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-native/Cargo.toml",
+      "unchangedFromFoundation": true,
+      "bytes": 258,
+      "sha256": "3e80ef2bca56f1ec9be684b04798ea80ada7ed20aa72b772b94ed1b9f2616344"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/src/feed_projection.rs",
+      "unchangedFromFoundation": true,
+      "bytes": 8825,
+      "sha256": "14723e68408c7fe552957c30145737b56b701b686ffb339c20524a7fd1a8875d"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/src/feeds.rs",
+      "unchangedFromFoundation": true,
+      "bytes": 6292,
+      "sha256": "3ffb05a59ec4a202b936b327b416b8d7ad61b2edcff74f7837d5dd7e6647f67a"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/src/portable.rs",
+      "unchangedFromFoundation": true,
+      "bytes": 28807,
+      "sha256": "438e0cf0a0be56274b9998f77942b1c6b6dd82a333e2dae92351a80a4cddfc8b"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/src/recovery_session.rs",
+      "unchangedFromFoundation": true,
+      "bytes": 77008,
+      "sha256": "a7ca77bdb3756d6b0bac0df6a8e8a815db886c28bcb50d809fa98017771e20de"
+    },
+    {
+      "relativePath": "crates/castalia-wallet-core/src/session_signer/holder.rs",
+      "unchangedFromFoundation": true,
+      "bytes": 4781,
+      "sha256": "bf5f9b5ffd4e513b8f56ae7f8d0586369710042e8b2036a9851a95bb277d9dce"
+    },
+    {
+      "relativePath": "contracts/feeds/v1/projection-conformance.json",
+      "unchangedFromFoundation": true,
+      "bytes": 103072,
+      "sha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7"
+    },
+    {
+      "relativePath": "contracts/feeds/v1/conformance.json",
+      "unchangedFromFoundation": true,
+      "bytes": 112237,
+      "sha256": "07dfd61336d1ccbaafe2d3cf7540255ae5345222366daf4ce4e942b83a369d8f"
+    },
+    {
+      "relativePath": "contracts/feeds/v1/section.json",
+      "unchangedFromFoundation": true,
+      "bytes": 561,
+      "sha256": "eff3c3c4b15743661c2628d504052211f54c0ec2ab220d6d1d103218569c0ec2"
+    },
+    {
+      "relativePath": "contracts/feeds/v1/encrypted-v3.json",
+      "unchangedFromFoundation": true,
+      "bytes": 33243,
+      "sha256": "1f2819bdc1ca2dfc403c5c7f9edbe9ee3f59dfe7126756cd85737ce366db93ce"
+    },
+    {
+      "relativePath": "packages/provider-types/src/index.ts",
+      "unchangedFromFoundation": true,
+      "bytes": 4744,
+      "sha256": "11c4ce1ca14f3a4174906edea1422c00baf667d10ca3b26a905d9686c5d46be2"
+    },
+    {
+      "relativePath": "apps/chrome-extension/src/service-worker.ts",
+      "unchangedFromFoundation": true,
+      "bytes": 40286,
+      "sha256": "6755ff6b38bd217acca7d44e3f8c079a4b4d957717be2cffa86cb43a885abb63"
+    },
+    {
+      "relativePath": "apps/chrome-extension/src/bridge.ts",
+      "unchangedFromFoundation": true,
+      "bytes": 2267,
+      "sha256": "a314fd8726b1af90924e81781f872124967c425dca582a2f6e136b8c94d68ff9"
+    },
+    {
+      "relativePath": "apps/chrome-extension/src/state/session-state.ts",
+      "unchangedFromFoundation": true,
+      "bytes": 6507,
+      "sha256": "94fcf09b66743ee0e68aeba086448e546057af224be85d7774d8b62dfcd70fc9"
+    }
+  ],
+  "boundaries": [
+    "Frozen fixture, source parser, supported-host policy and production guards unchanged",
+    "Existing global native allocator; separate16-entry preparation family; shared32-result capacity",
+    "Confirm consumes before Rust input validation and result-capacity allocation; C bounds precede unsafe reads",
+    "No authority is inferred from origin syntax, process-local ID, selected JSON or preview",
+    "No credential, grant, signing, custody/RecoverySession or extension provider capability changes",
+    "Generated artifacts are private development evidence, not committed or published"
+  ],
+  "qualification_limits": [
+    "Real browser/native adapters must bind actual trusted destination, live source/revision, session epoch, expiry, cancellation and explicit consent",
+    "Accepting-host inert additive import, same-ID conflict review and atomic CAS remain separate work",
+    "Book Nook retains existing wrapper and stricter origin policy; no app repin",
+    "No Transfer/iOS/Web changes or release-guard waiver"
+  ],
+  "independent_review": "Parent read the production WASM/C modules and rehashed all14 source snapshots plus preserved artifacts. No concrete blocker found in standalone data-binding scope. No host consent or app/runtime deployment is inferred."
+}

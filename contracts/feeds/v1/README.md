@@ -112,3 +112,52 @@ Accepting-host import remains additive by default with explicit same-ID conflict
 choices; absent/empty incoming data never implies removal. Replacement/removal is
 a separate reviewed local configuration edit. Validation, preview and commit must
 remain network-free, and activation requires a separate host action.
+
+
+### Standalone foreign projection bindings
+
+`WasmFeedProjectionV1` exposes this same primitive independently of `WasmWallet`.
+Its constructor accepts original `Uint8Array` source and selection bytes plus the
+separate caller-trusted origin. `destinationOrigin()` and `previewJson()` read
+only the prepared data. `confirm(currentSourceBytes, trustedOrigin)` takes the
+internal prepared value before validating the supplied UTF-8 bytes, bounds or
+origin, so a failed confirmation cannot be replayed. `dispose()` is idempotent;
+subsequent preview/confirmation calls fail. Release the generated wrapper with
+`free()` when finished. No serialized object can recreate a preparation.
+
+The native header adds `castalia_feed_projection_abi_version() == 1` and
+`castalia_feed_projection_prepare`, `_preview`, `_confirm`, and `_free` without
+changing the existing main ABI version. Prepare accepts original UTF-8 pointer /
+length pairs (256 KiB source and selection, 2,048-byte origin); null, empty and
+oversize inputs fail before reads. The caller must keep every accepted input
+buffer readable for the duration of its call. Inputs are copied/parsed, never
+retained. Preparation IDs use the existing global monotonic handle allocator in
+a separate family with 16 live preparations per process. Cross-family IDs fail
+closed; these process-local IDs are neither credentials nor approval tokens.
+
+Preview and confirmation return an existing result handle containing raw selected
+section JSON, or zero on failure. Read/copy/free it with `castalia_result_*`;
+this preserves the existing shared 32-result capacity. Confirmation removes the
+preparation before validating inputs or allocating its result, including when the
+result table is full. Exactly one concurrent confirmer can consume it. Free is
+idempotent and only affects its own handle family. Callers should clear their
+owned preparation ID when confirming and release it on cancellation/deinit.
+
+`tests/native/FeedProjectionSmoke.swift` is an executor-confined test consumer of
+the actual C header and freshly built static library. It is not a shipped host
+adapter. `bash scripts/test-feed-projection-swift.sh /absolute/library.a
+/absolute/output-directory` runs it. The extension test executes the rebuilt web
+WASM target **in Node**, while `scripts/test-feed-projection-node.mjs` runs the
+same assertions against a separately rebuilt nodejs target. Neither qualifies a
+browser/native consent surface. Both replay the frozen 46 preparation and three
+confirmation cases; the native ABI tests additionally exercise cross-family IDs,
+null/invalid pointers with rejected lengths, quotas, result copying and concurrent
+consumption. The generated TypeScript export is checked by
+`tests/feed-projection-types.ts`.
+
+These bindings do not add provider methods/capabilities or change supported-host
+allowlists, v3 production guards, custody, recovery, credentials, grants, signing,
+transport or persistence. Real host adapters still must bind their actual trusted
+destination, current source/revision, session lifetime and explicit consent before
+delivering any selected data. Inert additive accepting-host import remains later
+work; an empty selected section never authorizes deletion.

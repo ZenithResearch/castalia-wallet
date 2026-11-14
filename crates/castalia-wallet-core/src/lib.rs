@@ -23,6 +23,8 @@ pub mod browser_read;
 mod credential_presentation;
 pub use credential_presentation::WasmCredentialPresentation;
 pub mod feed_projection;
+mod feed_projection_wasm;
+pub use feed_projection_wasm::WasmFeedProjectionV1;
 pub mod feeds;
 mod files_keys;
 pub mod portable;
