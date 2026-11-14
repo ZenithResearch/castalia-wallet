@@ -1,0 +1,437 @@
+{
+  "schema": "castalia.feed-projection-development-evidence.v1",
+  "scope": "Pure Rust Wallet-core projection only; no host consent, custody, foreign binding, release enablement or transport",
+  "status": "scoped_checks_passed_on_repository_pinned_toolchain",
+  "base_revision": "e16dc940c8c338a2dd134a9becb3f715e0b02cef",
+  "files": [
+    {
+      "path": "crates/castalia-wallet-core/src/feed_projection.rs",
+      "bytes": 8825,
+      "sha256": "14723e68408c7fe552957c30145737b56b701b686ffb339c20524a7fd1a8875d"
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/lib.rs",
+      "bytes": 24669,
+      "sha256": "502669db20cd30b925472f82fb59bf513bab88207b95054a5bab49879c8cfd75"
+    },
+    {
+      "path": "crates/castalia-wallet-core/tests/feed_projection.rs",
+      "bytes": 14705,
+      "sha256": "61122f921c790542147810193bbf197bc7b2c218e02677097ac477fe667b62ba"
+    },
+    {
+      "path": "contracts/feeds/v1/projection-conformance.json",
+      "bytes": 103072,
+      "sha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7"
+    },
+    {
+      "path": "contracts/feeds/v1/README.md",
+      "bytes": 10266,
+      "sha256": "6e38130f2f58ed23987ad534a8b3e2fa46809e8a382313f620631601fd2137f7"
+    }
+  ],
+  "unchanged_baselines": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "2a586de313690e4ec699aeccca7735d6ffa81f2e329baafb4a450005706d921d",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "22018d39753aee9f93f6b6e05ca4d4f87dd4b236b124d77091695ea5f9aea37f",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/Cargo.toml",
+      "sha256": "4b8126206fcbc33eb30c304f6c6b1ffa04eeecae11c5967f94440ee301882cc5",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/feeds.rs",
+      "sha256": "3ffb05a59ec4a202b936b327b416b8d7ad61b2edcff74f7837d5dd7e6647f67a",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/portable.rs",
+      "sha256": "438e0cf0a0be56274b9998f77942b1c6b6dd82a333e2dae92351a80a4cddfc8b",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/recovery_session.rs",
+      "sha256": "a7ca77bdb3756d6b0bac0df6a8e8a815db886c28bcb50d809fa98017771e20de",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/files_keys.rs",
+      "sha256": "53f10fb2659ab1165052fcdbd2d08b2f867c7c319cc6229ad87ff462b2c6f9e0",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "crates/castalia-wallet-core/src/session_signer/holder.rs",
+      "sha256": "bf5f9b5ffd4e513b8f56ae7f8d0586369710042e8b2036a9851a95bb277d9dce",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "contracts/feeds/v1/conformance.json",
+      "sha256": "07dfd61336d1ccbaafe2d3cf7540255ae5345222366daf4ce4e942b83a369d8f",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "contracts/feeds/v1/section.json",
+      "sha256": "eff3c3c4b15743661c2628d504052211f54c0ec2ab220d6d1d103218569c0ec2",
+      "unchangedFromHead": true
+    },
+    {
+      "path": "contracts/feeds/v1/encrypted-v3.json",
+      "sha256": "1f2819bdc1ca2dfc403c5c7f9edbe9ee3f59dfe7126756cd85737ce366db93ce",
+      "unchangedFromHead": true
+    }
+  ],
+  "fixture_coverage": {
+    "preparationCases": 46,
+    "positiveCases": 10,
+    "confirmationCases": 3,
+    "existingSectionVerdicts": 102
+  },
+  "checks": [
+    {
+      "name": "tdd-red",
+      "command": "cargo test --locked --offline -p castalia-wallet-core --test feed_projection",
+      "toolchain": "1.96.0",
+      "status": "expected_failure",
+      "exitCode": 101,
+      "passed": 3,
+      "failed": 7,
+      "log_sha256": "691858744437a36549af6f70d3f27dd7a8258094ca8187608acca8021f542941"
+    },
+    {
+      "name": "first-green",
+      "command": "cargo test --locked --offline -p castalia-wallet-core --test feed_projection",
+      "toolchain": "1.96.0",
+      "status": "passed",
+      "exitCode": 0,
+      "passed": 10,
+      "log_sha256": "7cf4e64ad701315f9431359aa8e47cf98e77a01f9c58a29c1afba1140da001bc"
+    },
+    {
+      "name": "focused-tests",
+      "command": "cargo test --locked --offline -p castalia-wallet-core --test feed_projection --test feeds",
+      "toolchain": "1.96.0",
+      "status": "passed",
+      "exitCode": 0,
+      "passed": 21,
+      "failed": 0,
+      "log_sha256": "3f6db3e145467cebd27569dadc2364eb0d78f9b9a377fe32d49d93080e5725d9"
+    },
+    {
+      "name": "strict-clippy-default-newer-toolchain",
+      "command": "cargo clippy --locked --offline -p castalia-wallet-core --lib --test feed_projection --test feeds -- -D warnings",
+      "toolchain": "1.96.0",
+      "status": "failed_unchanged_baseline_warnings",
+      "exitCode": 101,
+      "warnings": [
+        "files_keys.rs:247 manual_is_multiple_of (3)",
+        "recovery_session.rs:1733 collapsible_if",
+        "session_signer/holder.rs:61 collapsible_if"
+      ],
+      "log_sha256": "123e2a2cdc65fed34165dd6996949e87e9cf9a06666c874ebd6546d7f14edd51"
+    },
+    {
+      "name": "npm-sandbox-attempt",
+      "command": "npm test",
+      "status": "sandbox_temporary_fixture_eperm",
+      "exitCode": 1,
+      "log_sha256": "9a951c1d1d1ee54f76078b2af3265c69f207b421fb2e75bbb8b5e533d5779731"
+    },
+    {
+      "name": "npm-test",
+      "command": "npm test",
+      "status": "passed",
+      "exitCode": 0,
+      "passed": 450,
+      "failed": 0,
+      "skipped": 4,
+      "scope": "All existing npm workspaces; builds current Rust core WASM. New projection has no WASM binding yet.",
+      "log_sha256": "821b8c162a397aa316145d739a80baad5e656cd58a8027a810597a05737b8edd"
+    },
+    {
+      "name": "npm-typecheck",
+      "command": "npm run typecheck",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "561a70483f01c65eb1346f7bb78a98fd60a810d0f045a665f1a71ed2f5514997"
+    },
+    {
+      "name": "pinned-clippy-sandbox-attempt",
+      "command": "cargo +1.85.1 clippy --locked --offline -p castalia-wallet-core --lib --test feed_projection --test feeds -- -D warnings",
+      "status": "sandbox_rustc_temporary_directory_eperm",
+      "exitCode": 101,
+      "log_sha256": "f12d033400a4e5e81cb9bff62129d26201babc544eb896fce95d658be9d5bf55"
+    },
+    {
+      "name": "strict-clippy-pinned",
+      "command": "cargo +1.85.1 clippy --locked --offline -p castalia-wallet-core --lib --test feed_projection --test feeds -- -D warnings",
+      "toolchain": "rustc 1.85.1 (4eb161250 2025-03-15), clippy 0.1.85 (4eb161250e 2025-03-15)",
+      "status": "passed",
+      "exitCode": 0,
+      "log_sha256": "9fb19c1e5991e7247a4c6e1ae70c52f9c3cb5d816bf45b2ff49bcb2e3ba4b07a"
+    },
+    {
+      "name": "focused-tests-pinned",
+      "command": "cargo +1.85.1 test --locked --offline -p castalia-wallet-core --test feed_projection --test feeds",
+      "toolchain": "1.85.1",
+      "status": "passed",
+      "exitCode": 0,
+      "passed": 21,
+      "failed": 0,
+      "log_sha256": "571c6cd44b17c2af3f9083e1a2c731f7531bd90cdd5d0b1392320f7470a3b2eb"
+    },
+    {
+      "name": "owned-rust-format",
+      "command": "rustfmt --edition 2024 --check crates/castalia-wallet-core/src/feed_projection.rs crates/castalia-wallet-core/tests/feed_projection.rs",
+      "status": "passed",
+      "exitCode": 0
+    },
+    {
+      "name": "diff-whitespace",
+      "command": "git diff --check",
+      "status": "passed",
+      "exitCode": 0
+    }
+  ],
+  "environment": {
+    "node": "v26.8.2",
+    "npm": "11.19.1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "RUST_MIN_STACK": null,
+    "network": "cargo offline; no package installation"
+  },
+  "independent_booknook_comparison": {
+    "schema": "booknook.private-shared-projection-compatibility.v1",
+    "status": "passed",
+    "fixtureSha256": "7a32cf721cdb62e35e9b5930b34cebd2a9574bf69576f9dc51c076dd69f92fe7",
+    "booknookWasmSha256": "d3a1f456c8e6b4af2fa6872afd416dc55cbe8bd2a142af60d25be41bc4b3da07",
+    "booknookShimSha256": "3b64f36ba4bb0b94ba68fe2403b42e089ffa7ee2842a4d673273ef561e3f58f6",
+    "node": "v24.18.0",
+    "preparationCases": [
+      {
+        "id": "source-order-unicode-explicit-memberships",
+        "outcome": "matching-selected-section"
+      },
+      {
+        "id": "https-port",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "https-ipv6",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "https-ipv4",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "http-localhost",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "http-ipv4-loopback",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "http-ipv6-loopback",
+        "outcome": "stricter-booknook-origin-refusal"
+      },
+      {
+        "id": "ascii-idn",
+        "outcome": "matching-selected-section"
+      },
+      {
+        "id": "empty-prunes-labels",
+        "outcome": "matching-selected-section"
+      },
+      {
+        "id": "labels-do-not-imply-membership",
+        "outcome": "matching-selected-section"
+      },
+      {
+        "id": "unknown-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "duplicate-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "unknown-label",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "duplicate-label",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "implicit-membership",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "future-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "private-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "invented-membership",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "unselected-label",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "duplicate-membership",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "duplicate-membership-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "untrusted-origin-in-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "unknown-nested-field",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "raw-duplicate-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "escaped-duplicate-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "raw-duplicate-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "escaped-duplicate-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "deep-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "deep-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "lone-surrogate-selection",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "lone-surrogate-source",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-trailing-slash",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-path",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-query",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-fragment",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-default-port",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-uppercase",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-unicode-idn",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-credentials",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-empty-userinfo",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-http-public",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-http-other-ip",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-http-loopback-suffix",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-http-trailing-dot",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-opaque",
+        "outcome": "expected-refusal"
+      },
+      {
+        "id": "origin-file",
+        "outcome": "expected-refusal"
+      }
+    ],
+    "confirmationCases": [
+      {
+        "id": "unchanged",
+        "sharedExpected": true,
+        "booknookObserved": true,
+        "classification": "matching-confirmation-boundary"
+      },
+      {
+        "id": "whitespace-is-stale",
+        "sharedExpected": false,
+        "booknookObserved": true,
+        "classification": "intentional-exact-bytes-versus-canonical-config-boundary"
+      },
+      {
+        "id": "changed-origin",
+        "sharedExpected": false,
+        "booknookObserved": false,
+        "classification": "matching-confirmation-boundary"
+      }
+    ]
+  },
+  "qualification_limits": [
+    "WASM/native opaque handle bindings and actual binding execution tests",
+    "Trusted host request/document binding, consent, wallet revision/epoch, expiry, cancellation and one-shot delivery",
+    "Capability advertisement only after host qualification",
+    "Inert accepting-host previews, conflict decisions and atomic CAS; activation separate",
+    "Preserve Book Nook stricter origin policy and existing wrapper; exact-source byte fence is intentionally stricter than canonical configuration review",
+    "All production v3/Web release guards remain unchanged",
+    "Actual previously built Book Nook Node WASM, not a new shared Wallet WASM binding test",
+    "No production SDK bytes, host consent, custody, transport, config or grants changed",
+    "Shared primitive and Book Nook wrappers remain separate contracts; adapters must preserve their stricter local boundaries"
+  ],
+  "provenance": "Local development checks against reviewed working files; not a release artifact or host qualification."
+}

@@ -32,3 +32,83 @@ The independent TypeScript reader in Castalia Web mirrors these bytes under `pac
 `encrypted-v3.json` contains eight authenticated synthetic vectors: populated, empty and conflicting-title files are individually valid; raw duplicate properties, outer/inner mismatch, wrong inner owner, future version and unknown section are invalid. A valid standalone conflicting file must still fail reconciliation against different existing values. The inputs contain only the publicly known encrypted custody vector and public test passwords. Never use them for real custody.
 
 The fixture was independently produced using Node 24.20.0 built-in Argon2id and OpenSSL AES-256-GCM, after checking the historical custody-vector derived key. Canonical header/plaintext keys are ASCII and use the existing JCS profile; nonce values are distinct per case. Both actual rebuilt WASM host adapters decrypt/validate the expected verdicts. These are test artifacts, not a production v3 export API or a supported-client rollout claim.
+
+## Pure selected projection — development SDK
+
+`castalia_wallet_core::feed_projection::PreparedFeedProjectionV1` provides a pure,
+opaque Rust preparation. This increment adds no browser/native host method,
+capability advertisement, custody command, persistence, signing or transmission.
+Production v3 admission/export guards remain in place. Neither a successful
+projection nor its preview is evidence of user consent or an approved origin.
+
+```rust
+use castalia_wallet_core::feed_projection::PreparedFeedProjectionV1;
+
+fn selected_section(
+    original_source_json: &str,
+    choices_json: &str,
+    current_source_json: &str,
+    trusted_origin: &str,
+) -> Result<serde_json::Value, &'static str> {
+    let prepared = PreparedFeedProjectionV1::prepare(
+        original_source_json, choices_json, trusted_origin,
+    )?;
+    // A host must separately review prepared.destination_origin() and
+    // prepared.preview_json(), then recheck consent and its live requester.
+    prepared.confirm(current_source_json, trusted_origin)
+}
+```
+
+The choices-only input has exactly `schema`, `subscriptionIds`, `collectionIds`
+and `memberships`. Its schema is `castalia.feed-projection-selection.v1`.
+Each membership is exactly `{subscriptionId, collectionIds}`. Every chosen
+subscription requires one explicit membership record, including an empty list.
+IDs must resolve to the strictly validated source section. Sources must already
+be marked `disclosure: "selected"` by a separate reviewed configuration edit.
+Duplicate/unknown/private selections, invented memberships, missing membership
+choices and memberships without explicitly selected labels fail closed.
+Unselected sources, unselected memberships and orphan labels are omitted without
+changing the source. Selection order never reorders source arrays or strings.
+Empty selection is valid and produces an empty section, not a deletion request.
+
+Source and choices are original raw JSON strings, each bounded to 256 KiB; the
+existing duplicate-key/Unicode/recursion-limited parser runs before typed
+conversion. Choices allow at most 256 sources, 64 labels and 16 memberships per
+source. Confirmation consumes the prepared value and requires identical source
+bytes and destination: even a whitespace-only source change is stale. The SHA-256
+source fingerprint is private. The handle cannot be cloned, serialized or
+deserialized; `preview_json()` returns only the selected existing
+`castalia.feeds-section.v1`, not a new envelope or approval token. JSON object key
+order/whitespace may change, but string contents and array order are preserved.
+
+The destination is a separate caller-trusted input, not a field in the selection.
+It must be at most 2,048 bytes and equal its parsed canonical tuple origin exactly:
+HTTPS, or HTTP for exact `localhost`, `127.0.0.1` or `[::1]`. This matches Wallet
+host syntax, including canonical HTTPS ports/IPs; it does not establish approval
+or public network reachability. Paths, trailing slash, userinfo, query, fragment,
+opaque origins and parser-normalized spellings fail. Host adapters retain their
+existing origin allowlists and may be stricter. They must bind the real requesting
+document/destination, wallet revision, custody epoch, expiry and cancellation,
+then obtain explicit consent before delivery. No destination is embedded in the
+selected section. Plaintext data does not enforce a recipient or grant fetch access.
+
+`projection-conformance.json` contains 46 original-JSON preparation cases and
+three exact-source/origin confirmation cases. It is synthetic development data,
+not a host qualification. The existing 102 section cases and encrypted vectors
+remain unchanged. Rust tests also check section/selection byte bounds, count
+bounds and raw depth/duplicate/Unicode failures.
+
+For the existing Book Nook adapter, replace the choices schema with
+`booknook.feed-disclosure-selection.v1`, add its required `origin`, and compare
+the existing `booknook.selected-feeds.v1` wrapper's `feeds` to `expectedSection`.
+Common positive cases are `source-order-unicode-explicit-memberships`, `ascii-idn`,
+`empty-prunes-labels` and `labels-do-not-imply-membership`. The other six positive
+origins deliberately exercise Wallet's wider syntax and must remain rejected by
+Book Nook's existing public-HTTPS policy. Book Nook's configuration-revision fence
+remains separate from this primitive's exact-byte fence. Do not repin or replace
+its published wrapper based solely on shared fixture agreement.
+
+Accepting-host import remains additive by default with explicit same-ID conflict
+choices; absent/empty incoming data never implies removal. Replacement/removal is
+a separate reviewed local configuration edit. Validation, preview and commit must
+remain network-free, and activation requires a separate host action.
