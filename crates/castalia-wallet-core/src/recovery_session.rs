@@ -1,6 +1,8 @@
 //! Platform-neutral custody session. The host owns persistence; a candidate is
 //! installed only after the host's atomic compare-and-swap has completed.
 #[cfg(test)]
+mod feed_storage_tests;
+#[cfg(test)]
 mod holder_session_tests;
 use crate::{
     OpenedWallet, create_wallet, import_wallet,
@@ -919,6 +921,7 @@ impl RecoverySession {
                     (None, None) => None,
                     _ => return Err("data_password_required"),
                 };
+                let feed_counts = imported_feed_counts(contents.as_ref());
                 let local = LocalState {
                     backup_verified: true,
                     legacy_confirmed: false,
@@ -930,7 +933,10 @@ impl RecoverySession {
                     read_credentials: Default::default(),
                     holder_grants: Default::default(),
                 };
-                self.prepare(Some(wallet), custody.to_string(), local)
+                let mut preview = self.prepare(Some(wallet), custody.to_string(), local)?;
+                preview["imported_feed_subscriptions"] = json!(feed_counts.0);
+                preview["imported_feed_collections"] = json!(feed_counts.1);
+                Ok(preview)
             }
             Command::PrepareLegacy {
                 key,
@@ -1059,6 +1065,20 @@ impl RecoverySession {
                     }
                     next = portable::with_wallet_identities(&next, &identities, &owner)?;
                 }
+                // The committed projection wins over omission in an older host snapshot.
+                // Merge collections before subscriptions and reject all conflicting IDs.
+                if let Some(feeds) = merge_feed_sections([
+                    self.local
+                        .contents
+                        .as_ref()
+                        .and_then(|c| c["sections"].get("feeds")),
+                    old["sections"].get("feeds"),
+                    incoming["sections"].get("feeds"),
+                ])? {
+                    next["sections"]["feeds"] = feeds;
+                    next["schema"] = json!("castalia.castaway-contents.v3");
+                    next["version"] = json!(3);
+                }
                 portable::validate(wallet, &next, &self.local.trust)?;
                 let mut local = self.local.clone();
                 local.contents = Some(next);
@@ -1069,6 +1089,9 @@ impl RecoverySession {
                         .as_array()
                         .map_or(0, Vec::len)
                 );
+                let feed_counts = imported_feed_counts(Some(&incoming));
+                preview["imported_feed_subscriptions"] = json!(feed_counts.0);
+                preview["imported_feed_collections"] = json!(feed_counts.1);
                 preview["replaces_profile"] =
                     json!(old["sections"]["identity"] != incoming["sections"]["identity"]);
                 preview["replaced_proofs"] = json!(
@@ -1707,6 +1730,11 @@ impl RecoverySession {
             .as_ref()
             .or(self.wallet.as_ref())
             .ok_or("wallet_locked")?;
+        if let Some(contents) = &local.contents {
+            if portable::contents_version(contents)? == 3 {
+                portable::preflight_export_size(contents)?;
+            }
+        }
         let revision = self
             .revision
             .checked_add(1)
@@ -1736,6 +1764,45 @@ impl RecoverySession {
         Ok(result)
     }
 }
+fn imported_feed_counts(contents: Option<&Value>) -> (usize, usize) {
+    let feeds = contents.and_then(|c| c["sections"].get("feeds"));
+    (
+        feeds
+            .and_then(|f| f["subscriptions"].as_array())
+            .map_or(0, Vec::len),
+        feeds
+            .and_then(|f| f["collections"].as_array())
+            .map_or(0, Vec::len),
+    )
+}
+
+fn merge_feed_sections(sections: [Option<&Value>; 3]) -> Result<Option<Value>> {
+    let sections = sections
+        .into_iter()
+        .flatten()
+        .map(crate::feeds::validate)
+        .collect::<Result<Vec<_>>>()?;
+    if sections.is_empty() {
+        return Ok(None);
+    }
+    let mut result = json!({"schema":crate::feeds::SCHEMA,"version":1,"subscriptions":[],"collections":[],"preferences":{"order":"newest-first"}});
+    for field in ["collections", "subscriptions"] {
+        let merged = result[field].as_array_mut().ok_or("invalid_feeds")?;
+        for section in &sections {
+            for record in section[field].as_array().ok_or("invalid_feeds")? {
+                if let Some(existing) = merged.iter().find(|old| old["id"] == record["id"]) {
+                    if existing != record {
+                        return Err("feed_conflict");
+                    }
+                } else {
+                    merged.push(record.clone());
+                }
+            }
+        }
+    }
+    crate::feeds::validate(&result).map(Some)
+}
+
 fn new_password(value: &str) -> Result<()> {
     if value.chars().count() < 12 || value.len() > 4096 {
         Err("password_minimum_12")

@@ -11,6 +11,13 @@ type Dependencies={
 const stable=(value:any):string=>JSON.stringify(value&&typeof value==='object'?Array.isArray(value)?value.map((v:any)=>JSON.parse(stable(v))):Object.fromEntries(Object.keys(value).sort().map(k=>[k,JSON.parse(stable(value[k]))])):value)
 const empty=(owner:string):WalletIdentitySection=>({schema:'castalia.wallet-identities.v1',version:1,ownerMemberKey:owner,authority:'descriptor-only',accounts:[]})
 const json=(raw:string)=>{if(typeof raw!=='string'||new TextEncoder().encode(raw).length>1_048_576)throw Error('file_too_large');return JSON.parse(raw)}
+// Reader support must not admit a format this host cannot preserve/review yet.
+// Remove this gate only with the shared feed persistence/import qualification.
+function requireQualifiedHostContents(contents:any){
+  const supported=contents?.version===1&&contents?.schema==='castalia.castaway-contents.v1'||contents?.version===2&&contents?.schema==='castalia.castaway-contents.v2'
+  if(!supported||Object.prototype.hasOwnProperty.call(contents?.sections??{},'feeds'))throw Error('feed_storage_not_qualified')
+  return contents
+}
 export function createWalletIdentitiesStore(d:Dependencies){
   let pending:{token:string;owner:string;epoch:number;revision:number;expires:number;contents:any;ciphertext:string}|null=null
   const key=(owner:string)=>'castalia-wallet-identities-v1:'+owner
@@ -21,7 +28,7 @@ export function createWalletIdentitiesStore(d:Dependencies){
     const saved=(await d.storage.get(key(owner)))[key(owner)] as any
     if(saved===undefined)return {revision:0,contents:initial(owner)}
     if(!saved||Object.keys(saved).sort().join(',')!=='ciphertext,revision,schema'||saved.schema!=='castalia.wallet-identity-storage.v1'||!Number.isSafeInteger(saved.revision)||saved.revision<1||typeof saved.ciphertext!=='string')throw Error('invalid_identity_storage')
-    const contents=json(d.validateContents(d.open(saved.ciphertext)));identities(contents,owner)
+    const contents=requireQualifiedHostContents(json(d.validateContents(d.open(saved.ciphertext))));identities(contents,owner)
     return {revision:saved.revision as number,contents}
   }
   return {
@@ -31,7 +38,7 @@ export function createWalletIdentitiesStore(d:Dependencies){
       pending=null
       if(typeof password!=='string'||new TextEncoder().encode(password).length>4096)throw Error('invalid_password')
       const owner=await guard(),epoch=d.epoch(),saved=await load(owner)
-      const incoming=json(d.validateContents(d.importFile(file,password)))
+      const incoming=requireQualifiedHostContents(json(d.validateContents(d.importFile(file,password))))
       if(incoming.sections.identity.subject.memberKey!==owner)throw Error('wrong_owner')
       const merged=json(d.merge(JSON.stringify(identities(saved.contents,owner)),JSON.stringify(identities(incoming,owner))))
       const contents=structuredClone(saved.contents)

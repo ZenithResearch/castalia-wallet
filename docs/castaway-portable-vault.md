@@ -1,6 +1,6 @@
 # Castaway Portable Vault
 
-Status: design contract v0.1; no conforming encoder or decoder is implemented yet
+Status: broader general-vault design v0.1. Closed identity/membership/account v1/v2 subsets are implemented; the general multi-object/opaque-entry vault below remains a design. Feed-bearing v3 readers are being qualified separately, with production v3 export disabled.
 
 ## Canonical definition
 
@@ -20,6 +20,12 @@ person-controlled encrypted vault
             |
       any compatible wallet
 ```
+
+## Closed feed-reader increment
+
+The development [feed contract and raw fixtures](../contracts/feeds/v1/README.md) add strict data-only `sections.feeds` readers targeting matching `castalia.castaway.v3` / `castalia.castaway-contents.v3`. V1/v2 keep their existing meanings; v2 already represents wallet identities. This is a narrow closed-section extension, not opaque entry support, new signing authority or a membership-credential version change.
+
+Native candidates preserve committed, older-host and incoming feed records additively, with exact conflict refusal, cancellation and whole-artifact size checks. Production v3 export stays refused until encrypted host storage, native review and cross-client qualification are complete. The extension currently refuses v3 rather than silently dropping it. Reader acceptance alone is not a host compatibility or release claim. Unknown future sections remain an explicit whole-import refusal.
 
 ## Boundary with wallet recovery
 

@@ -22,6 +22,7 @@ use zeroize::{Zeroize, Zeroizing};
 pub mod browser_read;
 mod credential_presentation;
 pub use credential_presentation::WasmCredentialPresentation;
+pub mod feeds;
 mod files_keys;
 pub mod portable;
 pub mod read_access;
@@ -56,6 +57,8 @@ const ED25519_PKCS8_PREFIX: [u8; 16] = [
 pub enum CustodyError {
     #[error("invalid_wallet_file")]
     InvalidWalletFile,
+    #[error("feed_writer_not_qualified")]
+    FeedWriterNotQualified,
 }
 
 type Result<T> = core::result::Result<T, CustodyError>;
@@ -698,8 +701,8 @@ impl Default for WasmWallet {
     }
 }
 
-fn js_closed(_: CustodyError) -> JsValue {
-    JsValue::from_str("invalid_wallet_file")
+fn js_closed(error: CustodyError) -> JsValue {
+    JsValue::from_str(&error.to_string())
 }
 
 /// Worker-owned recovery session. Native and WASM adapters share its state machine.

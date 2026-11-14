@@ -18,7 +18,8 @@ function fixture() {
     importFile:(raw:string)=>raw,exportFile:(raw:string)=>raw,
   })
   const file=()=>JSON.stringify({schema:'castalia.castaway-contents.v2',version:2,sections:{identity:{subject:{memberKey:owner}},walletIdentities:ids()}})
-  return {store,disk,file,ids,owner:()=>owner,writes:()=>writes,lock:()=>{unlocked=false;epoch++},unlock:()=>{unlocked=true;epoch++},switchOwner:()=>{owner='22'.repeat(32);epoch++},expire:()=>{now+=121_000}}
+  const seedContents=(contents:unknown)=>{const ciphertext='seed-'+sealed.size;sealed.set(ciphertext,JSON.stringify(contents));disk['castalia-wallet-identities-v1:'+owner]={schema:'castalia.wallet-identity-storage.v1',revision:1,ciphertext}}
+  return {store,disk,file,ids,seedContents,owner:()=>owner,writes:()=>writes,lock:()=>{unlocked=false;epoch++},unlock:()=>{unlocked=true;epoch++},switchOwner:()=>{owner='22'.repeat(32);epoch++},expire:()=>{now+=121_000}}
 }
 test('import preparation does not write; exact confirmation persists encrypted data once',async()=>{
   const f=fixture(),preview=await f.store.reviewImport(f.file(),'file password')
@@ -55,4 +56,38 @@ test('only exact top-level Wallet identity UI can reach private records',()=>{
 test('explicit identity edits preserve encryption and reject stale form revisions',async()=>{
   const f=fixture();await f.store.saveIdentities(f.ids(),0);assert.equal(f.writes(),1);assert.deepEqual((await f.store.read()).identities,f.ids());
   await assert.rejects(f.store.saveIdentities(f.ids(),0));assert.equal(f.writes(),1);assert.equal(JSON.stringify(f.disk).includes('Chat'),false)
+})
+
+test('reader support does not let an unqualified extension discard imported feeds',async()=>{
+  const f=fixture(),previous=await f.store.reviewImport(f.file(),'password')
+  const contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v3';contents.version=3
+  contents.sections.feeds={schema:'castalia.feeds-section.v1',version:1,subscriptions:[],collections:[],preferences:{order:'newest-first'}}
+  await assert.rejects(f.store.reviewImport(JSON.stringify(contents),'password'),/feed_storage_not_qualified/)
+  await assert.rejects(f.store.confirmImport(previous.token))
+  assert.equal(f.writes(),0)
+  assert.deepEqual((await f.store.read()).identities.accounts,[])
+})
+
+test('unqualified extension preserves saved future feed data through every attempted operation',async()=>{
+  const f=fixture(),contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v3';contents.version=3
+  contents.sections.feeds={schema:'castalia.feeds-section.v1',version:1,subscriptions:[],collections:[],preferences:{order:'newest-first'}}
+  f.seedContents(contents)
+  const prior=JSON.stringify(f.disk)
+  for(const operation of [
+    ()=>f.store.read(),
+    ()=>f.store.reviewImport(f.file(),'password'),
+    ()=>f.store.saveIdentities(f.ids(),1),
+    ()=>f.store.exportFile('backup password 123'),
+  ])await assert.rejects(operation(),/feed_storage_not_qualified/)
+  assert.equal(JSON.stringify(f.disk),prior)
+  assert.equal(f.writes(),0)
+})
+
+test('extension host refuses a future core format before import review or writes',async()=>{
+  const f=fixture(),contents=JSON.parse(f.file())
+  contents.schema='castalia.castaway-contents.v4';contents.version=4
+  await assert.rejects(f.store.reviewImport(JSON.stringify(contents),'password'),/feed_storage_not_qualified/)
+  assert.equal(f.writes(),0)
 })
