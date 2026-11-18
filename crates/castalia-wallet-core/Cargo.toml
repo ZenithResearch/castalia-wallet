@@ -18,6 +18,11 @@ name = "castalia-cardano-funding-fixture"
 path = "src/bin/cardano_funding_fixture.rs"
 required-features = ["funding-fixtures"]
 
+[[bin]]
+name = "castalia-kettle-funding-fixture"
+path = "src/bin/kettle_funding_fixture.rs"
+required-features = ["funding-fixtures"]
+
 [dependencies]
 secs-grant-contract = { path = "../../vendor/secs-grant-contract" }
 castalia-wallet-presentation = { path = "../castalia-wallet-presentation" }

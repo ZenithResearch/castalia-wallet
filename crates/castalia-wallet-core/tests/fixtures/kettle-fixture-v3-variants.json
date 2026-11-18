@@ -1,0 +1,110 @@
+{
+  "schema": "castalia.kettle-native-v3-byte-variants.v1",
+  "vectorSha256": "8c73807c8f316f998fa3822764aaa035c8e435cbd6d94f316a360887ca671630",
+  "cases": [
+    {
+      "name": "duplicateBodyFeeWideKey",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 776,
+          "remove": 0,
+          "insertHex": "18021a00125afc"
+        },
+        {
+          "offset": 1,
+          "remove": 1,
+          "insertHex": "ab"
+        }
+      ]
+    },
+    {
+      "name": "duplicateWitnessRedeemersWideKey",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 1334,
+          "remove": 0,
+          "insertHex": "180582840000d87e9fd87b9fd8799fd8799f456472696e6b01581cec17adcfd67ff9c84f4d9d4a0c516482ff5de676c0d9cfda1ed530bf5820a379658fdc827adedfe9b01452ff0a687b4e5b5961b776cb98fecb677d32c7ea58205fba46d3ea6fa30cb9a30c4a4eb4d58667570d0401e53eb483117966ee9cca955820874138fd92e58d99a28f1bb3f1662cd20a0d5705741a34532714036df513c35d01010402ffd87a809fd8799f40401a006acfc000ffd8799f581ca1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a141010900ffff582054e6c54460914baae6ac74298163f944287d63174d5f3dd5e8e3c35dfc089c7effd8799fd8799f5820222222222222222222222222222222222222222222222222222222222222222200ffd8799fd8799f581c2a20acf10de2ef05a2fcc481b012c530604ae30cff3935bd20a5d267ffd87a80ffd879809fd8799f40401a004c4b40ffd8799f581ca1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1410102ffff445a5a5a5a544b332072656769737465726564207061796f7574ffd8799f5820000000000000000000000000000000000000000000000000000000000000000080ffffff821a0065376c1a9642e23f840001d8799fd8799f5820056482c806e66cc9b102f0c942e190d8e3f093bc3064853e48187caeb5f3231000ff582038fb0737bcf3365cc2782e02f763f31ca82e3e18511d78091b0e82fe2f97e1e9ff821a001198d71a1cf3fcf0"
+        },
+        {
+          "offset": 776,
+          "remove": 1,
+          "insertHex": "a2"
+        }
+      ]
+    },
+    {
+      "name": "unorderedOriginalNormalInputs",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 7,
+          "remove": 72,
+          "insertHex": "825820222222222222222222222222222222222222222222222222222222222222222200825820056482c806e66cc9b102f0c942e190d8e3f093bc3064853e48187caeb5f3231000"
+        }
+      ]
+    },
+    {
+      "name": "repeatedSpendingRedeemerPointer",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 1245,
+          "remove": 1,
+          "insertHex": "00"
+        }
+      ]
+    },
+    {
+      "name": "duplicateValuePolicyWideBytes",
+      "target": "utxoCborHex",
+      "contextIndex": 0,
+      "edits": [
+        {
+          "offset": 160,
+          "remove": 0,
+          "insertHex": "59001ca1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a141011864"
+        },
+        {
+          "offset": 77,
+          "remove": 1,
+          "insertHex": "a3"
+        }
+      ]
+    },
+    {
+      "name": "duplicateValueAssetNameWideBytes",
+      "target": "utxoCborHex",
+      "contextIndex": 0,
+      "edits": [
+        {
+          "offset": 160,
+          "remove": 0,
+          "insertHex": "590001011864"
+        },
+        {
+          "offset": 155,
+          "remove": 1,
+          "insertHex": "a2"
+        }
+      ]
+    },
+    {
+      "name": "balancedFeeBelowReferenceMinimum",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 536,
+          "remove": 5,
+          "insertHex": "1a00120cdc"
+        },
+        {
+          "offset": 530,
+          "remove": 5,
+          "insertHex": "1a05e3d424"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 //! Opt-in disposable synthetic fixture custody. Never a production permission/consent API.
 mod cbor;
+pub mod kettle;
 mod marsh;
 pub use marsh::{
     MARSH_ADMISSION_DOMAIN, MARSH_CONTEXT_DOMAIN, MARSH_PROFILE_DOMAIN, MarshFixturePreparation,
