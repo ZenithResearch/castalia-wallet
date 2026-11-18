@@ -1,0 +1,469 @@
+{
+  "schema": "castalia.marsh-creation-authority-vectors.v1",
+  "scope": "public disposable vectors only",
+  "admission": {
+    "deployment": {
+      "network": {
+        "family": "Cardano",
+        "id": {
+          "kind": "testnet",
+          "magic": 270544960
+        },
+        "genesisKind": "shelley-genesis-raw-json-blake2b256",
+        "genesisDigest": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "discriminator": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "membershipTrustPolicy": {
+      "schema": "castalia.zenith-membership-trust-policy.v1",
+      "version": 1,
+      "roots": [
+        {
+          "issuerId": "fixture-issuer",
+          "keyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "publicKey": "08c15671eae4fced0904b80d78d80788bbf8927c1f79dc4b716a08a693cc55d8"
+        },
+        {
+          "issuerId": "fixture-issuer",
+          "keyId": "current-key",
+          "signatureSuite": "Ed25519",
+          "publicKey": "f23454a4f963703a7138bf413e19ccdc450e6353ab98738a5074e3d75b95d961"
+        }
+      ]
+    }
+  },
+  "positive": [
+    {
+      "name": "previously issued credential with inline receiver",
+      "context": {
+        "interface": "castalia.marsh-creation-authority.v1",
+        "deployment": {
+          "network": {
+            "family": "Cardano",
+            "id": {
+              "kind": "testnet",
+              "magic": 270544960
+            },
+            "genesisKind": "shelley-genesis-raw-json-blake2b256",
+            "genesisDigest": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "discriminator": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "seed": {
+          "transactionId": "3333333333333333333333333333333333333333333333333333333333333333",
+          "outputIndex": 256
+        },
+        "initialController": "44444444444444444444444444444444444444444444444444444444",
+        "initialSecondary": {
+          "kind": "present",
+          "paymentKeyHash": "55555555555555555555555555555555555555555555555555555555"
+        },
+        "initialReceiver": {
+          "address": {
+            "payment": {
+              "kind": "script",
+              "hash": "66666666666666666666666666666666666666666666666666666666"
+            },
+            "stake": {
+              "kind": "inline",
+              "credential": {
+                "kind": "key",
+                "hash": "77777777777777777777777777777777777777777777777777777777"
+              }
+            }
+          },
+          "datum": {
+            "kind": "inline",
+            "value": {
+              "kind": "constructor",
+              "index": "130",
+              "fields": [
+                {
+                  "kind": "int",
+                  "value": "-18446744073709551617"
+                },
+                {
+                  "kind": "map",
+                  "entries": [
+                    [
+                      {
+                        "kind": "int",
+                        "value": "2"
+                      },
+                      {
+                        "kind": "bytes",
+                        "hex": "deadbeef"
+                      }
+                    ],
+                    [
+                      {
+                        "kind": "int",
+                        "value": "1"
+                      },
+                      {
+                        "kind": "list",
+                        "items": [
+                          {
+                            "kind": "int",
+                            "value": "0"
+                          },
+                          {
+                            "kind": "bytes",
+                            "hex": ""
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "fixedKettle": {
+          "stateToken": {
+            "policyId": "88888888888888888888888888888888888888888888888888888888",
+            "assetName": "4b4554544c45"
+          },
+          "stateAddress": {
+            "payment": {
+              "kind": "script",
+              "hash": "99999999999999999999999999999999999999999999999999999999"
+            },
+            "stake": {
+              "kind": "none"
+            }
+          }
+        }
+      },
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "GNPgkeBvgPcjpoaM6SzCUsxh6tjERH6_un6IQvG_2tzfPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "issuerTranscriptHex": "63617374616c69612f7a656e6974682d6d656d626572736869702d63726564656e7469616c2f7633000300000000000000d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b060000006163746976650e000000666978747572652d6973737565720e000000686973746f726963616c2d6b65790700000065643235353139",
+      "credentialCommitmentHex": "1f29d43e1d0588cb36207240b48fe89dfac459763b9e9b238af0129939c0b212",
+      "holderTranscriptHex": "63617374616c69612f6d617273682d6372656174696f6e2d686f6c6465722f7631001f29d43e1d0588cb36207240b48fe89dfac459763b9e9b238af0129939c0b212014030201001111111111111111111111111111111111111111111111111111111111111111122222222222222222222222222222222222222222222222222222222222222223333333333333333333333333333333333333333333333333333333333333333000100004444444444444444444444444444444444444444444444444444444401555555555555555555555555555555555555555555555555555555550166666666666666666666666666666666666666666666666666666666010077777777777777777777777777777777777777777777777777777777023200048200000000000000020000010901000000000000000103020000000102010400deadbeef0000010102020000000001000088888888888888888888888888888888888888888888888888888888064b4554544c45019999999999999999999999999999999999999999999999999999999900"
+    },
+    {
+      "name": "same historical credential on a new seed",
+      "context": {
+        "interface": "castalia.marsh-creation-authority.v1",
+        "deployment": {
+          "network": {
+            "family": "Cardano",
+            "id": {
+              "kind": "testnet",
+              "magic": 270544960
+            },
+            "genesisKind": "shelley-genesis-raw-json-blake2b256",
+            "genesisDigest": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "discriminator": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "seed": {
+          "transactionId": "3333333333333333333333333333333333333333333333333333333333333333",
+          "outputIndex": 257
+        },
+        "initialController": "44444444444444444444444444444444444444444444444444444444",
+        "initialSecondary": {
+          "kind": "absent"
+        },
+        "initialReceiver": {
+          "address": {
+            "payment": {
+              "kind": "script",
+              "hash": "66666666666666666666666666666666666666666666666666666666"
+            },
+            "stake": {
+              "kind": "inline",
+              "credential": {
+                "kind": "key",
+                "hash": "77777777777777777777777777777777777777777777777777777777"
+              }
+            }
+          },
+          "datum": {
+            "kind": "none"
+          }
+        },
+        "fixedKettle": {
+          "stateToken": {
+            "policyId": "88888888888888888888888888888888888888888888888888888888",
+            "assetName": "4b4554544c45"
+          },
+          "stateAddress": {
+            "payment": {
+              "kind": "script",
+              "hash": "99999999999999999999999999999999999999999999999999999999"
+            },
+            "stake": {
+              "kind": "none"
+            }
+          }
+        }
+      },
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "pb2koLbY0T1XTbIkYElMCOgJ4S5q59lDwoogAnvaRyFxecn0DPo-KWR_6ZePGlyUUx1nk1jXa8oS0WFFfTBFAg"
+      },
+      "issuerTranscriptHex": "63617374616c69612f7a656e6974682d6d656d626572736869702d63726564656e7469616c2f7633000300000000000000d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b060000006163746976650e000000666978747572652d6973737565720e000000686973746f726963616c2d6b65790700000065643235353139",
+      "credentialCommitmentHex": "1f29d43e1d0588cb36207240b48fe89dfac459763b9e9b238af0129939c0b212",
+      "holderTranscriptHex": "63617374616c69612f6d617273682d6372656174696f6e2d686f6c6465722f7631001f29d43e1d0588cb36207240b48fe89dfac459763b9e9b238af0129939c0b21201403020100111111111111111111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222222222222222222333333333333333333333333333333333333333333333333333333333333333301010000444444444444444444444444444444444444444444444444444444440001666666666666666666666666666666666666666666666666666666660100777777777777777777777777777777777777777777777777777777770088888888888888888888888888888888888888888888888888888888064b4554544c45019999999999999999999999999999999999999999999999999999999900"
+    },
+    {
+      "name": "current issuer with pointer receiver and datum hash",
+      "context": {
+        "interface": "castalia.marsh-creation-authority.v1",
+        "deployment": {
+          "network": {
+            "family": "Cardano",
+            "id": {
+              "kind": "testnet",
+              "magic": 270544960
+            },
+            "genesisKind": "shelley-genesis-raw-json-blake2b256",
+            "genesisDigest": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "discriminator": "2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "seed": {
+          "transactionId": "3333333333333333333333333333333333333333333333333333333333333333",
+          "outputIndex": 256
+        },
+        "initialController": "44444444444444444444444444444444444444444444444444444444",
+        "initialSecondary": {
+          "kind": "present",
+          "paymentKeyHash": "55555555555555555555555555555555555555555555555555555555"
+        },
+        "initialReceiver": {
+          "address": {
+            "payment": {
+              "kind": "script",
+              "hash": "66666666666666666666666666666666666666666666666666666666"
+            },
+            "stake": {
+              "kind": "pointer",
+              "slot": "4294967297",
+              "transactionIndex": "256",
+              "certificateIndex": "3"
+            }
+          },
+          "datum": {
+            "kind": "hash",
+            "hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        },
+        "fixedKettle": {
+          "stateToken": {
+            "policyId": "88888888888888888888888888888888888888888888888888888888",
+            "assetName": "4b4554544c45"
+          },
+          "stateAddress": {
+            "payment": {
+              "kind": "script",
+              "hash": "99999999999999999999999999999999999999999999999999999999"
+            },
+            "stake": {
+              "kind": "none"
+            }
+          }
+        }
+      },
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "current-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "vL8QSbq8PTKO7NGRxkIqwtUT26ictyBETXJ6EKWyL0gDSg3fWv0nkN-886Gy0Hr9d1GSuiNrOAkFEO1PdVBNDA"
+        },
+        "holderSignature": "vkpDcO_SWS5-WV5h9iJJWu9VQn56-VYVvGI6pxb5oB1-25AB6EYJzad4CrynYpWAWDkysA2KYgun-xwrU402AA"
+      },
+      "issuerTranscriptHex": "63617374616c69612f7a656e6974682d6d656d626572736869702d63726564656e7469616c2f7633000300000000000000d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b060000006163746976650e000000666978747572652d6973737565720b00000063757272656e742d6b65790700000065643235353139",
+      "credentialCommitmentHex": "83202480c2a9033d053e57fc19300ec8fc59ab833937a8fbbf0c35187562cfbe",
+      "holderTranscriptHex": "63617374616c69612f6d617273682d6372656174696f6e2d686f6c6465722f76310083202480c2a9033d053e57fc19300ec8fc59ab833937a8fbbf0c35187562cfbe0140302010011111111111111111111111111111111111111111111111111111111111111111222222222222222222222222222222222222222222222222222222222222222233333333333333333333333333333333333333333333333333333333333333330001000044444444444444444444444444444444444444444444444444444444015555555555555555555555555555555555555555555555555555555501666666666666666666666666666666666666666666666666666666660201000000010000000001000000000000030000000000000001aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa88888888888888888888888888888888888888888888888888888888064b4554544c45019999999999999999999999999999999999999999999999999999999900"
+    }
+  ],
+  "negative": [
+    {
+      "name": "forged holder signature",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "GdPgkeBvgPcjpoaM6SzCUsxh6tjERH6_un6IQvG_2tzfPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "error": "invalid creation holder signature"
+    },
+    {
+      "name": "forged issuer signature",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hdwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "GNPgkeBvgPcjpoaM6SzCUsxh6tjERH6_un6IQvG_2tzfPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "error": "invalid issuer signature"
+    },
+    {
+      "name": "valid untrusted issuer and holder signatures",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "unknown-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "QZD7rDRjce8NkRS_xHwY0WkY9kCYVwfBIykghcNofRbGAcKeqFyM5UB88x-OV0v4o2HLdPID9kJMfzPgH4xeCQ"
+        },
+        "holderSignature": "pfHBYjtmcFxVcIt4RKO48-lQ2xG8hi91eFLWMzOwoSuD1cVfO9Bms19oikeBlZ0ddkfD_ZLQsDUUog1GTZkMBw"
+      },
+      "error": "membership issuer key is not trusted"
+    },
+    {
+      "name": "different valid issuer key for the same member",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "current-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "vL8QSbq8PTKO7NGRxkIqwtUT26ictyBETXJ6EKWyL0gDSg3fWv0nkN-886Gy0Hr9d1GSuiNrOAkFEO1PdVBNDA"
+        },
+        "holderSignature": "GNPgkeBvgPcjpoaM6SzCUsxh6tjERH6_un6IQvG_2tzfPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "error": "invalid creation holder signature"
+    },
+    {
+      "name": "identity-point MemberKey with trivial holder signature",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "3b61a316776b8e81e849e440201394cf63d5648b0a53cc870848c3288d8afc60",
+          "ownerPublicKey": "0100000000000000000000000000000000000000000000000000000000000000",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "09bYvieU_2zmpp9Hu20Bs_32OeADAL26ZNAd65VHNdEoxTlfj2A0PIbX8bosfXNLjKfpo3VSLmBQsEHgAeXvBg"
+        },
+        "holderSignature": "AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "error": "invalid creation holder signature"
+    },
+    {
+      "name": "signature R has noncanonical Y",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "7f_______________________________________3_fPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "error": "invalid creation holder signature"
+    },
+    {
+      "name": "signature R has small order",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADfPwYUfzQRlGN32WQQg00ouJU7Sfo0t-1HYciN_DcvAQ"
+      },
+      "error": "invalid creation holder signature"
+    },
+    {
+      "name": "signature S equals the subgroup order",
+      "proof": {
+        "schema": "castalia.marsh-creation-proof.v1",
+        "credential": {
+          "schema": "castalia.zenith-membership-credential.v3",
+          "version": 3,
+          "membershipId": "d4f9b6d22f0539cade31de4fc205e18fd6892f80047c93cb019369570a716a10",
+          "ownerPublicKey": "932f11665bbe2a50ebc92c009a88256161e0509c71b5de1afe23aefe1d14339b",
+          "status": "active",
+          "issuerId": "fixture-issuer",
+          "issuerKeyId": "historical-key",
+          "signatureSuite": "Ed25519",
+          "issuerSignature": "hNwGYX5d1-P5bcQ6ag6TwPu8_iuz4Vuy4iQbJyS6_qKqQuZNpgLlAs2QFMEvszpAOvHN3EvitDzn21LYYyAHDw"
+        },
+        "holderSignature": "GNPgkeBvgPcjpoaM6SzCUsxh6tjERH6_un6IQvG_2tzt0_VcGmMSWNac96Le-d4UAAAAAAAAAAAAAAAAAAAAEA"
+      },
+      "error": "invalid creation holder signature"
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add a default-off Marsh creation holder-proof fixture producer with custody-held MemberKey signing and independent issuer-path admission to qualify frozen transcript parity and one-use review handles. Product consent, saved-account signing, and actual minting remain unqualified.
+
 - Add typed v2 holder-session consent and isolated finite-key custody using the versioned secS contract. Preserve existing grants, backups and owner-bootstrap behavior; production exchange remains disabled pending consumer and receiver qualification.
 
 - Package the reconciled public Wallet source as extension 0.0.5; preserve existing custody, recovery and runtime trust profiles.

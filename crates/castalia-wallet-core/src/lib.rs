@@ -758,3 +758,6 @@ pub mod session_signer;
 compile_error!("funding-fixtures is a native-only synthetic test interface");
 #[cfg(all(feature = "funding-fixtures", not(target_arch = "wasm32")))]
 pub mod funding_fixture;
+
+#[cfg(feature = "funding-fixtures")]
+pub mod marsh_creation;
