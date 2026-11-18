@@ -1,5 +1,15 @@
 //! Opt-in disposable synthetic fixture custody. Never a production permission/consent API.
 mod cbor;
+pub mod current_approval;
+pub mod current_approval_v2;
+pub mod current_wire;
+pub mod kettle;
+pub mod kettle_admin;
+mod marsh;
+pub use marsh::{
+    MARSH_ADMISSION_DOMAIN, MARSH_CONTEXT_DOMAIN, MARSH_PROFILE_DOMAIN, MarshFixturePreparation,
+    MarshFixtureProof,
+};
 mod v2;
 use crate::{CardanoFundingAccountV1, CardanoFundingNetworkV1, OpenedWallet};
 use blake2::{
@@ -101,6 +111,7 @@ struct Prepared {
 /// No import, deserialization, recovery, cloning or private-material export constructor exists.
 pub struct FundingFixtureSession {
     wallet: Option<OpenedWallet>,
+    marsh: marsh::MarshState,
     owner: VerifyingKey,
     info: FixtureInfo,
     profile: Option<FixtureProfile>,
@@ -159,6 +170,7 @@ impl FundingFixtureSession {
             .map_err(|_| FixtureError("cannot derive fixture account"))?;
         Ok(Self {
             wallet: Some(wallet),
+            marsh: marsh::MarshState::default(),
             owner,
             info: FixtureInfo {
                 session_id: nonce(),
@@ -453,6 +465,7 @@ impl FundingFixtureSession {
     }
     pub fn invalidate(&mut self) -> FixtureResult<()> {
         self.active()?;
+        self.marsh.invalidate();
         self.pending.clear();
         self.used_admissions.clear();
         self.context = None;
@@ -463,6 +476,7 @@ impl FundingFixtureSession {
         Ok(())
     }
     pub fn close(&mut self) {
+        self.marsh.invalidate();
         self.pending.clear();
         self.used_admissions.clear();
         self.context = None;

@@ -2,11 +2,21 @@
 
 ## [Unreleased]
 
+- Add an isolated default-off K3 native-admin v4 fixture for current-controller Add and two-current-recovery Disable, with immutable participant roles and shared original-body review. Existing v3 signing and production consent remain unchanged.
+
+- Add a separate default-off K3 native Registered-pour fixture to bind source-pinned code, independently authenticated current ledger observations, exact payout/accounting review, and one-use fresh-custody payer witnesses. Production consent and existing funding dispatch remain unchanged.
+
+- Add a default-off Marsh creation holder-proof fixture producer with custody-held MemberKey signing and independent issuer-path admission to qualify frozen transcript parity and one-use review handles. Product consent, saved-account signing, and actual minting remain unqualified.
+
 - Add typed v2 holder-session consent and isolated finite-key custody using the versioned secS contract. Preserve existing grants, backups and owner-bootstrap behavior; production exchange remains disabled pending consumer and receiver qualification.
 
 - Package the reconciled public Wallet source as extension 0.0.5; preserve existing custody, recovery and runtime trust profiles.
 
 ### Added
+- Qualify separate-root encrypted recovery with an isolated host guard — verifies the complete expected Cardano descriptor before empty-slot installation while preserving the controlling Wallet. This adds disposable integration evidence only.
+- Add one opt-in Kettle v2 approval family for controller, quorum, author and policy actions — verifies original Spend/Mint effects and continues policy payouts after proposal payment, with distinct v2 session authority and preserved v1 behavior.
+- Add an opt-in current Kettle approval fixture with independent original-body, policy and full-value review — qualifies fresh native Add, paired payout and Disable without extending production custody or historical profiles.
+- Add an opt-in original-wire observation codec with a portable 78-case Web/Rust corpus — preserves exact transaction identity and separates structural decoding from local ledger representability before current signing integration.
 - Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.
 
 - Extend disposable native funding fixtures with versioned Marsh and proposal review — bind authentic resolved state, exact request revisions and independent payer roles without widening the original approval profile.
