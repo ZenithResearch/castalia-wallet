@@ -2,6 +2,9 @@
 use super::super::cbor::Node;
 use super::data::*;
 use super::*;
+#[path = "../current_approval_v2/fixed.rs"]
+pub(in crate::funding_fixture) mod fixed_v2;
+
 type Amounts = BTreeMap<String, i128>;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -181,6 +184,9 @@ struct Origins<'a> {
 }
 impl<'a> Origins<'a> {
     fn new(c: &'a ReviewContext, w: &Wire) -> FixtureResult<Self> {
+        Self::from_creators(&c.creators, w)
+    }
+    fn from_creators(creators: &'a [Creator], w: &Wire) -> FixtureResult<Self> {
         let ids: BTreeSet<_> = w
             .normal_inputs
             .iter()
@@ -189,12 +195,12 @@ impl<'a> Origins<'a> {
             .map(|r| r.tx_hash.as_str())
             .collect();
         ensure(
-            (1..=8).contains(&ids.len()) && ids.len() == c.creators.len(),
+            (1..=8).contains(&ids.len()) && ids.len() == creators.len(),
             "exact number of original creators",
         )?;
         let mut total = 0usize;
         let mut parents = BTreeMap::new();
-        for (expected, p) in ids.into_iter().zip(&c.creators) {
+        for (expected, p) in ids.into_iter().zip(creators) {
             ensure(expected == p.tx_id, "sorted exact creating transaction set")?;
             total = total
                 .checked_add(p.original.len())
@@ -559,6 +565,29 @@ fn minimum(o: &Output) -> FixtureResult<i128> {
     )?;
     Ok(min)
 }
+fn script_data_integrity(tx: &Wire, raw: &str) -> FixtureResult<(String, String)> {
+    let witnesses = tx.witness_set.extract(raw)?;
+    ensure(
+        witnesses.starts_with(&[0xa1, 0x05]),
+        "unsigned exact key-5 witness map",
+    )?;
+    let original_redeemers = &witnesses[2..];
+    let view = hex::decode(include_str!("cost_view.hex").trim()).expect("fixed language view hex");
+    let script_hash = hex::encode(hash32(&[original_redeemers, &view].concat()));
+    ensure(
+        tx.script_data_hash.as_deref() == Some(&script_hash),
+        "original script-data integrity",
+    )?;
+    Ok((script_hash, sha(original_redeemers)))
+}
+
+fn projected_fee(signed_size: usize, ref_bytes: usize, memory: i128, steps: i128) -> i128 {
+    155381
+        + 44 * (signed_size as i128 - 1)
+        + 15 * ref_bytes as i128
+        + (577000 * memory + 721 * steps + 9_999_999) / 10_000_000
+}
+
 pub(super) fn inspect(raw: &str, c: &ReviewContext) -> FixtureResult<Json> {
     ensure(
         c.schema == "castalia.kettle-current-approval-context.v1"
@@ -605,18 +634,7 @@ pub(super) fn inspect(raw: &str, c: &ReviewContext) -> FixtureResult<Json> {
         start <= i128::from(c.slot) && ttl > i128::from(c.slot) && ttl - i128::from(c.slot) <= 120,
         "current slot outside bounded action interval",
     )?;
-    let witnesses = tx.witness_set.extract(raw)?;
-    ensure(
-        witnesses.starts_with(&[0xa1, 0x05]),
-        "unsigned exact key-5 witness map",
-    )?;
-    let original_redeemers = &witnesses[2..];
-    let view = hex::decode(include_str!("cost_view.hex").trim()).expect("fixed language view hex");
-    let script_hash = hex::encode(hash32(&[original_redeemers, &view].concat()));
-    ensure(
-        tx.script_data_hash.as_deref() == Some(&script_hash),
-        "original script-data integrity",
-    )?;
+    let (script_hash, redeemers_sha) = script_data_integrity(&tx, raw)?;
     let origins = Origins::new(c, &tx)?;
     ensure(
         tx.normal_inputs.contains(&c.head.outpoint)
@@ -821,10 +839,7 @@ pub(super) fn inspect(raw: &str, c: &ReviewContext) -> FixtureResult<Json> {
     )?;
     let signed_size = tx.envelope.length + 5 + 101 * signers.len();
     ensure(signed_size <= 16_384, "final witness/envelope size")?;
-    let min_fee = 155381
-        + 44 * (signed_size as i128 - 1)
-        + 15 * ref_bytes as i128
-        + (577000 * memory + 721 * steps + 9_999_999) / 10_000_000;
+    let min_fee = projected_fee(signed_size, ref_bytes, memory, steps);
     ensure(fee >= min_fee, "reference-inclusive minimum fee")?;
     let mins = tx
         .outputs
@@ -872,7 +887,7 @@ pub(super) fn inspect(raw: &str, c: &ReviewContext) -> FixtureResult<Json> {
         "policy": pol.effect,
         "requiredSignerKeyHashes": signers,
         "scriptDataHash": script_hash,
-        "redeemersSha256": sha(original_redeemers),
+        "redeemersSha256": redeemers_sha,
         "projectedSignedBytes": signed_size,
         "referenceScriptBytes": ref_bytes,
         "fee": tx.fee,

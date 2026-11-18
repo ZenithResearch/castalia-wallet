@@ -33,6 +33,11 @@ name = "castalia-kettle-current-approval-fixture"
 path = "src/bin/current_approval_fixture.rs"
 required-features = ["funding-fixtures"]
 
+[[bin]]
+name = "castalia-kettle-current-approval-v2-fixture"
+path = "src/bin/current_approval_v2_fixture.rs"
+required-features = ["funding-fixtures"]
+
 [dependencies]
 secs-grant-contract = { path = "../../vendor/secs-grant-contract" }
 castalia-wallet-presentation = { path = "../castalia-wallet-presentation" }

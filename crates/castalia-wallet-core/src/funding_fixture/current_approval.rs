@@ -8,6 +8,7 @@ use std::collections::{BTreeMap, BTreeSet};
 mod data;
 mod data_reader;
 mod review;
+pub(super) use review::fixed_v2;
 
 pub const PROFILE: &str = "36e0ba818c65428a8c30bc5a4885af4e35e9148d53bb22383e7d1301442d1779";
 const SCOPE: &str = "570f69099e9a585e8066ff20430c5d9c3ff862b46a780ab5a5d61c138886c5d4";

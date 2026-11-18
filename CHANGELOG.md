@@ -13,6 +13,7 @@
 - Package the reconciled public Wallet source as extension 0.0.5; preserve existing custody, recovery and runtime trust profiles.
 
 ### Added
+- Add one opt-in Kettle v2 approval family for controller, quorum, author and policy actions — verifies original Spend/Mint effects and continues policy payouts after proposal payment, with distinct v2 session authority and preserved v1 behavior.
 - Add an opt-in current Kettle approval fixture with independent original-body, policy and full-value review — qualifies fresh native Add, paired payout and Disable without extending production custody or historical profiles.
 - Add an opt-in original-wire observation codec with a portable 78-case Web/Rust corpus — preserves exact transaction identity and separates structural decoding from local ledger representability before current signing integration.
 - Publish the Castalia Wallet Standard and CWS-001 file envelopes, typed sections and schema-publication draft — gives SDK authors explicit artifact shapes, storage routing and versioned extension definitions while preserving existing recovery bytes.

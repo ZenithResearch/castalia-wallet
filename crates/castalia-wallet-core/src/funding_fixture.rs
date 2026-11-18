@@ -1,6 +1,7 @@
 //! Opt-in disposable synthetic fixture custody. Never a production permission/consent API.
 mod cbor;
 pub mod current_approval;
+pub mod current_approval_v2;
 pub mod current_wire;
 pub mod kettle;
 pub mod kettle_admin;
