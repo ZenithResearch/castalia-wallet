@@ -13,6 +13,7 @@
 - Package the reconciled public Wallet source as extension 0.0.5; preserve existing custody, recovery and runtime trust profiles.
 
 ### Added
+- Qualify separate-root encrypted recovery with an isolated host guard — verifies the complete expected Cardano descriptor before empty-slot installation while preserving the controlling Wallet. This adds disposable integration evidence only.
 - Add one opt-in Kettle v2 approval family for controller, quorum, author and policy actions — verifies original Spend/Mint effects and continues policy payouts after proposal payment, with distinct v2 session authority and preserved v1 behavior.
 - Add an opt-in current Kettle approval fixture with independent original-body, policy and full-value review — qualifies fresh native Add, paired payout and Disable without extending production custody or historical profiles.
 - Add an opt-in original-wire observation codec with a portable 78-case Web/Rust corpus — preserves exact transaction identity and separates structural decoding from local ledger representability before current signing integration.
