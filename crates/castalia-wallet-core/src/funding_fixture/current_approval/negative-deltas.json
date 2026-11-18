@@ -1,0 +1,21 @@
+{
+  "sourceSha256": "204b242c2638def5ceafd06d84f1bc776516c6188be90cd3140a01170cc47d77",
+  "cases": [
+    {
+      "name": "changed-script-data",
+      "offset": 924,
+      "before": "",
+      "after": "18",
+      "sourceId": "1d2be5d8f41f6b062efcb042142195a09c3b882c0ecdbf4cac6f40a9dde24b13",
+      "envelopeSha256": "6e0e3d3374a259d70d43741fe4955bd72ec28c28d5fb5cb0e1d6dd0191ab9c34"
+    },
+    {
+      "name": "native-only-residual-deficit",
+      "offset": 640,
+      "before": "04",
+      "after": "03",
+      "sourceId": "1d2be5d8f41f6b062efcb042142195a09c3b882c0ecdbf4cac6f40a9dde24b13",
+      "envelopeSha256": "d17762be9410a2db43499318433c5e70e045f1c410ee623825953b25af3a10a6"
+    }
+  ]
+}
