@@ -1,0 +1,111 @@
+{
+  "schema": "castalia.kettle-native-admin-v4-byte-variants.v1",
+  "vectorSha256": "e12a87cec64e4039ba44469bf2f9e50e1e2054a0c22b708d65e7d1a8ec09c9b6",
+  "cases": [
+    {
+      "action": "add",
+      "name": "addUnderpricesFullWitnessSet",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 390,
+          "remove": 5,
+          "insertHex": "1a000e3869"
+        },
+        {
+          "offset": 384,
+          "remove": 5,
+          "insertHex": "1a05e7a897"
+        }
+      ]
+    },
+    {
+      "action": "add",
+      "name": "addUnorderedRequiredSigners",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 479,
+          "remove": 60,
+          "insertHex": "581cfa20973d06d93b234a3b711e86e18a3ef061039d7969e2b30018ea27581c994bd605d8e1ab1222a0a49e3f36eb6cdaa2bb35c37e32ce9005f9d8"
+        }
+      ]
+    },
+    {
+      "action": "add",
+      "name": "duplicateBodyFeeWideKey",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 624,
+          "remove": 0,
+          "insertHex": "18021a000e3c51"
+        },
+        {
+          "offset": 1,
+          "remove": 1,
+          "insertHex": "ab"
+        }
+      ]
+    },
+    {
+      "action": "add",
+      "name": "duplicateValueAssetNameWideBytes",
+      "target": "utxoCborHex",
+      "contextIndex": 0,
+      "edits": [
+        {
+          "offset": 160,
+          "remove": 0,
+          "insertHex": "590001011864"
+        },
+        {
+          "offset": 155,
+          "remove": 1,
+          "insertHex": "a2"
+        }
+      ]
+    },
+    {
+      "action": "disable",
+      "name": "disableUnderpricesFullWitnessSet",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 390,
+          "remove": 5,
+          "insertHex": "1a000e4ee7"
+        },
+        {
+          "offset": 384,
+          "remove": 5,
+          "insertHex": "1a05d955c8"
+        }
+      ]
+    },
+    {
+      "action": "disable",
+      "name": "disableUnorderedRequiredSigners",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 479,
+          "remove": 60,
+          "insertHex": "581c2365539806f48500b1d7589de895bc56a90283bdcbfe23242f68dbaf581c1b0219bd82c91c9c54da91e5b78cecbf74831768274827a0d5af2e1c"
+        }
+      ]
+    },
+    {
+      "action": "disable",
+      "name": "disableAlreadyDisabledPrior",
+      "target": "transactionHex",
+      "edits": [
+        {
+          "offset": 816,
+          "remove": 3,
+          "insertHex": "d87980"
+        }
+      ]
+    }
+  ]
+}

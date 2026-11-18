@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Add an isolated default-off K3 native-admin v4 fixture for current-controller Add and two-current-recovery Disable, with immutable participant roles and shared original-body review. Existing v3 signing and production consent remain unchanged.
+
 - Add a separate default-off K3 native Registered-pour fixture to bind source-pinned code, independently authenticated current ledger observations, exact payout/accounting review, and one-use fresh-custody payer witnesses. Production consent and existing funding dispatch remain unchanged.
 
 - Add a default-off Marsh creation holder-proof fixture producer with custody-held MemberKey signing and independent issuer-path admission to qualify frozen transcript parity and one-use review handles. Product consent, saved-account signing, and actual minting remain unqualified.
